@@ -160,6 +160,7 @@ export class AgentInstaller {
       'devops',
       'docs-writer',
       'debugger',
+      'ui-ux-dev',
     ];
 
     const managementAgents = ['product-owner', 'scrum-master'];

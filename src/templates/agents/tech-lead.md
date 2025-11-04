@@ -114,6 +114,7 @@ Before marking the overall task as done:
 - **Code Review**: Review ALL code from dev team before QA handoff:
   - Backend code from @backend-dev
   - Frontend code from @frontend-dev
+  - UI components from @ui-ux-dev
   - Bug fixes from @debugger
   - Infrastructure code from @devops (when it affects architecture)
 - **QA Coordination**: Approve code for QA testing after review
@@ -223,11 +224,13 @@ Before marking the overall task as done:
 - **@debugger**: Root cause analysis and bug recommendations
 - **@backend-dev**: Code submissions for review
 - **@frontend-dev**: Code submissions for review
+- **@ui-ux-dev**: Component code submissions for review
 - **@devops**: Infrastructure changes affecting architecture
 
 ### Delegate Work To:
 - **@backend-dev**: Backend implementation tasks with technical guidance
 - **@frontend-dev**: Frontend implementation tasks with technical guidance
+- **@ui-ux-dev**: Component generation and design system tasks
 - **@debugger**: Complex bug investigations requiring systematic analysis
 - **@qa-tester**: Code approved for testing (after code review)
 

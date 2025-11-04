@@ -9,13 +9,14 @@ This document defines comprehensive workflows for agent collaboration across all
 
 ## 🎯 Workflow Overview
 
-AgentWeaver provides **8 major workflows** covering the complete software development lifecycle and go-to-market activities:
+AgentWeaver provides **9 major workflows** covering the complete software development lifecycle and go-to-market activities:
 
 | Workflow | When to Use | Key Agents | Duration |
 |----------|-------------|------------|----------|
 | 🆕 **Greenfield App** | Building app from scratch | All dev + marketing/sales | Weeks-Months |
 | ✨ **Feature Development** | Adding new features | product-owner → tech-lead → dev → qa | Days-Weeks |
 | 🐛 **Bug Resolution** | Fixing bugs and errors | debugger → tech-lead → dev → qa | Hours-Days |
+| 🎨 **UI/UX Design** | Component generation | product-owner → ui-ux-dev → tech-lead → frontend-dev | Days |
 | 🚀 **Infrastructure/DevOps** | CI/CD, deployment, scaling | devops → tech-lead → qa | Days-Weeks |
 | 📣 **Marketing Campaign** | Product launch and promotion | marketing team | Weeks |
 | 💰 **Sales Process** | Selling and customer success | sales team | Ongoing |
@@ -1401,6 +1402,283 @@ Claude Code uses these signals to automatically detect which workflow to use:
 ### Documentation
 - Keywords: "documentation", "docs", "README"
 - User says: "We need to document our API"
+
+### UI/UX Design (Code-First)
+- Keywords: "design", "UI", "component", "mockup", "layout", "responsive"
+- User says: "Create a responsive card component"
+
+---
+
+## WORKFLOW #9: 🎨 UI/UX Design (Code-First)
+
+**Trigger Keywords**: "design", "UI", "component", "mockup", "layout", "responsive", "accessibility"
+
+**Use When**:
+- Need new UI components
+- Implementing design requirements
+- Creating design system components
+- Building responsive layouts
+- Improving accessibility
+
+### Quick Flow
+
+```
+@product-owner (design requirements)
+    ↓
+@ui-ux-dev (generate component code)
+    ↓
+Preview & user approval
+    ↓
+@tech-lead (code review)
+    ↓
+@frontend-dev (add functionality)
+    ↓
+@qa-tester (visual & functional testing)
+```
+
+### Detailed Steps
+
+#### Step 1: @product-owner - Design Requirements
+**Duration**: 0.5-1 day
+
+**Actions**:
+1. Define component requirements and use cases
+2. Specify user interactions and behavior
+3. Provide brand guidelines and design system context
+4. List accessibility requirements (WCAG level)
+5. Define responsive behavior across devices
+
+**Deliverable**: Design requirements document
+
+**Handoff**: Share requirements with @ui-ux-dev
+
+---
+
+#### Step 2: @ui-ux-dev - Component Generation
+**Duration**: 0.5-2 days
+
+**CRITICAL**: Uses code-first approach, generates production-ready components
+
+**Actions**:
+1. Read **agentweaver.config.yml** for design system configuration
+2. Query **shadcn/ui MCP** for component patterns:
+   ```
+   mcp__shadcn-ui-server__list-components
+   mcp__shadcn-ui-server__get-component-docs with component: "button"
+   ```
+3. Generate component code with:
+   - React/Vue/Svelte based on tech stack
+   - Tailwind CSS styling
+   - WCAG 2.1 AA accessibility (semantic HTML, ARIA, keyboard nav)
+   - Responsive breakpoints (mobile-first)
+   - Dark mode support
+4. Create visual preview (HTML/browser)
+5. Document component usage and props
+
+**MCP Usage**:
+- **shadcn/ui**: Get proven component patterns
+- **Context7**: Research design system best practices
+- **Sequential Thinking**: Complex layout decisions
+- **Playwright**: Generate screenshots for preview
+
+**Deliverable**: Component code with visual preview
+
+**Handoff**: Present to user for approval, then submit to @tech-lead
+
+---
+
+#### Step 3: User Approval & Iteration
+**Duration**: 0.5-1 day
+
+**Actions**:
+1. Review visual preview in browser
+2. Test responsive behavior (resize browser)
+3. Provide feedback on design, layout, interactions
+4. Request changes if needed
+5. @ui-ux-dev iterates based on feedback
+
+**Deliverable**: Approved component design
+
+---
+
+#### Step 4: @tech-lead - Code Review
+**Duration**: 0.5 day
+
+**Actions**:
+1. Review component code quality:
+   - TypeScript types properly defined
+   - Props are clear and well-documented
+   - Code follows project conventions
+2. Verify accessibility implementation:
+   - Semantic HTML used
+   - ARIA labels where needed
+   - Keyboard navigation works
+   - Color contrast meets WCAG AA
+3. Check responsive design approach:
+   - Mobile-first implementation
+   - Breakpoints match design system
+   - Touch-friendly (44x44px minimum)
+4. Ensure design system adherence:
+   - Uses design tokens (colors, spacing, typography)
+   - Follows component patterns
+   - Consistent with existing components
+5. Approve for frontend integration
+
+**Deliverable**: Code review approval
+
+**Handoff**: @tech-lead delegates to @frontend-dev for functionality integration
+
+---
+
+#### Step 5: @frontend-dev - Functionality Integration
+**Duration**: 0.5-2 days
+
+**Actions**:
+1. Integrate component into application:
+   - Import component into relevant pages
+   - Place in appropriate layout structure
+2. Add state management:
+   - Connect to Redux/Zustand/Context
+   - Implement local component state
+3. Connect to API/backend:
+   - Fetch data for component
+   - Handle loading/error states
+4. Add event handlers and business logic:
+   - Form submissions
+   - Button click handlers
+   - Navigation logic
+5. Write unit tests for component logic:
+   - Test state changes
+   - Test event handlers
+   - Test API integration
+
+**Deliverable**: Fully functional component
+
+**Handoff**: Submit to @tech-lead for final review, then @qa-tester
+
+---
+
+#### Step 6: @qa-tester - Visual & Functional Testing
+**Duration**: 0.5-1 day
+
+**Actions**:
+1. Test visual appearance across browsers:
+   - Chrome, Firefox, Safari, Edge
+   - Check for layout issues
+2. Test responsive behavior:
+   - Mobile devices (320px, 375px, 414px)
+   - Tablets (768px, 1024px)
+   - Desktop (1280px, 1920px)
+3. Test accessibility:
+   - Keyboard navigation (Tab, Enter, Space, Arrow keys)
+   - Screen reader announcements (NVDA, JAWS, VoiceOver)
+   - Color contrast (use WebAIM Contrast Checker)
+   - Focus indicators visible
+4. Test functionality and interactions:
+   - All buttons and links work
+   - Forms submit correctly
+   - Validation messages display
+   - Loading states render
+5. Run visual regression tests with Playwright:
+   ```
+   mcp__playwright__browser_snapshot
+   mcp__playwright__browser_take_screenshot
+   ```
+
+**Deliverable**: Test results and approval
+
+**Handoff**: If bugs found, return to @frontend-dev. If passed, ready for deployment via @devops.
+
+---
+
+### Common Scenarios
+
+#### Scenario 1: New Component from Scratch
+**Example**: "Create a responsive blog post card component"
+
+**Flow**:
+1. @product-owner defines requirements (image, title, excerpt, author, date, link)
+2. @ui-ux-dev queries shadcn/ui for card patterns
+3. @ui-ux-dev generates component with Tailwind CSS
+4. User approves visual preview
+5. @tech-lead reviews code
+6. @frontend-dev adds blog data fetching
+7. @qa-tester validates across devices
+
+#### Scenario 2: Design System Foundation
+**Example**: "Build a component library for our app"
+
+**Flow**:
+1. @product-owner provides brand guidelines
+2. @ui-ux-dev creates base components:
+   - Button variants (primary, secondary, ghost, danger)
+   - Form inputs (text, select, checkbox, radio)
+   - Cards and containers
+   - Navigation elements
+3. @tech-lead reviews component library
+4. @frontend-dev integrates into app
+5. @qa-tester validates consistency
+
+#### Scenario 3: Responsive Layout
+**Example**: "Create a responsive dashboard layout"
+
+**Flow**:
+1. @product-owner defines dashboard sections
+2. @ui-ux-dev designs mobile-first grid layout
+3. @ui-ux-dev implements responsive breakpoints
+4. User tests on multiple devices
+5. @tech-lead reviews layout approach
+6. @frontend-dev adds dashboard data
+7. @qa-tester validates responsive behavior
+
+---
+
+### Integration with Other Workflows
+
+#### Greenfield Workflow
+Add **Step 4.5** (parallel to backend/frontend setup):
+
+**Step 4.5**: @ui-ux-dev - Component Library & Design System
+- Duration: 1-2 weeks
+- Establish design system foundation
+- Generate base components
+- Create component documentation
+
+#### Feature Development Workflow
+Add **Optional Step 2.5** (after tech-lead review):
+
+**Step 2.5**: @ui-ux-dev - UI Component Generation (if UI changes)
+- Duration: 0.5-2 days
+- Generate new components or modify existing
+- Get user approval on visual design
+- Submit to tech-lead for code review
+
+---
+
+### Quality Gates
+
+**Before User Approval**:
+- [ ] Component matches requirements
+- [ ] Visual preview generated
+- [ ] Responsive behavior works
+- [ ] Accessibility features visible
+
+**Before Tech-Lead Approval**:
+- [ ] WCAG 2.1 AA accessibility achieved
+- [ ] Design system tokens applied
+- [ ] TypeScript types defined
+- [ ] Props documented
+
+**Before Frontend Integration**:
+- [ ] Code review passed
+- [ ] No accessibility violations
+- [ ] Responsive breakpoints correct
+
+**Before Deployment**:
+- [ ] Functional tests passing
+- [ ] Visual regression tests passing
+- [ ] Cross-browser testing complete
+- [ ] Accessibility testing complete
 
 ---
 

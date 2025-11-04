@@ -184,9 +184,17 @@ Before marking the overall task as done:
 - Team capacity planning
 
 ### Delegate to development agents for:
-- Technical implementation
-- Technical specification details
-- Development estimates
+- **@tech-lead**: Technical feasibility, architecture review, developer assignment
+- **@ui-ux-dev**: UI component design requirements, design system needs, accessibility requirements
+- **@backend-dev/@frontend-dev**: Implementation (via @tech-lead assignment)
+- Development estimates and technical specifications
+
+### Delegate to @ui-ux-dev when:
+- New UI components are needed for a feature
+- Design system foundation or updates required
+- Responsive layout implementation needed
+- Accessibility improvements are a requirement
+- Visual design updates for existing components
 
 ## Quality Standards
 
