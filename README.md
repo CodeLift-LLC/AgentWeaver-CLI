@@ -99,23 +99,46 @@ agentweaver init --mode strict
 ```
 your-project/
 ├── .claude/
-│   ├── agents/              # 8 AI agent templates
+│   ├── agents/                  # 8 AI agent templates
 │   │   ├── backend-dev.md
 │   │   ├── frontend-dev.md
 │   │   ├── qa-tester.md
 │   │   └── ...
-│   └── skills/              # 3 reusable skill patterns
-│       ├── api-pagination/
-│       ├── ui-form-validation/
-│       └── database-optimization/
-├── .mcp.json                # MCP server configuration
-├── .env.example             # Environment variables template
-└── agentweaver.config.yml   # Tech stack configuration
+│   ├── skills/                  # 3 reusable skill patterns
+│   │   ├── api-pagination/
+│   │   ├── ui-form-validation/
+│   │   └── database-optimization/
+│   ├── CLAUDE.md                # Project context (read by Claude Code)
+│   ├── .mcp.json                # MCP server configuration
+│   └── agentweaver.config.yml   # Tech stack configuration
+└── .env.example                 # Environment variables template
 ```
 
 ## 🎮 Using Your Agents
 
-Once installed, use agents directly in Claude Code:
+### Automatic Invocation (Recommended)
+
+Agents are configured to be **automatically invoked** by Claude Code when you ask for tasks they specialize in:
+
+```markdown
+"Build a REST API for user authentication"
+→ Claude Code automatically invokes @backend-dev
+
+"Create a responsive navigation component"
+→ Claude Code automatically invokes @frontend-dev
+
+"Write tests for the login flow"
+→ Claude Code automatically invokes @qa-tester
+```
+
+**How it works:**
+- Each agent has a `description` field with triggers (e.g., "Use PROACTIVELY when backend code changes...")
+- Claude Code matches your request to the appropriate agent
+- The agent is invoked automatically with full context
+
+### Manual Invocation
+
+You can also explicitly request specific agents using `@agent-name`:
 
 ```markdown
 @backend-dev implement user authentication with JWT
@@ -126,6 +149,18 @@ Once installed, use agents directly in Claude Code:
 
 @tech-lead review the authentication architecture
 ```
+
+### When to Use Each Method
+
+**Automatic** (Just ask naturally):
+- ✅ Faster - no need to remember agent names
+- ✅ Claude picks the best agent for the task
+- ✅ Works across conversations
+
+**Manual** (Use `@agent-name`):
+- ✅ Precise control over which agent handles the task
+- ✅ Useful when you want a specific perspective
+- ✅ Override automatic selection if needed
 
 ## ⚙️ Configuration
 
@@ -234,6 +269,109 @@ tags:
 
 Skill documentation and patterns...
 ```
+
+## 🔧 Troubleshooting
+
+### Agents Not Automatically Invoked
+
+If agents aren't being invoked automatically:
+
+1. **Verify Installation**
+   ```bash
+   ls -la .claude/agents/
+   # Should show: backend-dev.md, frontend-dev.md, etc.
+   ```
+
+2. **Check Agent Files**
+   ```bash
+   head -n 5 .claude/agents/backend-dev.md
+   # Should show frontmatter with: name, description, tools, model
+   ```
+
+3. **Restart Claude Code**
+   - Close and reopen Claude Code
+   - Agents are loaded when Claude Code starts
+
+4. **Use Manual Invocation**
+   - Try explicit invocation: `@backend-dev build an API`
+   - If manual works but automatic doesn't, the agent is installed correctly
+
+5. **Check Description Triggers**
+   - Each agent's `description` includes "Use PROACTIVELY when..."
+   - Claude Code matches your request against these triggers
+
+### Agents Not Found (Manual Invocation)
+
+If `@agent-name` shows "agent not found":
+
+1. **Check File Names**
+   - Agent files must match their `name` field
+   - Example: `backend-dev.md` must have `name: backend-dev`
+
+2. **Verify Directory Structure**
+   ```
+   .claude/
+   └── agents/
+       ├── backend-dev.md  ✅ Correct
+       └── frontend/
+           └── dev.md      ❌ Wrong - must be at agents/ root level
+   ```
+
+3. **Check Frontmatter Format**
+   ```markdown
+   ---
+   name: backend-dev
+   description: Expert Backend Developer...
+   ---
+   ```
+   - YAML must be valid (use proper indentation)
+   - Description must not be empty
+
+### Skills Not Available
+
+If skills aren't showing up:
+
+1. **Check Installation**
+   ```bash
+   ls -la .claude/skills/
+   # Should show: api-pagination/, ui-form-validation/, database-optimization/
+   ```
+
+2. **Verify Structure**
+   ```
+   .claude/skills/
+   └── api-pagination/
+       ├── SKILL.md          ✅ Required
+       ├── templates/        ✅ Optional
+       └── examples/         ✅ Optional
+   ```
+
+### MCP Servers Not Working
+
+If MCP servers aren't connecting:
+
+1. **Check Configuration**
+   ```bash
+   cat .mcp.json
+   # Should show configured servers
+   ```
+
+2. **Set Environment Variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your API tokens
+   ```
+
+3. **Verify Tokens**
+   - GitHub: Generate at [github.com/settings/tokens](https://github.com/settings/tokens)
+   - Supabase: Get from your project settings
+
+### Still Having Issues?
+
+- **Check Claude Code Version**: Ensure you're using the latest version
+- **Review Logs**: Check Claude Code logs for errors
+- **Open an Issue**: [GitHub Issues](https://github.com/CodeLift-LLC/AgentWeaver-CLI/issues)
+- **Manual Invocation**: Always works as fallback (`@agent-name task`)
 
 ## 📝 License
 
