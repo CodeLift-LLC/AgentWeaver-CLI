@@ -13,8 +13,9 @@ const __dirname = path.dirname(__filename);
 
 export interface McpServerConfig {
   type?: string;
-  command: string;
-  args: string[];
+  command?: string;
+  args?: string[];
+  url?: string;
   env?: Record<string, string>;
 }
 
@@ -79,33 +80,45 @@ export class ConfigGenerator {
     includePlaywright?: boolean;
     includeShadcn?: boolean;
     includeSupabase?: boolean;
+    includeFetch?: boolean;
+    includeSocket?: boolean;
   }): McpConfig {
     const config: McpConfig = { mcpServers: {} };
 
     // GitHub MCP Server
     if (options.includeGithub) {
       config.mcpServers.github = {
-        command: 'npx',
-        args: ['-y', '@modelcontextprotocol/server-github'],
+        command: 'cmd',
+        args: ['/c', 'npx', '-y', '@modelcontextprotocol/server-github'],
         env: {
           GITHUB_PERSONAL_ACCESS_TOKEN: '${GITHUB_TOKEN}',
         },
       };
     }
 
-    // Context7 MCP Server (Documentation lookup)
+    // Fetch MCP Server
+    if (options.includeFetch) {
+      config.mcpServers.fetch = {
+        type: 'stdio',
+        command: 'cmd',
+        args: ['/c', 'npx', '-y', '@kazuph/mcp-fetch@latest'],
+        env: {},
+      };
+    }
+
+    // Context7 MCP Server (Documentation lookup) - HTTP type
     if (options.includeContext7) {
       config.mcpServers.context7 = {
-        command: 'npx',
-        args: ['-y', '@context7/mcp-server'],
+        type: 'http',
+        url: 'https://mcp.context7.com/mcp',
       };
     }
 
     // Sequential Thinking MCP Server
     if (options.includeSequential) {
       config.mcpServers['sequential-thinking'] = {
-        command: 'npx',
-        args: ['-y', '@modelcontextprotocol/server-sequential-thinking'],
+        command: 'cmd',
+        args: ['/c', 'npx', '-y', '@modelcontextprotocol/server-sequential-thinking@latest'],
       };
     }
 
@@ -121,17 +134,25 @@ export class ConfigGenerator {
 
     // shadcn-ui MCP Server
     if (options.includeShadcn) {
-      config.mcpServers['shadcn-ui'] = {
-        command: 'npx',
-        args: ['-y', '@modelcontextprotocol/server-shadcn'],
+      config.mcpServers['shadcn-ui-server'] = {
+        command: 'cmd',
+        args: ['/c', 'npx', '-y', '@heilgar/shadcn-ui-mcp-server'],
+      };
+    }
+
+    // Socket MCP Server - HTTP type
+    if (options.includeSocket) {
+      config.mcpServers.socket = {
+        type: 'http',
+        url: 'https://mcp.socket.dev/',
       };
     }
 
     // Supabase MCP Server
     if (options.includeSupabase) {
       config.mcpServers.supabase = {
-        command: 'npx',
-        args: ['-y', '@modelcontextprotocol/server-supabase'],
+        command: 'cmd',
+        args: ['/c', 'npx', '-y', '@modelcontextprotocol/server-supabase'],
         env: {
           SUPABASE_URL: '${SUPABASE_URL}',
           SUPABASE_SERVICE_ROLE_KEY: '${SUPABASE_SERVICE_ROLE_KEY}',

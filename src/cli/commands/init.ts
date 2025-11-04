@@ -182,6 +182,7 @@ export async function initCommand(options: InitOptions) {
             message: 'Select MCP servers to configure:',
             choices: [
               { name: 'GitHub (repository operations)', value: 'github', checked: true },
+              { name: 'Fetch (web content fetching)', value: 'fetch', checked: true },
               { name: 'Context7 (documentation lookup)', value: 'context7', checked: true },
               {
                 name: 'Sequential Thinking (complex analysis)',
@@ -190,6 +191,7 @@ export async function initCommand(options: InitOptions) {
               },
               { name: 'Playwright (E2E testing)', value: 'playwright', checked: false },
               { name: 'shadcn/ui (UI components)', value: 'shadcn', checked: false },
+              { name: 'Socket (security scanning)', value: 'socket', checked: false },
               { name: 'Supabase (database)', value: 'supabase', checked: false },
             ],
           },
@@ -198,7 +200,7 @@ export async function initCommand(options: InitOptions) {
       }
     } else if (options.mcp !== false && options.yes) {
       // Default MCP servers for --yes flag
-      mcpServers = ['github', 'context7', 'sequential'];
+      mcpServers = ['github', 'fetch', 'context7', 'sequential'];
     }
 
     // Step 5: Tech stack mode
@@ -272,10 +274,12 @@ export async function initCommand(options: InitOptions) {
       const mcpSpinner = ora('Generating MCP configuration...').start();
       const mcpConfig = ConfigGenerator.generateMcpConfig({
         includeGithub: mcpServers.includes('github'),
+        includeFetch: mcpServers.includes('fetch'),
         includeContext7: mcpServers.includes('context7'),
         includeSequential: mcpServers.includes('sequential'),
         includePlaywright: mcpServers.includes('playwright'),
         includeShadcn: mcpServers.includes('shadcn'),
+        includeSocket: mcpServers.includes('socket'),
         includeSupabase: mcpServers.includes('supabase'),
       });
 
