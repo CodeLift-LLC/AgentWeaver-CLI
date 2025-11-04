@@ -9,7 +9,8 @@ import { BaseDetector, TechInfo } from './base-detector.js';
 export class JavaDetector extends BaseDetector {
   readonly language = 'java';
   readonly name = 'JavaDetector';
-  readonly manifestFiles = ['pom.xml', 'build.gradle', 'build.gradle.kts', 'settings.gradle', 'settings.gradle.kts'];
+  readonly manifestFiles = ['pom.xml'];
+  readonly manifestPatterns = ['build.gradle*', 'settings.gradle*'];
 
   protected async detectFromManifests(): Promise<TechInfo | null> {
     // Try Maven first (most common)

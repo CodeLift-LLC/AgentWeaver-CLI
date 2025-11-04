@@ -1,7 +1,6 @@
 import path from 'path';
 import { parseString as parseXml } from 'xml2js';
 import { BaseDetector, TechInfo } from './base-detector.js';
-import { readdir } from 'fs/promises';
 
 /**
  * Detector for C# / .NET projects
@@ -11,7 +10,8 @@ import { readdir } from 'fs/promises';
 export class CSharpDetector extends BaseDetector {
   readonly language = 'csharp';
   readonly name = 'CSharpDetector';
-  readonly manifestFiles = ['.csproj', '.sln', 'packages.config', 'Directory.Build.props', 'global.json'];
+  readonly manifestFiles = ['packages.config', 'Directory.Build.props', 'global.json'];
+  readonly manifestPatterns = ['*.csproj', '*.sln'];
 
   protected async detectFromManifests(): Promise<TechInfo | null> {
     // Try to find .csproj files first
@@ -50,37 +50,6 @@ export class CSharpDetector extends BaseDetector {
   }
 
   /**
-   * Override: Check if C# project files exist (handles .csproj pattern)
-   */
-  async isLikelyCandidate(): Promise<boolean> {
-    // Check for .csproj files
-    const csprojFiles = await this.findCsprojFiles();
-    if (csprojFiles.length > 0) return true;
-
-    // Check for .sln files
-    if (await this.hasSolutionFile()) return true;
-
-    // Check for other manifest files
-    if (await this.hasManifestFile('global.json')) return true;
-    if (await this.hasManifestFile('Directory.Build.props')) return true;
-    if (await this.hasManifestFile('packages.config')) return true;
-
-    return false;
-  }
-
-  /**
-   * Check if a solution file exists
-   */
-  private async hasSolutionFile(): Promise<boolean> {
-    try {
-      const files = await readdir(this.projectRoot);
-      return files.some((file) => file.endsWith('.sln'));
-    } catch {
-      return false;
-    }
-  }
-
-  /**
    * Check if a C# file exists
    */
   private async hasCSharpFile(filename: string): Promise<boolean> {
@@ -91,12 +60,14 @@ export class CSharpDetector extends BaseDetector {
    * Find all .csproj files in the project root
    */
   private async findCsprojFiles(): Promise<string[]> {
-    try {
-      const files = await readdir(this.projectRoot);
-      return files.filter((file) => file.endsWith('.csproj'));
-    } catch {
-      return [];
-    }
+    return await this.findFilesMatchingPattern('*.csproj');
+  }
+
+  /**
+   * Find all .sln files in the project root
+   */
+  private async findSolutionFiles(): Promise<string[]> {
+    return await this.findFilesMatchingPattern('*.sln');
   }
 
   /**
@@ -144,10 +115,10 @@ export class CSharpDetector extends BaseDetector {
    * Detect from .sln solution file
    */
   private async detectFromSolution(): Promise<TechInfo | null> {
-    const slnFiles = await readdir(this.projectRoot).catch(() => []);
-    const slnFile = slnFiles.find((file) => file.endsWith('.sln'));
+    const slnFiles = await this.findSolutionFiles();
+    if (slnFiles.length === 0) return null;
 
-    if (!slnFile) return null;
+    const slnFile = slnFiles[0]; // Use the first .sln file found
 
     const slnContent = await this.readManifest(slnFile);
     if (!slnContent) return null;

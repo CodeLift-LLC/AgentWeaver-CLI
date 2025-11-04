@@ -1,5 +1,6 @@
 import path from 'path';
 import { readFile, readJsonFile, pathExists } from '../../utils/file-operations.js';
+import { readdir } from 'fs/promises';
 
 /**
  * Common tech information structure returned by all detectors
@@ -41,9 +42,15 @@ export abstract class BaseDetector {
   abstract readonly language: string;
 
   /**
-   * Manifest files this detector can parse (e.g., ['pom.xml', 'build.gradle'])
+   * Exact manifest filenames to check (e.g., ['package.json', 'go.mod'])
    */
   abstract readonly manifestFiles: string[];
+
+  /**
+   * File patterns with wildcards (e.g., ['*.csproj', '*.gradle', '*.gradle.kts'])
+   * Use this for files with variable names like ProjectName.csproj
+   */
+  readonly manifestPatterns: string[] = [];
 
   /**
    * Human-readable name for this detector
@@ -208,13 +215,61 @@ export abstract class BaseDetector {
    * Can be used as a quick pre-check before expensive detection
    */
   async isLikelyCandidate(): Promise<boolean> {
-    // Check if any manifest files exist
+    // Check exact manifest filenames
     for (const manifestFile of this.manifestFiles) {
       if (await this.hasManifestFile(manifestFile)) {
         return true;
       }
     }
 
+    // Check manifest patterns (*.csproj, *.gradle, etc.)
+    for (const pattern of this.manifestPatterns) {
+      if (await this.hasFileMatchingPattern(pattern)) {
+        return true;
+      }
+    }
+
     return false;
+  }
+
+  /**
+   * Check if any file matches the given pattern (e.g., *.csproj)
+   */
+  protected async hasFileMatchingPattern(pattern: string): Promise<boolean> {
+    try {
+      const files = await readdir(this.projectRoot);
+
+      // Convert glob pattern to regex
+      // *.csproj -> ^.*\.csproj$
+      // *.gradle.kts -> ^.*\.gradle\.kts$
+      const regexPattern = pattern
+        .replace(/\./g, '\\.')  // Escape dots
+        .replace(/\*/g, '.*');  // Convert * to .*
+
+      const regex = new RegExp(`^${regexPattern}$`);
+
+      return files.some(file => regex.test(file));
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Find all files matching a pattern (e.g., *.csproj)
+   */
+  protected async findFilesMatchingPattern(pattern: string): Promise<string[]> {
+    try {
+      const files = await readdir(this.projectRoot);
+
+      const regexPattern = pattern
+        .replace(/\./g, '\\.')
+        .replace(/\*/g, '.*');
+
+      const regex = new RegExp(`^${regexPattern}$`);
+
+      return files.filter(file => regex.test(file));
+    } catch {
+      return [];
+    }
   }
 }
