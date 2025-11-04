@@ -93,12 +93,18 @@ export function validateAgentFrontmatter(
 
   // Validate optional fields
   if (fm.tools !== undefined) {
-    if (!Array.isArray(fm.tools)) {
-      throw new YamlParseError('Agent frontmatter "tools" must be an array', filePath);
+    // Handle both string (comma-separated) and array formats
+    if (typeof fm.tools === 'string') {
+      // Convert comma-separated string to array
+      fm.tools = fm.tools.split(',').map((tool) => tool.trim());
+    } else if (!Array.isArray(fm.tools)) {
+      throw new YamlParseError('Agent frontmatter "tools" must be an array or comma-separated string', filePath);
     }
 
-    if (!fm.tools.every((tool) => typeof tool === 'string')) {
-      throw new YamlParseError('Agent frontmatter "tools" must be an array of strings', filePath);
+    // Type assertion after validation
+    const tools = fm.tools as unknown[];
+    if (!tools.every((tool: unknown) => typeof tool === 'string')) {
+      throw new YamlParseError('Agent frontmatter "tools" must contain only strings', filePath);
     }
   }
 
@@ -146,25 +152,33 @@ export function validateSkillFrontmatter(
 
   // Validate optional fields
   if (fm['allowed-tools'] !== undefined) {
-    if (!Array.isArray(fm['allowed-tools'])) {
-      throw new YamlParseError('Skill frontmatter "allowed-tools" must be an array', filePath);
+    // Handle both string (comma-separated) and array formats
+    if (typeof fm['allowed-tools'] === 'string') {
+      fm['allowed-tools'] = (fm['allowed-tools'] as string).split(',').map((tool) => tool.trim());
+    } else if (!Array.isArray(fm['allowed-tools'])) {
+      throw new YamlParseError('Skill frontmatter "allowed-tools" must be an array or comma-separated string', filePath);
     }
 
-    if (!fm['allowed-tools'].every((tool) => typeof tool === 'string')) {
+    const allowedTools = fm['allowed-tools'] as unknown[];
+    if (!allowedTools.every((tool: unknown) => typeof tool === 'string')) {
       throw new YamlParseError(
-        'Skill frontmatter "allowed-tools" must be an array of strings',
+        'Skill frontmatter "allowed-tools" must contain only strings',
         filePath
       );
     }
   }
 
   if (fm.tags !== undefined) {
-    if (!Array.isArray(fm.tags)) {
-      throw new YamlParseError('Skill frontmatter "tags" must be an array', filePath);
+    // Handle both string (comma-separated) and array formats
+    if (typeof fm.tags === 'string') {
+      fm.tags = (fm.tags as string).split(',').map((tag) => tag.trim());
+    } else if (!Array.isArray(fm.tags)) {
+      throw new YamlParseError('Skill frontmatter "tags" must be an array or comma-separated string', filePath);
     }
 
-    if (!fm.tags.every((tag) => typeof tag === 'string')) {
-      throw new YamlParseError('Skill frontmatter "tags" must be an array of strings', filePath);
+    const tags = fm.tags as unknown[];
+    if (!tags.every((tag: unknown) => typeof tag === 'string')) {
+      throw new YamlParseError('Skill frontmatter "tags" must contain only strings', filePath);
     }
   }
 

@@ -202,7 +202,15 @@ export function getPackageRoot(): string {
  * Gets the templates directory path
  */
 export function getTemplatesDirectory(): string {
-  return path.join(getPackageRoot(), 'templates');
+  // From dist/utils/file-operations.js, templates are in dist/templates
+  // Get the directory of the current module
+  const currentFile = fileURLToPath(import.meta.url);
+  const currentDir = dirname(currentFile);
+
+  // Templates are one level up from utils, then into templates
+  const templatesPath = path.join(currentDir, '..', 'templates');
+
+  return templatesPath;
 }
 
 /**

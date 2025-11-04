@@ -65,6 +65,16 @@ export async function initCommand(options: InitOptions) {
     let selectedAgents: string[] = [];
     if (options.agents) {
       selectedAgents = options.agents.split(',').map((a) => a.trim());
+    } else if (options.yes) {
+      // Default to development agents for --yes flag
+      selectedAgents = [
+        'backend-dev',
+        'frontend-dev',
+        'qa-tester',
+        'tech-lead',
+        'devops',
+        'docs-writer',
+      ];
     } else if (!options.yes) {
       const { agentChoice } = await inquirer.prompt([
         {
@@ -116,6 +126,9 @@ export async function initCommand(options: InitOptions) {
     let selectedSkills: string[] = [];
     if (options.skills) {
       selectedSkills = options.skills.split(',').map((s) => s.trim());
+    } else if (options.yes) {
+      // Default to all skills for --yes flag
+      selectedSkills = [];
     } else if (!options.yes) {
       const { installSkills } = await inquirer.prompt([
         {
@@ -215,7 +228,7 @@ export async function initCommand(options: InitOptions) {
     }
 
     // Step 7: Install skills
-    if (selectedSkills.length > 0 || (!options.skills && !options.yes)) {
+    if (selectedSkills.length > 0 || (!options.skills && !options.yes) || (options.yes && selectedSkills.length === 0)) {
       const skillsInstaller = new SkillsInstaller(path.join(templatesDir, 'skills'));
       const skillSpinner = ora('Installing skills...').start();
 
@@ -252,8 +265,8 @@ export async function initCommand(options: InitOptions) {
 
       // Generate .env.example
       const envExample = ConfigGenerator.generateEnvExample(mcpConfig);
-      const fs = await import('fs-extra');
-      await fs.writeFile(path.join(projectRoot, '.env.example'), envExample);
+      const { writeFile: writeFileUtil } = await import('../../utils/file-operations.js');
+      await writeFileUtil(path.join(projectRoot, '.env.example'), envExample);
     }
 
     const configSpinner = ora('Generating AgentWeaver configuration...').start();
