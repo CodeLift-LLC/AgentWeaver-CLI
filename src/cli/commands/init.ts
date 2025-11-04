@@ -283,8 +283,8 @@ export async function initCommand(options: InitOptions) {
         includeSupabase: mcpServers.includes('supabase'),
       });
 
-      await ConfigGenerator.writeMcpConfig(path.join(claudeDir, '.mcp.json'), mcpConfig);
-      mcpSpinner.succeed('Generated .claude/.mcp.json');
+      await ConfigGenerator.writeMcpConfig(path.join(projectRoot, '.mcp.json'), mcpConfig);
+      mcpSpinner.succeed('Generated .mcp.json');
 
       // Generate .env.example (keep at project root for visibility)
       const envExample = ConfigGenerator.generateEnvExample(mcpConfig);
@@ -327,12 +327,10 @@ export async function initCommand(options: InitOptions) {
       console.log(chalk.gray(`  ├── skills/                (${skillResult.installed.length} skills)`));
     }
     console.log(chalk.gray(`  ├── CLAUDE.md              (Project context)`));
-    if (mcpServers.length > 0) {
-      console.log(chalk.gray(`  ├── .mcp.json              (MCP servers)`));
-    }
     console.log(chalk.gray(`  └── agentweaver.config.yml (Tech stack)`));
     if (mcpServers.length > 0) {
-      console.log(chalk.gray(`  .env.example               (at project root)`));
+      console.log(chalk.gray(`  .mcp.json                  (MCP servers at root)`));
+      console.log(chalk.gray(`  .env.example               (Environment variables)`));
     }
 
     console.log(chalk.cyan('\n🎯 Next steps:\n'));
