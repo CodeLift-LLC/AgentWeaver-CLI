@@ -6,7 +6,25 @@ import { AgentInstaller } from '../../lib/agent-installer.js';
 import { SkillsInstaller } from '../../lib/skills-installer.js';
 import { TechDetector } from '../../lib/tech-detector.js';
 import { ConfigGenerator } from '../../lib/config-generator.js';
-import { getTemplatesDirectory, pathExists } from '../../utils/file-operations.js';
+import { getTemplatesDirectory, pathExists, readFile } from '../../utils/file-operations.js';
+
+/**
+ * Get project name from package.json or directory name
+ */
+async function getProjectName(projectRoot: string): Promise<string> {
+  try {
+    const packageJsonPath = path.join(projectRoot, 'package.json');
+    if (await pathExists(packageJsonPath)) {
+      const packageJson = JSON.parse(await readFile(packageJsonPath));
+      if (packageJson.name) {
+        return packageJson.name;
+      }
+    }
+  } catch (error) {
+    // Fallback to directory name
+  }
+  return path.basename(projectRoot);
+}
 
 interface InitOptions {
   yes?: boolean;
@@ -283,7 +301,11 @@ export async function initCommand(options: InitOptions) {
     const installedAgentNames = agentResult.installed.map((agent: any) => agent.name);
     const installedSkillDirNames = skillResult.installed.map((skill: any) => skill.dirName);
 
-    const claudeMdContent = ConfigGenerator.generateClaudeMd(
+    // Get project name from package.json or directory name
+    const projectName = await getProjectName(projectRoot);
+
+    const claudeMdContent = await ConfigGenerator.generateClaudeMd(
+      projectName,
       detectedTech,
       installedAgentNames,
       installedSkillDirNames
