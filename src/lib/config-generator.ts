@@ -102,7 +102,6 @@ export class ConfigGenerator {
         type: 'stdio',
         command: 'cmd',
         args: ['/c', 'npx', '-y', '@kazuph/mcp-fetch@latest'],
-        env: {},
       };
     }
 
@@ -128,7 +127,6 @@ export class ConfigGenerator {
         type: 'stdio',
         command: 'cmd',
         args: ['/c', 'npx', '@playwright/mcp@latest'],
-        env: {},
       };
     }
 
