@@ -566,5 +566,20 @@ export class ConfigGenerator {
   static async writeClaudeMd(filePath: string, content: string): Promise<void> {
     await writeFile(filePath, content);
   }
+
+  /**
+   * Copies WORKFLOWS.md to .claude directory
+   */
+  static async copyWorkflowsFile(targetDir: string): Promise<void> {
+    try {
+      const { copyFile: copyFileUtil } = await import('../utils/file-operations.js');
+      const workflowsTemplatePath = path.join(__dirname, '../../templates/WORKFLOWS.md');
+      const workflowsTargetPath = path.join(targetDir, 'WORKFLOWS.md');
+
+      await copyFileUtil(workflowsTemplatePath, workflowsTargetPath);
+    } catch (error) {
+      console.warn('Warning: Could not copy WORKFLOWS.md:', (error as Error).message);
+    }
+  }
 }
 

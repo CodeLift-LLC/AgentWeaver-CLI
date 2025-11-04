@@ -319,6 +319,9 @@ export async function initCommand(options: InitOptions) {
     await ConfigGenerator.writeClaudeMd(path.join(claudeDir, 'CLAUDE.md'), claudeMdContent);
     claudeMdSpinner.succeed('Generated .claude/CLAUDE.md');
 
+    // Copy WORKFLOWS.md to .claude directory
+    await ConfigGenerator.copyWorkflowsFile(claudeDir);
+
     // Success message
     console.log(chalk.green.bold('\n✅ Installation complete!\n'));
 
@@ -329,6 +332,7 @@ export async function initCommand(options: InitOptions) {
       console.log(chalk.gray(`  ├── skills/                (${skillResult.installed.length} skills)`));
     }
     console.log(chalk.gray(`  ├── CLAUDE.md              (Project context)`));
+    console.log(chalk.gray(`  ├── WORKFLOWS.md           (Agent workflows)`));
     console.log(chalk.gray(`  └── agentweaver.config.yml (Tech stack)`));
     if (mcpServers.length > 0) {
       console.log(chalk.gray(`  .mcp.json                  (MCP servers at root)`));

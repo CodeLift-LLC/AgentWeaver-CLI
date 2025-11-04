@@ -6,7 +6,7 @@
 
 ## 📋 Project Overview
 
-This project has been configured with **AgentWeaver**, providing you with a comprehensive library of **19 specialized AI agents** and **28 reusable skills** to accelerate development, marketing, and sales workflows.
+This project has been configured with **AgentWeaver**, providing you with a comprehensive library of **20 specialized AI agents** and **28 reusable skills** to accelerate development, marketing, and sales workflows.
 
 ### Quick Start
 
@@ -22,9 +22,9 @@ This project has been configured with **AgentWeaver**, providing you with a comp
 
 ---
 
-## 🤖 Available Agents (19)
+## 🤖 Available Agents (20)
 
-### Development Team (8 Agents)
+### Development Team (9 Agents)
 
 #### 🔧 @backend-dev
 **Expert Backend Developer** - API development, database design, server-side logic
@@ -60,6 +60,13 @@ This project has been configured with **AgentWeaver**, providing you with a comp
 - **Tools**: Read, Write, Edit, Bash, Grep
 - **Tech Stack**: {{techStack.deployment.platform}}, {{techStack.deployment.cicd}}
 - **File**: `.claude/agents/devops.md`
+
+#### 🐛 @debugger
+**Debug Specialist** - Systematic debugging, error investigation, root cause analysis
+- **Use for**: Investigating bugs, analyzing errors, troubleshooting production issues
+- **Tools**: Read, Write, Edit, Bash, Glob, Grep, WebSearch
+- **MCP Servers**: WebSearch (CRITICAL for error research), Playwright, Socket
+- **File**: `.claude/agents/debugger.md`
 
 #### 📦 @product-owner
 **Product Owner** - Requirements, backlog management, user stories
@@ -478,18 +485,115 @@ Configured in `.mcp.json` for agent tool access:
 
 ---
 
-## 🤝 Agent Collaboration
+## 🔄 Agent Collaboration Workflows
 
-Agents automatically collaborate and hand off tasks:
+AgentWeaver provides **8 pre-defined workflows** for common scenarios. Claude Code will automatically detect which workflow to use based on your request and context.
 
-**Example Flow:**
-1. `@product-owner` creates user story
-2. → Hands off to `@backend-dev` for API implementation
-3. → `@backend-dev` hands off to `@frontend-dev` for UI
-4. → `@frontend-dev` hands off to `@qa-tester` for testing
-5. → `@qa-tester` hands off to `@devops` for deployment
+### Quick Workflow Reference
 
-Each agent knows when to delegate to specialists for optimal results.
+| Emoji | Workflow | Trigger Keywords | Key Agents |
+|-------|----------|------------------|------------|
+| 🆕 | **Greenfield App (0 → Production)** | "build app from scratch", "new project", "MVP" | product-owner → tech-lead → dev team → qa → devops → marketing → sales |
+| ✨ | **Feature Development** | "add feature", "implement", "new functionality" | product-owner → tech-lead → dev → qa → devops |
+| 🐛 | **Bug Resolution** | "bug", "error", "crash", "fix", "500 error" | debugger → tech-lead → dev → qa → devops |
+| 🚀 | **Infrastructure/DevOps** | "CI/CD", "deployment", "Docker", "infrastructure" | devops → tech-lead → qa |
+| 📣 | **Marketing Campaign** | "marketing", "launch", "SEO", "social media" | marketing-manager → content → seo → social-media |
+| 💰 | **Sales Process** | "sales", "CRM", "pipeline", "customers" | sales-manager → sdr → account-exec → customer-success |
+| 🏗️ | **Architecture Review** | "refactor", "architecture", "tech debt", "optimize" | tech-lead → dev → qa |
+| 📚 | **Documentation** | "documentation", "docs", "README", "API docs" | docs-writer → tech-lead → dev |
+
+### How Workflows Work
+
+**Semi-Automatic Detection**:
+- Claude Code analyzes your request and context
+- Suggests appropriate workflow: *"I see you're starting a greenfield app. I'll follow the Greenfield Workflow: @product-owner → @tech-lead → @backend-dev..."*
+- You can approve, modify, or skip the suggested workflow
+- Workflows are composable - can transition between workflows as needed
+
+### Detailed Workflow Documentation
+
+**📖 See [WORKFLOWS.md](.claude/WORKFLOWS.md)** for comprehensive workflow orchestration patterns including:
+- Detailed step-by-step processes for each workflow
+- Agent handoff protocols
+- Duration estimates
+- Deliverables at each step
+- Example scenarios
+- Workflow transition patterns
+
+### Common Workflow Examples
+
+#### 🆕 Greenfield Application
+```bash
+"Build a task management app from scratch"
+→ Triggers: Greenfield Workflow (16 steps, 4 phases)
+→ Flow: product-owner → tech-lead (updates agentweaver.config.yml)
+   → backend-dev + frontend-dev (parallel) → qa-tester → devops
+   → marketing-manager → sales-manager
+```
+
+#### ✨ Feature Development
+```bash
+"Add user authentication with JWT"
+→ Triggers: Feature Development Workflow (7 steps)
+→ Flow: product-owner → tech-lead (technical review & assignment)
+   → backend-dev → tech-lead (code review) → qa-tester → devops
+```
+
+#### 🐛 Bug Investigation
+```bash
+"Users are getting 500 errors on login"
+→ Triggers: Bug Resolution Workflow (6 steps)
+→ Flow: debugger (root cause analysis) → tech-lead (assignment)
+   → backend-dev (fix) → tech-lead (code review) → qa-tester → devops
+```
+
+### Workflow Best Practices
+
+1. **Trust the Workflow** - Let Claude Code suggest the right workflow
+2. **agentweaver.config.yml is Key** - Tech-lead updates it during Greenfield workflow
+3. **Parallel When Possible** - Backend-dev and frontend-dev can work simultaneously
+4. **Workflow Transitions** - Switch workflows as needed (e.g., Feature → Bug → Feature)
+5. **Validation Checklists** - Every agent validates work before completing
+
+### Workflow Detection Signals
+
+Claude Code uses these signals to detect your scenario:
+
+- **No `.claude` directory** → Greenfield App workflow
+- **Existing codebase + "add feature"** → Feature Development workflow
+- **Error messages or "bug"** → Bug Resolution workflow
+- **"deploy" or "CI/CD"** → Infrastructure workflow
+- **Product deployed + "marketing"** → Marketing Campaign workflow
+- **"sales" or "CRM"** → Sales Process workflow
+- **"refactor" or "tech debt"** → Architecture Review workflow
+- **"docs" or "README"** → Documentation workflow
+
+---
+
+## 🤝 Agent Handoff Protocols
+
+Each agent knows when to delegate to specialists:
+
+**Development Handoffs (via Tech-Lead):**
+- `@product-owner` → `@tech-lead`: Feature spec or PRD complete
+- `@tech-lead` → `@backend-dev/@frontend-dev`: Work assignment with technical guidance
+- `@backend-dev` → `@tech-lead`: Backend implementation complete for code review
+- `@frontend-dev` → `@tech-lead`: Frontend implementation complete for code review
+- `@tech-lead` → `@qa-tester`: Code review approved, ready for testing
+- `@qa-tester` → `@devops`: Tests passing, ready to deploy
+- `@debugger` → `@tech-lead`: Root cause identified, awaiting developer assignment
+
+**Cross-Functional Handoffs:**
+- `@product-owner` → `@scrum-master`: PRD complete for sprint planning
+- `@scrum-master` → `@tech-lead`: Sprint planned, ready for work delegation
+- `@tech-lead` → Dev team: Architecture approved and work delegated
+- `@devops` → `@marketing-manager`: Production deployment complete
+
+**Marketing/Sales Handoffs:**
+- `@marketing-manager` → `@content-writer`: Campaign strategy ready
+- `@content-writer` → `@seo-specialist`: Content created
+- `@sales-manager` → `@sdr`: Sales process defined
+- `@account-exec` → `@customer-success`: Deal closed
 
 ---
 
