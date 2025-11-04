@@ -1,0 +1,95 @@
+{
+  "name": "spring-boot-pagination",
+  "version": "1.0.0",
+  "description": "Cursor-based and offset-based pagination for Spring Boot with Spring Data",
+  "author": "AgentWeaver",
+  "applicability": {
+    "language": "java",
+    "framework": ["spring-boot", "spring-webflux"],
+    "minVersion": "2.7.0",
+    "dependencies": {
+      "required": ["org.springframework.boot:spring-boot-starter"],
+      "optional": ["org.springframework.data:spring-data-commons"]
+    }
+  },
+  "files": [
+    {
+      "source": "CursorPagination.java",
+      "target": "{{packagePath}}/pagination/CursorPagination.java",
+      "description": "Cursor-based pagination implementation",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "OffsetPagination.java",
+      "target": "{{packagePath}}/pagination/OffsetPagination.java",
+      "description": "Offset-based pagination with Spring Data Page",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "PaginationResponse.java",
+      "target": "{{packagePath}}/dto/PaginationResponse.java",
+      "description": "Generic pagination response DTO",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "PaginationUtils.java",
+      "target": "{{packagePath}}/util/PaginationUtils.java",
+      "description": "Utility methods for pagination",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    }
+  ],
+  "variables": {
+    "packagePath": {
+      "description": "Java package path (e.g., src/main/java/com/myapp)",
+      "required": true,
+      "default": "src/main/java/com/example/app",
+      "type": "path"
+    },
+    "packageName": {
+      "description": "Java package name (e.g., com.myapp)",
+      "required": true,
+      "default": "com.example.app",
+      "type": "string"
+    },
+    "defaultPageSize": {
+      "description": "Default number of items per page",
+      "required": false,
+      "default": "20",
+      "type": "number"
+    },
+    "maxPageSize": {
+      "description": "Maximum number of items per page",
+      "required": false,
+      "default": "100",
+      "type": "number"
+    }
+  },
+  "instructions": [
+    "Add the pagination classes to your Spring Boot project",
+    "Use CursorPagination for efficient large dataset pagination",
+    "Use OffsetPagination with Spring Data Pageable for traditional pagination",
+    "Integrate with your Spring Data repositories",
+    "See example controller usage in the comments"
+  ],
+  "references": [
+    "https://spring.io/guides/gs/rest-service/",
+    "https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Pageable.html",
+    "https://www.baeldung.com/spring-data-jpa-pagination-sorting"
+  ],
+  "dependencies": {
+    "required": ["org.springframework.boot:spring-boot-starter-web"],
+    "optional": [
+      "org.springframework.data:spring-data-jpa",
+      "org.springframework.boot:spring-boot-starter-data-jpa"
+    ]
+  },
+  "tags": ["pagination", "spring-boot", "java", "cursor", "offset", "spring-data"]
+}

@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { AgentInstaller } from '../../lib/agent-installer.js';
 import { SkillsInstaller } from '../../lib/skills-installer.js';
-import { TechDetector } from '../../lib/tech-detector.js';
+import { EnhancedTechDetector } from '../../lib/enhanced-tech-detector.js';
 import { ConfigGenerator } from '../../lib/config-generator.js';
 import { getTemplatesDirectory, pathExists, readFile } from '../../utils/file-operations.js';
 
@@ -60,24 +60,52 @@ export async function initCommand(options: InitOptions) {
   }
 
   try {
-    // Step 1: Detect tech stack
+    // Step 1: Detect tech stack (using enhanced detector)
     const spinner = ora('Detecting project tech stack...').start();
-    const detector = new TechDetector(projectRoot);
-    const detectedTech = await detector.detectAll();
+    const enhancedDetector = new EnhancedTechDetector(projectRoot);
+    const enhancedTech = await enhancedDetector.detectAll();
     spinner.succeed('Tech stack detected');
 
     // Display detected technologies
     console.log(chalk.gray('\n📊 Detected Technologies:'));
-    if (detectedTech.frontend?.framework) {
-      console.log(chalk.gray(`  Frontend: ${detectedTech.frontend.framework}`));
+
+    // Show architecture info
+    if (enhancedTech.architecture) {
+      console.log(chalk.cyan(`  Architecture: ${enhancedTech.architecture.type} (${enhancedTech.architecture.style})`));
+      if (enhancedTech.architecture.workspaceTool) {
+        console.log(chalk.gray(`  Monorepo: ${enhancedTech.architecture.workspaceTool}`));
+      }
     }
-    if (detectedTech.backend?.framework) {
-      console.log(chalk.gray(`  Backend: ${detectedTech.backend.framework}`));
+
+    // Show all detected projects
+    if (enhancedTech.projects.length > 0) {
+      console.log(chalk.cyan(`\n  Detected ${enhancedTech.projects.length} project(s):`));
+      enhancedTech.projects.forEach((project, idx) => {
+        const frameworkInfo = project.framework ? ` (${project.framework})` : '';
+        console.log(chalk.gray(`    ${idx + 1}. ${project.language}${frameworkInfo} - ${(project.confidence * 100).toFixed(0)}% confidence`));
+      });
     }
-    if (detectedTech.database?.primary) {
-      console.log(chalk.gray(`  Database: ${detectedTech.database.primary}`));
+
+    // Legacy display for backward compatibility
+    if (enhancedTech.frontend?.framework) {
+      console.log(chalk.gray(`\n  Frontend: ${enhancedTech.frontend.framework}`));
+    }
+    if (enhancedTech.backend?.framework) {
+      console.log(chalk.gray(`  Backend: ${enhancedTech.backend.framework} (${enhancedTech.backend.language})`));
+    }
+    if (enhancedTech.database?.primary) {
+      console.log(chalk.gray(`  Database: ${enhancedTech.database.primary}`));
     }
     console.log('');
+
+    // Use legacy format for config generation (backward compatibility)
+    const detectedTech = {
+      frontend: enhancedTech.frontend,
+      backend: enhancedTech.backend,
+      database: enhancedTech.database,
+      testing: enhancedTech.testing,
+      deployment: enhancedTech.deployment,
+    };
 
     // Step 2: Agent selection
     let selectedAgents: string[] = [];
@@ -251,16 +279,37 @@ export async function initCommand(options: InitOptions) {
       agentSpinner.succeed(`Installed ${agentResult.installed.length} agents`);
     }
 
-    // Step 7: Install skills
-    let skillResult: any = { installed: [] };
+    // Step 7: Install skills with template pack resolution
+    let skillResult: any = { installed: [], templatePacksUsed: [] };
     if (selectedSkills.length > 0 || (!options.skills && !options.yes) || (options.yes && selectedSkills.length === 0)) {
       const skillsInstaller = new SkillsInstaller(path.join(templatesDir, 'skills'));
-      const skillSpinner = ora('Installing skills...').start();
+      const skillSpinner = ora('Installing skills with template resolution...').start();
+
+      // Create tech stack context from detected tech
+      const primaryProject = enhancedTech.projects.length > 0 ? enhancedTech.projects[0] : null;
+      const techStackContext = primaryProject
+        ? {
+            techStack: {
+              language: primaryProject.language,
+              framework: primaryProject.framework,
+              version: primaryProject.version,
+              buildTool: primaryProject.buildTool,
+              dependencies: primaryProject.dependencies,
+            },
+            project: {
+              name: await getProjectName(projectRoot),
+              path: projectRoot,
+              architecture: enhancedTech.architecture?.type,
+            },
+          }
+        : undefined;
 
       skillResult = await skillsInstaller.installSkills({
         targetDirectory: skillsDir,
         skillsToInstall: selectedSkills.length > 0 ? selectedSkills : undefined,
         overwrite: true,
+        techStackContext,
+        projectRoot,
       });
 
       if (skillResult.errors.length > 0) {
@@ -270,6 +319,16 @@ export async function initCommand(options: InitOptions) {
         });
       } else {
         skillSpinner.succeed(`Installed ${skillResult.installed.length} skills`);
+
+        // Show template packs used
+        if (skillResult.templatePacksUsed && skillResult.templatePacksUsed.length > 0) {
+          console.log(chalk.gray('\n  Template packs selected:'));
+          skillResult.templatePacksUsed.forEach((tpu: any) => {
+            console.log(
+              chalk.gray(`    ${tpu.skill}: ${tpu.templatePack} (${(tpu.score * 100).toFixed(0)}% match)`)
+            );
+          });
+        }
       }
     }
 

@@ -23,21 +23,21 @@ export interface FrontendTech {
 }
 
 export interface BackendTech {
-  framework?: 'express' | 'fastapi' | 'nestjs' | 'django' | 'flask' | 'hono' | 'elysia';
-  language?: 'typescript' | 'javascript' | 'python' | 'go' | 'rust';
+  framework?: 'express' | 'fastapi' | 'nestjs' | 'django' | 'flask' | 'hono' | 'elysia' | 'spring-boot' | 'aspnet-core' | 'gin' | 'actix-web' | 'rails' | 'laravel';
+  language?: 'typescript' | 'javascript' | 'python' | 'go' | 'rust' | 'java' | 'csharp' | 'ruby' | 'php';
   apiStyle?: 'rest' | 'graphql' | 'grpc' | 'trpc';
   validation?: 'zod' | 'joi' | 'yup' | 'pydantic' | 'class-validator';
 }
 
 export interface DatabaseTech {
-  primary?: 'postgresql' | 'mysql' | 'mongodb' | 'sqlite' | 'redis' | 'supabase';
-  orm?: 'prisma' | 'typeorm' | 'drizzle' | 'mongoose' | 'sequelize' | 'sqlalchemy';
+  primary?: 'postgresql' | 'mysql' | 'mongodb' | 'sqlite' | 'redis' | 'supabase' | 'oracle' | 'sql-server' | 'mariadb' | 'h2';
+  orm?: 'prisma' | 'typeorm' | 'drizzle' | 'mongoose' | 'sequelize' | 'sqlalchemy' | 'hibernate' | 'entity-framework-core' | 'gorm' | 'diesel';
   cache?: 'redis' | 'memcached';
   migrations?: 'prisma' | 'typeorm' | 'knex' | 'alembic';
 }
 
 export interface TestingTech {
-  unit?: 'jest' | 'vitest' | 'mocha' | 'pytest' | 'go-test';
+  unit?: 'jest' | 'vitest' | 'mocha' | 'pytest' | 'go-test' | 'junit5' | 'xunit' | 'rspec';
   e2e?: 'playwright' | 'cypress' | 'selenium' | 'puppeteer';
   coverage?: boolean;
 }

@@ -1,0 +1,94 @@
+{
+  "name": "gin-pagination",
+  "version": "1.0.0",
+  "description": "Cursor-based and offset-based pagination for Gin framework with GORM",
+  "author": "AgentWeaver",
+  "applicability": {
+    "language": "go",
+    "framework": ["gin", "gin-gonic"],
+    "minVersion": "1.18.0",
+    "dependencies": {
+      "required": ["github.com/gin-gonic/gin"],
+      "optional": ["gorm.io/gorm"]
+    }
+  },
+  "files": [
+    {
+      "source": "cursor_pagination.go",
+      "target": "{{packagePath}}/pagination/cursor_pagination.go",
+      "description": "Cursor-based pagination implementation",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "offset_pagination.go",
+      "target": "{{packagePath}}/pagination/offset_pagination.go",
+      "description": "Offset-based pagination with GORM",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "models.go",
+      "target": "{{packagePath}}/pagination/models.go",
+      "description": "Pagination response models",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "middleware.go",
+      "target": "{{packagePath}}/pagination/middleware.go",
+      "description": "Gin middleware for pagination parameters",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    }
+  ],
+  "variables": {
+    "packagePath": {
+      "description": "Go package path (e.g., internal/api)",
+      "required": true,
+      "default": "internal/api",
+      "type": "path"
+    },
+    "moduleName": {
+      "description": "Go module name (e.g., github.com/myorg/myapp)",
+      "required": true,
+      "default": "myapp",
+      "type": "string"
+    },
+    "defaultPageSize": {
+      "description": "Default number of items per page",
+      "required": false,
+      "default": "20",
+      "type": "number"
+    },
+    "maxPageSize": {
+      "description": "Maximum number of items per page",
+      "required": false,
+      "default": "100",
+      "type": "number"
+    }
+  },
+  "instructions": [
+    "Add the pagination package to your Gin project",
+    "Use CursorPaginate for efficient large dataset pagination",
+    "Use OffsetPaginate with GORM for traditional pagination",
+    "Integrate with your handlers using the middleware",
+    "See example usage in the function comments"
+  ],
+  "references": [
+    "https://gin-gonic.com/docs/",
+    "https://gorm.io/docs/",
+    "https://go.dev/doc/effective_go"
+  ],
+  "dependencies": {
+    "required": ["github.com/gin-gonic/gin"],
+    "optional": [
+      "gorm.io/gorm"
+    ]
+  },
+  "tags": ["pagination", "gin", "go", "cursor", "offset", "gorm"]
+}

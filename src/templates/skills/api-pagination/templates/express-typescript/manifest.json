@@ -1,0 +1,71 @@
+{
+  "name": "express-typescript-pagination",
+  "version": "1.0.0",
+  "description": "Cursor-based and offset-based pagination for Express.js with TypeScript",
+  "author": "AgentWeaver",
+  "applicability": {
+    "language": "typescript",
+    "framework": ["express", "nestjs"],
+    "minVersion": "4.0.0",
+    "dependencies": {
+      "required": ["express"]
+    }
+  },
+  "files": [
+    {
+      "source": "cursor-pagination.ts",
+      "target": "src/utils/pagination/cursor-pagination.ts",
+      "description": "Cursor-based pagination utility with type safety",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "offset-pagination.ts",
+      "target": "src/utils/pagination/offset-pagination.ts",
+      "description": "Offset-based pagination utility with type safety",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "pagination.types.ts",
+      "target": "src/types/pagination.types.ts",
+      "description": "TypeScript type definitions for pagination",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "plain"
+    }
+  ],
+  "variables": {
+    "baseUrl": {
+      "description": "Base URL for pagination links",
+      "required": false,
+      "default": "/api",
+      "type": "string"
+    },
+    "defaultPageSize": {
+      "description": "Default number of items per page",
+      "required": false,
+      "default": "20",
+      "type": "number"
+    }
+  },
+  "instructions": [
+    "Import the pagination utilities in your route handlers",
+    "Use `cursorPaginate` for efficient large dataset pagination",
+    "Use `offsetPaginate` for simple pagination with page numbers",
+    "Configure default page size in your environment variables",
+    "See the TypeScript types in `src/types/pagination.types.ts` for usage examples"
+  ],
+  "references": [
+    "https://expressjs.com/en/guide/routing.html",
+    "https://www.typescriptlang.org/docs/",
+    "https://www.prisma.io/docs/concepts/components/prisma-client/pagination"
+  ],
+  "dependencies": {
+    "required": ["express"],
+    "optional": ["@types/express", "prisma", "typeorm"]
+  },
+  "tags": ["pagination", "express", "typescript", "cursor", "offset", "api"]
+}

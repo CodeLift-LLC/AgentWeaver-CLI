@@ -1,0 +1,94 @@
+{
+  "name": "rails-pagination",
+  "version": "1.0.0",
+  "description": "Cursor-based and offset-based pagination for Ruby on Rails with ActiveRecord",
+  "author": "AgentWeaver",
+  "applicability": {
+    "language": "ruby",
+    "framework": ["rails", "ruby-on-rails"],
+    "minVersion": "6.0.0",
+    "dependencies": {
+      "required": ["rails"],
+      "optional": ["activerecord"]
+    }
+  },
+  "files": [
+    {
+      "source": "cursor_pagination.rb",
+      "target": "{{appPath}}/lib/pagination/cursor_pagination.rb",
+      "description": "Cursor-based pagination module",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "offset_pagination.rb",
+      "target": "{{appPath}}/lib/pagination/offset_pagination.rb",
+      "description": "Offset-based pagination with ActiveRecord",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "pagination_concern.rb",
+      "target": "{{appPath}}/app/controllers/concerns/pagination_concern.rb",
+      "description": "Controller concern for pagination",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "paginated_serializer.rb",
+      "target": "{{appPath}}/app/serializers/paginated_serializer.rb",
+      "description": "Serializer for paginated responses",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    }
+  ],
+  "variables": {
+    "appPath": {
+      "description": "Rails app path (usually just the root)",
+      "required": true,
+      "default": ".",
+      "type": "path"
+    },
+    "moduleName": {
+      "description": "Module name for namespacing (e.g., MyApp)",
+      "required": false,
+      "default": "Application",
+      "type": "string"
+    },
+    "defaultPageSize": {
+      "description": "Default number of items per page",
+      "required": false,
+      "default": "20",
+      "type": "number"
+    },
+    "maxPageSize": {
+      "description": "Maximum number of items per page",
+      "required": false,
+      "default": "100",
+      "type": "number"
+    }
+  },
+  "instructions": [
+    "Add the pagination modules to your Rails project",
+    "Include PaginationConcern in your controllers",
+    "Use cursor_paginate for efficient large dataset pagination",
+    "Use offset_paginate for traditional page-based pagination",
+    "See example usage in the module comments"
+  ],
+  "references": [
+    "https://guides.rubyonrails.org/active_record_querying.html",
+    "https://api.rubyonrails.org/classes/ActiveRecord/QueryMethods.html",
+    "https://github.com/kaminari/kaminari"
+  ],
+  "dependencies": {
+    "required": ["rails"],
+    "optional": [
+      "active_model_serializers"
+    ]
+  },
+  "tags": ["pagination", "rails", "ruby", "cursor", "offset", "activerecord"]
+}

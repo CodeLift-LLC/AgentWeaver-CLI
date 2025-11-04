@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { initCommand } from './commands/init.js';
+import { validateCommand } from './commands/validate.js';
 
 const program = new Command();
 
@@ -21,6 +22,15 @@ program
   .option('--no-mcp', 'Skip MCP server configuration')
   .option('--mode <mode>', 'Tech stack mode: strict, flexible, or adaptive', 'flexible')
   .action(initCommand);
+
+// Validate command
+program
+  .command('validate')
+  .description('Validate template packs for correctness')
+  .option('--skill <skill>', 'Validate template packs for a specific skill')
+  .option('--pack <pack>', 'Validate a specific template pack directory')
+  .option('-v, --verbose', 'Show detailed validation information')
+  .action(validateCommand);
 
 // Global error handling
 program.exitOverride();
