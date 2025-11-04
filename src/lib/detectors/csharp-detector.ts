@@ -50,6 +50,37 @@ export class CSharpDetector extends BaseDetector {
   }
 
   /**
+   * Override: Check if C# project files exist (handles .csproj pattern)
+   */
+  async isLikelyCandidate(): Promise<boolean> {
+    // Check for .csproj files
+    const csprojFiles = await this.findCsprojFiles();
+    if (csprojFiles.length > 0) return true;
+
+    // Check for .sln files
+    if (await this.hasSolutionFile()) return true;
+
+    // Check for other manifest files
+    if (await this.hasManifestFile('global.json')) return true;
+    if (await this.hasManifestFile('Directory.Build.props')) return true;
+    if (await this.hasManifestFile('packages.config')) return true;
+
+    return false;
+  }
+
+  /**
+   * Check if a solution file exists
+   */
+  private async hasSolutionFile(): Promise<boolean> {
+    try {
+      const files = await readdir(this.projectRoot);
+      return files.some((file) => file.endsWith('.sln'));
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Check if a C# file exists
    */
   private async hasCSharpFile(filename: string): Promise<boolean> {
@@ -206,6 +237,9 @@ export class CSharpDetector extends BaseDetector {
     const targetFramework =
       propertyGroup.TargetFramework?.[0] || propertyGroup.TargetFrameworks?.[0] || '';
 
+    // Extract NuGet packages to help with framework detection
+    const packages = this.extractNuGetPackages(csproj);
+
     // Detect framework type from SDK or package references
     let framework: string | undefined;
 
@@ -228,6 +262,21 @@ export class CSharpDetector extends BaseDetector {
     // Check for WinForms
     else if (propertyGroup.UseWindowsForms?.[0] === 'true') {
       framework = 'winforms';
+    }
+    // Check for ASP.NET Core packages
+    else if (
+      packages.some(
+        (pkg) =>
+          pkg.includes('Microsoft.AspNetCore') ||
+          pkg.includes('AspNetCore.Mvc') ||
+          pkg.includes('AspNetCore.App')
+      )
+    ) {
+      framework = 'aspnet-core';
+    }
+    // Check for Blazor packages
+    else if (packages.some((pkg) => pkg.includes('Blazor'))) {
+      framework = 'blazor';
     }
     // Default to generic .NET
     else {
