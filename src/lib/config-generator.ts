@@ -12,6 +12,7 @@ const __dirname = path.dirname(__filename);
  */
 
 export interface McpServerConfig {
+  type?: string;
   command: string;
   args: string[];
   env?: Record<string, string>;
@@ -111,8 +112,10 @@ export class ConfigGenerator {
     // Playwright MCP Server
     if (options.includePlaywright) {
       config.mcpServers.playwright = {
-        command: 'npx',
-        args: ['-y', '@executeautomation/playwright-mcp-server'],
+        type: 'stdio',
+        command: 'cmd',
+        args: ['/c', 'npx', '@playwright/mcp@latest'],
+        env: {},
       };
     }
 
@@ -396,7 +399,8 @@ export class ConfigGenerator {
     }
 
     // Add comments for each env var
-    if (envVars.has('GITHUB_TOKEN')) {
+    // Check for GITHUB_PERSONAL_ACCESS_TOKEN which maps to GITHUB_TOKEN
+    if (envVars.has('GITHUB_PERSONAL_ACCESS_TOKEN') || envVars.has('GITHUB_TOKEN')) {
       lines.push('# GitHub Personal Access Token');
       lines.push('# Get it from: https://github.com/settings/tokens');
       lines.push('GITHUB_TOKEN=');
