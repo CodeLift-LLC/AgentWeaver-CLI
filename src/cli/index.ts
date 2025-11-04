@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+
+import { Command } from 'commander';
+import chalk from 'chalk';
+import { initCommand } from './commands/init.js';
+
+const program = new Command();
+
+program
+  .name('agentweaver')
+  .description('CLI tool for installing pre-built AI agent templates and reusable skills')
+  .version('0.1.0');
+
+// Init command
+program
+  .command('init')
+  .description('Initialize AgentWeaver in your project')
+  .option('-y, --yes', 'Skip prompts and use defaults')
+  .option('--agents <agents>', 'Comma-separated list of agents to install (e.g., backend-dev,frontend-dev)')
+  .option('--skills <skills>', 'Comma-separated list of skills to install')
+  .option('--no-mcp', 'Skip MCP server configuration')
+  .option('--mode <mode>', 'Tech stack mode: strict, flexible, or adaptive', 'flexible')
+  .action(initCommand);
+
+// Global error handling
+program.exitOverride();
+
+try {
+  await program.parseAsync(process.argv);
+} catch (error) {
+  if ((error as { code?: string }).code === 'commander.help') {
+    process.exit(0);
+  }
+  console.error(chalk.red('Error:'), (error as Error).message);
+  process.exit(1);
+}

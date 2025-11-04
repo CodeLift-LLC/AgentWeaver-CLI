@@ -1,0 +1,304 @@
+import path from 'path';
+import inquirer from 'inquirer';
+import chalk from 'chalk';
+import ora from 'ora';
+import { AgentInstaller } from '../../lib/agent-installer.js';
+import { SkillsInstaller } from '../../lib/skills-installer.js';
+import { TechDetector } from '../../lib/tech-detector.js';
+import { ConfigGenerator } from '../../lib/config-generator.js';
+import { getTemplatesDirectory, pathExists } from '../../utils/file-operations.js';
+
+interface InitOptions {
+  yes?: boolean;
+  agents?: string;
+  skills?: string;
+  mcp?: boolean;
+  mode?: 'strict' | 'flexible' | 'adaptive';
+}
+
+export async function initCommand(options: InitOptions) {
+  console.log(chalk.cyan.bold('\n🚀 AgentWeaver CLI - Setup Wizard\n'));
+
+  const projectRoot = process.cwd();
+  const claudeDir = path.join(projectRoot, '.claude');
+  const agentsDir = path.join(claudeDir, 'agents');
+  const skillsDir = path.join(claudeDir, 'skills');
+
+  // Check if .claude directory already exists
+  if (await pathExists(claudeDir)) {
+    const { overwrite } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'overwrite',
+        message: chalk.yellow('.claude directory already exists. Overwrite?'),
+        default: false,
+      },
+    ]);
+
+    if (!overwrite) {
+      console.log(chalk.yellow('\n✋ Setup cancelled.'));
+      return;
+    }
+  }
+
+  try {
+    // Step 1: Detect tech stack
+    const spinner = ora('Detecting project tech stack...').start();
+    const detector = new TechDetector(projectRoot);
+    const detectedTech = await detector.detectAll();
+    spinner.succeed('Tech stack detected');
+
+    // Display detected technologies
+    console.log(chalk.gray('\n📊 Detected Technologies:'));
+    if (detectedTech.frontend?.framework) {
+      console.log(chalk.gray(`  Frontend: ${detectedTech.frontend.framework}`));
+    }
+    if (detectedTech.backend?.framework) {
+      console.log(chalk.gray(`  Backend: ${detectedTech.backend.framework}`));
+    }
+    if (detectedTech.database?.primary) {
+      console.log(chalk.gray(`  Database: ${detectedTech.database.primary}`));
+    }
+    console.log('');
+
+    // Step 2: Agent selection
+    let selectedAgents: string[] = [];
+    if (options.agents) {
+      selectedAgents = options.agents.split(',').map((a) => a.trim());
+    } else if (!options.yes) {
+      const { agentChoice } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'agentChoice',
+          message: 'Which agents would you like to install?',
+          choices: [
+            { name: '✨ All agents (8 development agents)', value: 'all' },
+            { name: '👨‍💻 Development agents only (6 agents)', value: 'dev' },
+            { name: '🎯 Custom selection', value: 'custom' },
+          ],
+          default: 'dev',
+        },
+      ]);
+
+      if (agentChoice === 'custom') {
+        const templatesDir = getTemplatesDirectory();
+        const agentInstaller = new AgentInstaller(path.join(templatesDir, 'agents'));
+        const availableAgents = await agentInstaller.listAvailableAgents();
+
+        const { agents } = await inquirer.prompt([
+          {
+            type: 'checkbox',
+            name: 'agents',
+            message: 'Select agents to install:',
+            choices: availableAgents.map((agent) => ({
+              name: `${agent.name} - ${agent.frontmatter.description.split('.')[0]}`,
+              value: agent.name,
+              checked: true,
+            })),
+          },
+        ]);
+        selectedAgents = agents;
+      } else if (agentChoice === 'dev') {
+        selectedAgents = [
+          'backend-dev',
+          'frontend-dev',
+          'qa-tester',
+          'tech-lead',
+          'devops',
+          'docs-writer',
+        ];
+      } else {
+        selectedAgents = []; // All agents
+      }
+    }
+
+    // Step 3: Skills selection
+    let selectedSkills: string[] = [];
+    if (options.skills) {
+      selectedSkills = options.skills.split(',').map((s) => s.trim());
+    } else if (!options.yes) {
+      const { installSkills } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'installSkills',
+          message: 'Install reusable skills library?',
+          default: true,
+        },
+      ]);
+
+      if (installSkills) {
+        selectedSkills = []; // Install all skills
+      }
+    }
+
+    // Step 4: MCP configuration
+    let mcpServers: string[] = [];
+    if (options.mcp !== false && !options.yes) {
+      const { configureMcp } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'configureMcp',
+          message: 'Configure MCP servers (.mcp.json)?',
+          default: true,
+        },
+      ]);
+
+      if (configureMcp) {
+        const { servers } = await inquirer.prompt([
+          {
+            type: 'checkbox',
+            name: 'servers',
+            message: 'Select MCP servers to configure:',
+            choices: [
+              { name: 'GitHub (repository operations)', value: 'github', checked: true },
+              { name: 'Context7 (documentation lookup)', value: 'context7', checked: true },
+              {
+                name: 'Sequential Thinking (complex analysis)',
+                value: 'sequential',
+                checked: true,
+              },
+              { name: 'Playwright (E2E testing)', value: 'playwright', checked: false },
+              { name: 'shadcn/ui (UI components)', value: 'shadcn', checked: false },
+              { name: 'Supabase (database)', value: 'supabase', checked: false },
+            ],
+          },
+        ]);
+        mcpServers = servers;
+      }
+    } else if (options.mcp !== false && options.yes) {
+      // Default MCP servers for --yes flag
+      mcpServers = ['github', 'context7', 'sequential'];
+    }
+
+    // Step 5: Tech stack mode
+    let techMode: 'strict' | 'flexible' | 'adaptive' = options.mode || 'flexible';
+    if (!options.yes && !options.mode) {
+      const { mode } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'mode',
+          message: 'Tech stack mode:',
+          choices: [
+            {
+              name: 'Flexible - Prefer detected stack, allow alternatives (recommended)',
+              value: 'flexible',
+            },
+            { name: 'Strict - Enforce detected stack only', value: 'strict' },
+            { name: 'Adaptive - Auto-detect and adapt', value: 'adaptive' },
+          ],
+          default: 'flexible',
+        },
+      ]);
+      techMode = mode;
+    }
+
+    // Step 6: Install agents
+    console.log(chalk.cyan('\n📦 Installing components...\n'));
+
+    const templatesDir = getTemplatesDirectory();
+    const agentInstaller = new AgentInstaller(path.join(templatesDir, 'agents'));
+
+    const agentSpinner = ora('Installing agents...').start();
+    const agentResult = await agentInstaller.installAgents({
+      targetDirectory: agentsDir,
+      agentsToInstall: selectedAgents.length > 0 ? selectedAgents : undefined,
+      overwrite: true,
+    });
+
+    if (agentResult.errors.length > 0) {
+      agentSpinner.fail(`Agent installation completed with errors`);
+      agentResult.errors.forEach((err) => {
+        console.log(chalk.red(`  ✗ ${err.agent}: ${err.error}`));
+      });
+    } else {
+      agentSpinner.succeed(`Installed ${agentResult.installed.length} agents`);
+    }
+
+    // Step 7: Install skills
+    if (selectedSkills.length > 0 || (!options.skills && !options.yes)) {
+      const skillsInstaller = new SkillsInstaller(path.join(templatesDir, 'skills'));
+      const skillSpinner = ora('Installing skills...').start();
+
+      const skillResult = await skillsInstaller.installSkills({
+        targetDirectory: skillsDir,
+        skillsToInstall: selectedSkills.length > 0 ? selectedSkills : undefined,
+        overwrite: true,
+      });
+
+      if (skillResult.errors.length > 0) {
+        skillSpinner.fail(`Skill installation completed with errors`);
+        skillResult.errors.forEach((err) => {
+          console.log(chalk.red(`  ✗ ${err.skill}: ${err.error}`));
+        });
+      } else {
+        skillSpinner.succeed(`Installed ${skillResult.installed.length} skills`);
+      }
+    }
+
+    // Step 8: Generate configurations
+    if (mcpServers.length > 0) {
+      const mcpSpinner = ora('Generating MCP configuration...').start();
+      const mcpConfig = ConfigGenerator.generateMcpConfig({
+        includeGithub: mcpServers.includes('github'),
+        includeContext7: mcpServers.includes('context7'),
+        includeSequential: mcpServers.includes('sequential'),
+        includePlaywright: mcpServers.includes('playwright'),
+        includeShadcn: mcpServers.includes('shadcn'),
+        includeSupabase: mcpServers.includes('supabase'),
+      });
+
+      await ConfigGenerator.writeMcpConfig(path.join(projectRoot, '.mcp.json'), mcpConfig);
+      mcpSpinner.succeed('Generated .mcp.json');
+
+      // Generate .env.example
+      const envExample = ConfigGenerator.generateEnvExample(mcpConfig);
+      const fs = await import('fs-extra');
+      await fs.writeFile(path.join(projectRoot, '.env.example'), envExample);
+    }
+
+    const configSpinner = ora('Generating AgentWeaver configuration...').start();
+    const agentWeaverConfig = ConfigGenerator.generateAgentWeaverConfig(detectedTech, techMode);
+    await ConfigGenerator.writeAgentWeaverConfig(
+      path.join(projectRoot, 'agentweaver.config.yml'),
+      agentWeaverConfig
+    );
+    configSpinner.succeed('Generated agentweaver.config.yml');
+
+    // Success message
+    console.log(chalk.green.bold('\n✅ Installation complete!\n'));
+
+    console.log(chalk.cyan('📁 Created:'));
+    console.log(chalk.gray(`  ├── .claude/agents/        (${agentResult.installed.length} agents)`));
+    if (selectedSkills.length > 0 || (!options.skills && !options.yes)) {
+      console.log(chalk.gray(`  ├── .claude/skills/        (3 skills)`));
+    }
+    if (mcpServers.length > 0) {
+      console.log(chalk.gray(`  ├── .mcp.json             (MCP server config)`));
+      console.log(chalk.gray(`  ├── .env.example          (Environment variables template)`));
+    }
+    console.log(chalk.gray(`  └── agentweaver.config.yml (Tech stack config)`));
+
+    console.log(chalk.cyan('\n🎯 Next steps:\n'));
+    if (mcpServers.length > 0) {
+      console.log(chalk.white('  1. Copy .env.example to .env and fill in your credentials:'));
+      if (mcpServers.includes('github')) {
+        console.log(chalk.gray('     - GITHUB_TOKEN (from https://github.com/settings/tokens)'));
+      }
+      if (mcpServers.includes('supabase')) {
+        console.log(chalk.gray('     - SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'));
+      }
+      console.log('');
+    }
+    console.log(chalk.white('  2. Open Claude Code and use your agents:'));
+    console.log(chalk.gray('     @backend-dev implement user authentication'));
+    console.log(chalk.gray('     @frontend-dev create dashboard layout'));
+    console.log('');
+    console.log(chalk.white('  3. Browse skills in .claude/skills/ for reusable patterns'));
+    console.log('');
+    console.log(chalk.cyan('📚 Documentation: https://github.com/CodeLift-LLC/AgentWeaver-CLI'));
+    console.log('');
+  } catch (error) {
+    console.error(chalk.red('\n❌ Installation failed:'), (error as Error).message);
+    process.exit(1);
+  }
+}
