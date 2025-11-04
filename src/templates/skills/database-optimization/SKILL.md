@@ -7,17 +7,38 @@ allowed-tools:
   - Edit
   - Bash
   - Grep
+  - WebFetch
 tags:
   - database
   - performance
   - optimization
   - sql
   - queries
+mcp-servers:
+  - socket
+  - context7
 ---
 
 # Database Optimization Skill
 
 Comprehensive patterns for identifying and fixing database performance issues, with focus on query optimization, indexing, and preventing common anti-patterns.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Analyze slow queries, identify N+1 problems, add proper indexes, optimize query structure, implement connection pooling, and validate performance improvements with benchmarks.
+
+**Additional tools available**:
+- Use Socket MCP to scan database driver dependencies
+- Use Context7 MCP for database and ORM documentation
 
 ## When to Use
 

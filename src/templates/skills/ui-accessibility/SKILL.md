@@ -5,6 +5,9 @@ allowed-tools:
   - Read
   - Write
   - Edit
+  - Grep
+  - Bash
+  - WebFetch
 tags:
   - ui
   - accessibility
@@ -12,11 +15,31 @@ tags:
   - wcag
   - aria
   - inclusive-design
+mcp-servers:
+  - playwright
+  - context7
 ---
 
 # UI Accessibility Skill
 
 Build inclusive, accessible web applications that work for all users, including those using assistive technologies like screen readers, keyboard navigation, and alternative input devices.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Audit existing components for accessibility issues, implement semantic HTML, add ARIA labels where needed, ensure keyboard navigation works, test with screen readers, validate WCAG compliance.
+
+**Additional tools available**:
+- Use Playwright MCP for automated accessibility testing
+- Use Context7 MCP for WCAG and ARIA documentation
 
 ## When to Use
 

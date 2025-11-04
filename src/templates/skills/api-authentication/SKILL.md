@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - api
   - authentication
@@ -13,11 +15,31 @@ tags:
   - jwt
   - oauth
   - backend
+mcp-servers:
+  - socket
+  - context7
 ---
 
 # API Authentication Skill
 
 This skill provides production-ready patterns for implementing secure authentication mechanisms in REST APIs, covering JWT tokens, OAuth 2.0, API keys, and session-based authentication.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Select the appropriate authentication strategy (JWT, OAuth, API keys), implement secure token generation/validation, add authentication middleware, test with various scenarios, and validate security requirements are met.
+
+**Additional tools available**:
+- Use Socket MCP to scan authentication dependencies for vulnerabilities
+- Use Context7 MCP for framework-specific authentication documentation
 
 ## When to Use
 

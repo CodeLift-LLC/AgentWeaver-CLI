@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - tdd
   - test-driven-development
@@ -15,11 +17,31 @@ tags:
   - jest
   - pytest
   - quality
+mcp-servers:
+  - playwright
+  - socket
 ---
 
 # Test-Driven Development (TDD) Skill
 
 A comprehensive guide to Test-Driven Development: the practice of writing tests before implementation code. This skill covers the complete TDD cycle with practical examples and real-world scenarios.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Follow Red-Green-Refactor cycle: write failing test (Red), write minimal code to pass (Green), refactor for quality (Refactor), repeat for each feature incrementally.
+
+**Additional tools available**:
+- Use Playwright MCP for E2E TDD workflows
+- Use Socket MCP to scan test dependencies
 
 ## When to Use TDD
 

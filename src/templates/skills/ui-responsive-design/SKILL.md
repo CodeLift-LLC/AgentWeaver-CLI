@@ -5,6 +5,9 @@ allowed-tools:
   - Read
   - Write
   - Edit
+  - Grep
+  - Bash
+  - WebFetch
 tags:
   - ui
   - responsive
@@ -12,11 +15,31 @@ tags:
   - css-grid
   - flexbox
   - breakpoints
+mcp-servers:
+  - playwright
+  - context7
 ---
 
 # UI Responsive Design Skill
 
 Create fluid, adaptive interfaces that work beautifully across all screen sizes and devices using modern CSS techniques and mobile-first methodology.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Design breakpoints, implement mobile-first CSS, use CSS Grid/Flexbox for layouts, test across multiple devices and screen sizes, optimize images and assets for different resolutions.
+
+**Additional tools available**:
+- Use Playwright MCP for testing responsive behavior across viewports
+- Use Context7 MCP for CSS Grid and Flexbox documentation
 
 ## When to Use
 

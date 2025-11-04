@@ -7,17 +7,38 @@ allowed-tools:
   - Edit
   - Grep
   - Bash
+  - WebFetch
 tags:
   - docker
   - containers
   - deployment
   - devops
   - infrastructure
+mcp-servers:
+  - socket
+  - playwright
 ---
 
 # Docker Deployment Skill
 
 This skill provides battle-tested patterns for containerizing applications with Docker, focusing on production readiness, security, and optimization.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Create Dockerfile with multi-stage build, optimize image size, add security best practices, set up Docker Compose for local development, test container builds, validate security scanning.
+
+**Additional tools available**:
+- Use Socket MCP for security scanning dependencies in container
+- Use Playwright MCP for smoke testing deployed containers
 
 ## When to Use
 

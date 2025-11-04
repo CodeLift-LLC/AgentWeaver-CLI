@@ -7,17 +7,38 @@ allowed-tools:
   - Edit
   - Bash
   - Grep
+  - WebFetch
 tags:
   - database
   - indexes
   - performance
   - optimization
   - queries
+mcp-servers:
+  - socket
+  - context7
 ---
 
 # Database Indexes Skill
 
 Master database indexing to dramatically improve query performance, understand index types, and learn when (and when not) to create indexes.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Analyze query patterns, identify slow queries, determine appropriate index types (B-tree, GIN, etc.), create indexes, test performance impact, and validate query execution plans.
+
+**Additional tools available**:
+- Use Socket MCP to scan database driver dependencies
+- Use Context7 MCP for database-specific indexing documentation
 
 ## When to Use
 

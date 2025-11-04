@@ -92,6 +92,7 @@ export async function initCommand(options: InitOptions) {
         'tech-lead',
         'devops',
         'docs-writer',
+        'debugger',
       ];
     } else if (!options.yes) {
       const { agentChoice } = await inquirer.prompt([
@@ -100,8 +101,8 @@ export async function initCommand(options: InitOptions) {
           name: 'agentChoice',
           message: 'Which agents would you like to install?',
           choices: [
-            { name: '✨ All agents (8 development agents)', value: 'all' },
-            { name: '👨‍💻 Development agents only (6 agents)', value: 'dev' },
+            { name: '✨ All agents (20 total agents)', value: 'all' },
+            { name: '👨‍💻 Development agents only (7 agents)', value: 'dev' },
             { name: '🎯 Custom selection', value: 'custom' },
           ],
           default: 'dev',
@@ -134,6 +135,7 @@ export async function initCommand(options: InitOptions) {
           'tech-lead',
           'devops',
           'docs-writer',
+          'debugger',
         ];
       } else {
         selectedAgents = []; // All agents

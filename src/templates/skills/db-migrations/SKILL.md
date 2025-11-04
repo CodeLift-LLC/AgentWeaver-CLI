@@ -7,17 +7,38 @@ allowed-tools:
   - Edit
   - Bash
   - Grep
+  - WebFetch
 tags:
   - database
   - migrations
   - schema
   - versioning
   - deployment
+mcp-servers:
+  - socket
+  - context7
 ---
 
 # Database Migrations Skill
 
 Comprehensive guide for managing database schema changes safely and reliably through migrations, with support for multiple frameworks and databases.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Plan schema changes, create migration files, test migrations locally, prepare rollback strategy, execute migration in staging, validate data integrity, then deploy to production.
+
+**Additional tools available**:
+- Use Socket MCP to scan migration tool dependencies
+- Use Context7 MCP for migration framework documentation
 
 ## When to Use
 

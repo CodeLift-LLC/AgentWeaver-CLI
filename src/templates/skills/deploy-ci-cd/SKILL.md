@@ -7,6 +7,7 @@ allowed-tools:
   - Edit
   - Grep
   - Bash
+  - WebFetch
 tags:
   - ci-cd
   - github-actions
@@ -14,9 +15,29 @@ tags:
   - deployment
   - automation
   - devops
+mcp-servers:
+  - socket
+  - playwright
 ---
 
 # CI/CD Pipelines Skill
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Design pipeline stages (lint, test, build, deploy), implement CI/CD workflow, add security scanning, configure environment-specific deployments, test pipeline execution, validate automated tests run.
+
+**Additional tools available**:
+- Use Socket MCP for security scanning in CI pipeline
+- Use Playwright MCP for smoke tests in deployment pipeline
 
 This skill provides comprehensive patterns for implementing robust, secure, and efficient CI/CD pipelines across popular platforms.
 

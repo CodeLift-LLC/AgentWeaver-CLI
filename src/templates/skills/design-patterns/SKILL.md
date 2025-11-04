@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - design-patterns
   - architecture
@@ -14,9 +16,29 @@ tags:
   - typescript
   - python
   - best-practices
+mcp-servers:
+  - sequential-thinking
+  - context7
 ---
 
 # Design Patterns Skill
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Identify the problem pattern solves, select appropriate design pattern, implement pattern following best practices, refactor existing code to use pattern, test implementation.
+
+**Additional tools available**:
+- Use Sequential Thinking MCP for complex pattern selection decisions
+- Use Context7 MCP to research design pattern examples and variations
 
 Master essential design patterns from the Gang of Four and modern software development, with practical implementations in TypeScript and Python for building robust, maintainable applications.
 

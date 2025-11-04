@@ -6,17 +6,39 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - api
   - error-handling
   - rest
   - http
   - backend
+mcp-servers:
+  - socket
+  - context7
 ---
 
 # API Error Handling Skill
 
 This skill provides battle-tested patterns for implementing comprehensive error handling in REST APIs that balance developer experience with security.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Review existing error handling, design a consistent error format, implement centralized error middleware, test with various error scenarios, and validate error messages are user-friendly yet secure.
+
+**Additional tools available**:
+- Use Socket MCP to scan dependencies before adding error handling libraries
+- Use Context7 MCP for framework-specific error handling documentation
 
 ## When to Use
 

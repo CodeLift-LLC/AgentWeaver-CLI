@@ -5,6 +5,9 @@ allowed-tools:
   - Read
   - Write
   - Edit
+  - Grep
+  - Bash
+  - WebFetch
 tags:
   - ui
   - state-management
@@ -13,11 +16,31 @@ tags:
   - redux
   - context-api
   - typescript
+mcp-servers:
+  - playwright
+  - context7
 ---
 
 # UI State Management Skill
 
 Master modern state management patterns in React applications, understanding when to use local state, Context API, Zustand, or Redux Toolkit for optimal performance and maintainability.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Identify state requirements, choose appropriate state management solution (local, Context, Zustand, Redux), implement state logic, optimize re-renders, test state updates and edge cases.
+
+**Additional tools available**:
+- Use Playwright MCP for testing state-driven UI interactions
+- Use Context7 MCP for state management library documentation
 
 ## When to Use
 

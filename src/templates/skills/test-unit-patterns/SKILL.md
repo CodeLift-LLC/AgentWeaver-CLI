@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - testing
   - unit-tests
@@ -14,11 +16,31 @@ tags:
   - pytest
   - tdd
   - quality
+mcp-servers:
+  - playwright
+  - socket
 ---
 
 # Unit Testing Patterns Skill
 
 Proven patterns for writing clean, maintainable unit tests that follow the AAA (Arrange-Act-Assert) pattern and industry best practices.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Identify functions/components to test, write tests using AAA pattern, organize tests into logical groups, add edge cases and error scenarios, run tests and validate coverage.
+
+**Additional tools available**:
+- Use Playwright MCP for E2E testing integration
+- Use Socket MCP to scan test dependencies for security issues
 
 ## When to Use
 

@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - clean-code
   - refactoring
@@ -13,11 +15,31 @@ tags:
   - code-quality
   - maintainability
   - readability
+mcp-servers:
+  - sequential-thinking
+  - context7
 ---
 
 # Clean Code Principles Skill
 
 This skill provides comprehensive guidance on writing clean, maintainable code based on Robert C. Martin's (Uncle Bob) Clean Code principles. Includes practical examples, before/after refactoring patterns, and anti-patterns to avoid.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Analyze code for cleanliness issues, identify violations (naming, functions, duplication), refactor incrementally, apply DRY/KISS/YAGNI principles, test refactored code.
+
+**Additional tools available**:
+- Use Sequential Thinking MCP for complex refactoring decisions
+- Use Context7 MCP to research Clean Code examples and patterns
 
 ## When to Use
 

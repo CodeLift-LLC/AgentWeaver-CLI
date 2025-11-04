@@ -23,12 +23,13 @@ agentweaver init
 
 ## ✨ What You Get
 
-### 🤖 **8 Pre-Built Agent Templates**
+### 🤖 **9 Pre-Built Development Agent Templates**
 - **backend-dev** - Backend development, APIs, databases
 - **frontend-dev** - UI development, accessibility, performance
 - **qa-tester** - Testing automation, quality assurance
 - **tech-lead** - Architecture, code review, technical decisions
 - **devops** - CI/CD, infrastructure, deployment
+- **debugger** - Systematic debugging, error investigation, root cause analysis
 - **product-owner** - Requirements, user stories, backlog
 - **scrum-master** - Agile ceremonies, impediment removal
 - **docs-writer** - Technical documentation, API docs
@@ -148,6 +149,8 @@ You can also explicitly request specific agents using `@agent-name`:
 @qa-tester write E2E tests for the login flow
 
 @tech-lead review the authentication architecture
+
+@debugger investigate why users are getting 500 errors on login
 ```
 
 ### When to Use Each Method

@@ -5,17 +5,40 @@ allowed-tools:
   - Read
   - Write
   - Edit
+  - Grep
+  - Bash
+  - WebFetch
 tags:
   - ui
   - forms
   - validation
   - accessibility
   - ux
+mcp-servers:
+  - playwright
+  - context7
 ---
 
 # UI Form Validation Skill
 
 Comprehensive patterns for implementing accessible, user-friendly form validation with excellent UX and real-time feedback.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Design validation rules, implement client-side validation, add real-time feedback, ensure accessibility (ARIA labels, error messages), test with various inputs including edge cases.
+
+**Additional tools available**:
+- Use Playwright MCP for testing form validation workflows
+- Use Context7 MCP for form validation library documentation
 
 ## When to Use
 

@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - testing
   - mocking
@@ -14,11 +16,31 @@ tags:
   - pytest
   - stubs
   - spies
+mcp-servers:
+  - playwright
+  - socket
 ---
 
 # Test Mocking Strategies Skill
 
 Proven patterns for mocking dependencies in tests, understanding when and how to use mocks, stubs, and spies effectively.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Identify dependencies to mock, choose mocking strategy (mocks vs stubs vs spies), implement mocks with appropriate libraries, write isolated tests, validate mocks behave correctly.
+
+**Additional tools available**:
+- Use Playwright MCP for E2E testing that complements unit test mocks
+- Use Socket MCP to scan mocking library dependencies
 
 ## When to Use
 

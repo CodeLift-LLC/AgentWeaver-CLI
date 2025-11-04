@@ -7,17 +7,38 @@ allowed-tools:
   - Edit
   - Bash
   - Grep
+  - WebFetch
 tags:
   - database
   - transactions
   - acid
   - concurrency
   - isolation
+mcp-servers:
+  - socket
+  - context7
 ---
 
 # Database Transactions Skill
 
 Master database transactions to ensure data consistency, handle concurrent operations safely, and implement reliable multi-step operations across PostgreSQL, MySQL, and popular ORMs.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Identify operations requiring transactions, choose appropriate isolation level, implement transaction boundaries, handle rollback scenarios, test for race conditions and deadlocks.
+
+**Additional tools available**:
+- Use Socket MCP to scan ORM/database library dependencies
+- Use Context7 MCP for transaction pattern documentation
 
 ## When to Use
 

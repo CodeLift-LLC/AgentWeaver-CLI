@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - api
   - versioning
@@ -13,11 +15,31 @@ tags:
   - backward-compatibility
   - api-design
   - backend
+mcp-servers:
+  - socket
+  - context7
 ---
 
 # API Versioning Skill
 
 This skill provides battle-tested patterns for versioning REST APIs, enabling you to evolve your API while maintaining backward compatibility and a smooth migration path for clients.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Select versioning strategy (URL, header, content negotiation), implement version routing/parsing, create response transformers, add deprecation notices, document migration paths, and test all versions.
+
+**Additional tools available**:
+- Use Socket MCP to scan dependencies before adding versioning libraries
+- Use Context7 MCP for framework-specific versioning patterns
 
 ## When to Use
 

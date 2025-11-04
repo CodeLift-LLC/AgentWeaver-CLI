@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - api
   - rate-limiting
@@ -13,11 +15,31 @@ tags:
   - security
   - scalability
   - backend
+mcp-servers:
+  - socket
+  - context7
 ---
 
 # API Rate Limiting Skill
 
 This skill provides comprehensive patterns for implementing rate limiting in REST APIs to protect against abuse, ensure fair resource usage, and maintain API performance.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Choose the right rate limiting algorithm (token bucket, sliding window), implement rate limiter with proper storage (in-memory or Redis), add rate limit middleware, configure limits per endpoint, and test with high traffic scenarios.
+
+**Additional tools available**:
+- Use Socket MCP to scan rate limiting dependencies
+- Use Context7 MCP for framework-specific rate limiting patterns
 
 ## When to Use
 

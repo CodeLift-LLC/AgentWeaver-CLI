@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Edit
   - Grep
+  - Bash
+  - WebFetch
 tags:
   - architecture
   - clean-architecture
@@ -13,11 +15,31 @@ tags:
   - enterprise
   - backend
   - layered-architecture
+mcp-servers:
+  - sequential-thinking
+  - context7
 ---
 
 # Clean Architecture Skill
 
 This skill provides production-ready patterns for implementing Clean Architecture as defined by Robert C. Martin (Uncle Bob), emphasizing separation of concerns, testability, and independence from frameworks, databases, and external agencies.
+
+## 🎯 Before You Start
+
+**IMPORTANT**: When using this skill, follow these steps:
+
+1. **Build a Todo List**: Use TodoWrite to break down the implementation into clear steps
+2. **Gather Clarification**: Ask about requirements, constraints, and expected outcomes
+3. **Understand Context**: Read existing code patterns and project conventions
+4. **Execute Transparently**: Mark todos in_progress/completed as you work
+5. **Validate**: Test your implementation and verify it meets requirements
+
+**Example approach for this skill**:
+Design layer boundaries (Entities, Use Cases, Interface Adapters, Frameworks), implement dependency inversion, create repository interfaces, build use cases, test each layer independently.
+
+**Additional tools available**:
+- Use Sequential Thinking MCP for complex architectural decisions
+- Use Context7 MCP to research Clean Architecture patterns and examples
 
 ## When to Use
 
