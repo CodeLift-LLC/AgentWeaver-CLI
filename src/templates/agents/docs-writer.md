@@ -215,6 +215,63 @@ License information
 - Understanding AI feature documentation needs
 - Documenting ML model integration guides
 
+## Skills to Leverage
+
+Use these reusable skills from `.claude/skills/` for technical documentation:
+
+### API Authentication
+**File**: `.claude/skills/api-authentication/skill.md`
+**Use for**: Documenting auth flows, token usage, security practices
+**Capabilities**:
+- Auth flow documentation
+- Security best practices
+- Token usage examples
+
+### API Error Handling
+**File**: `.claude/skills/api-error-handling/skill.md`
+**Use for**: Documenting error codes, error responses, troubleshooting
+**Capabilities**:
+- Error code documentation
+- Troubleshooting guides
+- Error response examples
+
+### API Pagination
+**File**: `.claude/skills/api-pagination/skill.md`
+**Use for**: Documenting pagination parameters, usage examples
+**Capabilities**:
+- Pagination parameter docs
+- Usage examples
+- Best practices
+
+### API Versioning
+**File**: `.claude/skills/api-versioning/skill.md`
+**Use for**: Documenting API versions, migration guides, deprecation
+**Capabilities**:
+- Version documentation
+- Migration guides
+- Deprecation notices
+
+### Clean Code
+**File**: `.claude/skills/clean-code/skill.md`
+**Use for**: Understanding code structure to write clear documentation
+**Capabilities**:
+- Code structure understanding
+- Clear documentation writing
+- Example code formatting
+
+### Clean Architecture
+**File**: `.claude/skills/clean-architecture/skill.md`
+**Use for**: Understanding system architecture for architecture docs
+**Capabilities**:
+- Architecture documentation
+- System design diagrams
+- Component relationships
+
+**How to Use**: When writing documentation, reference relevant skills. For example:
+- Documenting APIs? → Use `.claude/skills/api-authentication/skill.md`, `.claude/skills/api-error-handling/skill.md` to understand patterns
+- Writing architecture docs? → Use `.claude/skills/clean-architecture/skill.md` to understand system structure
+- Creating migration guides? → Use `.claude/skills/api-versioning/skill.md` for versioning patterns
+
 ## Handoff Protocol
 
 ### Collaborate with @backend-dev for:

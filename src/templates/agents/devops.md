@@ -136,6 +136,106 @@ Read from config:
 - **Compliance**: SOC2, HIPAA, GDPR requirements
 - **Vulnerability Scanning**: Trivy, Snyk, Dependabot
 
+## Skills to Leverage
+
+Use these reusable skills from `.claude/skills/` to accelerate infrastructure work:
+
+### CI/CD Deployment
+**File**: `.claude/skills/deploy-ci-cd/skill.md`
+**Use for**: CI/CD pipeline patterns, GitHub Actions, GitLab CI, deployment strategies
+**Capabilities**:
+- GitHub Actions/GitLab CI configuration
+- Deployment automation (staging, production)
+- Blue-green and canary deployments
+- Rollback strategies
+- Pipeline optimization
+
+### Docker Deployment
+**File**: `.claude/skills/deploy-docker/skill.md`
+**Use for**: Dockerfile best practices, multi-stage builds, image optimization
+**Capabilities**:
+- Multi-stage Dockerfile builds
+- Image size optimization
+- Layer caching strategies
+- Security best practices
+- Docker Compose orchestration
+
+### Environment Configuration
+**File**: `.claude/skills/deploy-environment-config/skill.md`
+**Use for**: Environment variable management, config patterns, secrets handling
+**Capabilities**:
+- Environment variable management
+- Secrets management (Vault, AWS Secrets Manager)
+- Config file strategies
+- Environment-specific configuration
+- Security best practices
+
+### Deployment Monitoring
+**File**: `.claude/skills/deploy-monitoring/skill.md`
+**Use for**: Observability patterns, metrics, logging, alerting strategies
+**Capabilities**:
+- Application performance monitoring (APM)
+- Log aggregation (ELK, Loki)
+- Metrics collection (Prometheus, Datadog)
+- Alert configuration
+- Dashboard creation (Grafana)
+
+### Database Migrations
+**File**: `.claude/skills/db-migrations/skill.md`
+**Use for**: Database migration strategies, rollback procedures
+**Capabilities**:
+- Zero-downtime migrations
+- Rollback safety
+- Migration versioning
+- Data migration patterns
+- Production migration strategies
+
+### Database Transactions
+**File**: `.claude/skills/db-transactions/skill.md`
+**Use for**: Transaction handling in deployment contexts
+**Capabilities**:
+- Transaction management in deployments
+- ACID compliance verification
+- Deadlock prevention
+- Distributed transaction handling
+- Isolation level configuration
+
+### Database Optimization
+**File**: `.claude/skills/database-optimization/skill.md`
+**Use for**: Performance tuning for production databases
+**Capabilities**:
+- Query performance tuning
+- Connection pooling configuration
+- Caching strategies (Redis)
+- Index optimization
+- Resource monitoring
+
+### Clean Architecture
+**File**: `.claude/skills/clean-architecture/skill.md`
+**Use for**: Infrastructure layer separation, dependency management
+**Capabilities**:
+- Infrastructure layer design
+- Dependency management
+- Framework independence
+- Testable infrastructure code
+- Configuration management
+
+### Design Patterns
+**File**: `.claude/skills/design-patterns/skill.md`
+**Use for**: Infrastructure patterns (Circuit Breaker, Retry, Bulkhead)
+**Capabilities**:
+- Circuit Breaker pattern for resilience
+- Retry patterns with backoff
+- Bulkhead pattern for isolation
+- Health check patterns
+- Graceful degradation
+
+**How to Use**: When working on infrastructure, reference relevant skills. For example:
+- Setting up CI/CD? → Use `.claude/skills/deploy-ci-cd/skill.md`
+- Building containers? → Use `.claude/skills/deploy-docker/skill.md`
+- Configuring monitoring? → Use `.claude/skills/deploy-monitoring/skill.md`
+- Managing secrets? → Use `.claude/skills/deploy-environment-config/skill.md`
+
 ## MCP Server Access
 
 ### Available Servers

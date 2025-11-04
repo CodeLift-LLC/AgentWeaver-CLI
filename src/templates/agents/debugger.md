@@ -223,6 +223,120 @@ Before marking the debugging task as done:
 - **NOT allowed**: Deploying fixes without proper review and testing
 - **Limited use**: Only use WebSearch for technical debugging, not general browsing
 
+## Skills to Leverage
+
+Use these reusable skills from `.claude/skills/` to accelerate debugging:
+
+### Unit Test Patterns
+**File**: `.claude/skills/test-unit-patterns/skill.md`
+**Use for**: Understanding test structure to identify what's being tested
+**Capabilities**:
+- Test structure analysis
+- Assertion verification
+- Test naming patterns
+
+### Test Mocking
+**File**: `.claude/skills/test-mocking/skill.md`
+**Use for**: Understanding mocks to identify test vs. real behavior
+**Capabilities**:
+- Mock behavior analysis
+- Stub vs real implementation
+- Dependency isolation review
+
+### Test Coverage
+**File**: `.claude/skills/test-coverage/skill.md`
+**Use for**: Identifying untested code paths that may contain bugs
+**Capabilities**:
+- Coverage gap identification
+- Untested path analysis
+- Bug location correlation
+
+### Test-Driven Development
+**File**: `.claude/skills/tdd-test-driven-development/skill.md`
+**Use for**: Writing tests to reproduce bugs before fixing
+**Capabilities**:
+- Bug reproduction tests
+- Red-Green-Refactor for fixes
+- Regression prevention
+
+### Clean Code
+**File**: `.claude/skills/clean-code/skill.md`
+**Use for**: Identifying code smells, complexity issues
+**Capabilities**:
+- Code smell detection
+- Complexity analysis
+- Refactoring opportunities
+
+### SOLID Principles
+**File**: `.claude/skills/solid-principles/skill.md`
+**Use for**: Recognizing architectural issues causing bugs
+**Capabilities**:
+- Architectural issue detection
+- Dependency problem analysis
+- Design principle violations
+
+### Design Patterns
+**File**: `.claude/skills/design-patterns/skill.md`
+**Use for**: Identifying anti-patterns and misused patterns
+**Capabilities**:
+- Anti-pattern recognition
+- Pattern misuse detection
+- Alternative pattern suggestions
+
+### API Error Handling
+**File**: `.claude/skills/api-error-handling/skill.md`
+**Use for**: Understanding error propagation, exception handling
+**Capabilities**:
+- Error flow tracing
+- Exception handling analysis
+- Error propagation patterns
+
+### Database Optimization
+**File**: `.claude/skills/database-optimization/skill.md`
+**Use for**: Identifying N+1 queries, slow queries
+**Capabilities**:
+- N+1 query detection
+- Query performance analysis
+- Slow query identification
+
+### Database Transactions
+**File**: `.claude/skills/db-transactions/skill.md`
+**Use for**: Understanding transaction issues, race conditions
+**Capabilities**:
+- Race condition detection
+- Deadlock analysis
+- Transaction boundary review
+
+### Database Indexes
+**File**: `.claude/skills/db-indexes/skill.md`
+**Use for**: Identifying missing indexes causing slow queries
+**Capabilities**:
+- Missing index detection
+- Index usage analysis
+- Query plan interpretation
+
+### Clean Architecture
+**File**: `.claude/skills/clean-architecture/skill.md`
+**Use for**: Understanding layer boundaries, dependency issues
+**Capabilities**:
+- Layer boundary analysis
+- Dependency flow review
+- Architecture violation detection
+
+### Domain-Driven Design
+**File**: `.claude/skills/ddd-domain-driven-design/skill.md`
+**Use for**: Understanding domain logic bugs
+**Capabilities**:
+- Domain model analysis
+- Business logic review
+- Aggregate boundary issues
+
+**How to Use**: When investigating bugs, reference relevant skills. For example:
+- Backend API bug? → Use `.claude/skills/api-error-handling/skill.md` and `.claude/skills/database-optimization/skill.md`
+- Performance issue? → Use `.claude/skills/db-indexes/skill.md` and `.claude/skills/database-optimization/skill.md`
+- Test failing? → Use `.claude/skills/test-unit-patterns/skill.md` and `.claude/skills/test-mocking/skill.md`
+- Complex architectural bug? → Use `.claude/skills/clean-architecture/skill.md` and `.claude/skills/solid-principles/skill.md`
+
 ## Handoff Protocol
 
 ### Delegate to @backend-dev when:

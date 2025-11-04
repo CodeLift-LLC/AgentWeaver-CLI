@@ -144,6 +144,200 @@ Before marking the overall task as done:
 - **Conflict Resolution**: Technical disagreements
 - **Documentation**: Ensure technical decisions are documented
 
+## Skills to Leverage
+
+Use these reusable skills from `.claude/skills/` for architectural decisions and code reviews:
+
+### Clean Architecture
+**File**: `.claude/skills/clean-architecture/skill.md`
+**Use for**: Layered architecture, dependency inversion, maintainability
+**Capabilities**:
+- Layered architecture review
+- Dependency flow analysis
+- Framework independence assessment
+
+### Domain-Driven Design
+**File**: `.claude/skills/ddd-domain-driven-design/skill.md`
+**Use for**: Domain modeling, bounded contexts, strategic design
+**Capabilities**:
+- Domain model review
+- Bounded context definition
+- Ubiquitous language verification
+
+### Vertical Slice Architecture
+**File**: `.claude/skills/vertical-slice-architecture/skill.md`
+**Use for**: Feature-first organization, coupling reduction
+**Capabilities**:
+- Feature organization review
+- Coupling analysis
+- Shared code evaluation
+
+### Design Patterns
+**File**: `.claude/skills/design-patterns/skill.md`
+**Use for**: Gang of Four patterns, architectural patterns, when to apply
+**Capabilities**:
+- Pattern application review
+- Pattern selection guidance
+- Anti-pattern identification
+
+### SOLID Principles
+**File**: `.claude/skills/solid-principles/skill.md`
+**Use for**: SOLID design principles, code review criteria
+**Capabilities**:
+- SOLID compliance review
+- Design principle violations
+- Refactoring recommendations
+
+### API Authentication
+**File**: `.claude/skills/api-authentication/skill.md`
+**Use for**: Auth patterns, security review criteria
+**Capabilities**:
+- Security review of auth
+- Token strategy evaluation
+- OAuth flow verification
+
+### API Error Handling
+**File**: `.claude/skills/api-error-handling/skill.md`
+**Use for**: Error handling standards, exception patterns
+**Capabilities**:
+- Error response review
+- Exception handling patterns
+- Error logging standards
+
+### API Pagination
+**File**: `.claude/skills/api-pagination/skill.md`
+**Use for**: Pagination strategies, performance implications
+**Capabilities**:
+- Pagination strategy review
+- Performance assessment
+- Scalability evaluation
+
+### API Rate Limiting
+**File**: `.claude/skills/api-rate-limiting/skill.md`
+**Use for**: Rate limiting design, abuse prevention
+**Capabilities**:
+- Rate limiting review
+- Abuse prevention patterns
+- Performance impact
+
+### API Versioning
+**File**: `.claude/skills/api-versioning/skill.md`
+**Use for**: Versioning strategies, backwards compatibility
+**Capabilities**:
+- Versioning strategy review
+- Compatibility assessment
+- Migration path evaluation
+
+### Database Optimization
+**File**: `.claude/skills/database-optimization/skill.md`
+**Use for**: Performance review, query optimization
+**Capabilities**:
+- Query performance review
+- N+1 detection
+- Caching strategy
+
+### Database Indexes
+**File**: `.claude/skills/db-indexes/skill.md`
+**Use for**: Index strategy, query plan analysis
+**Capabilities**:
+- Index design review
+- Query plan analysis
+- Performance optimization
+
+### Database Migrations
+**File**: `.claude/skills/db-migrations/skill.md`
+**Use for**: Migration review, rollback safety
+**Capabilities**:
+- Migration safety review
+- Rollback verification
+- Zero-downtime assessment
+
+### Database Transactions
+**File**: `.claude/skills/db-transactions/skill.md`
+**Use for**: Transaction boundaries, consistency review
+**Capabilities**:
+- Transaction boundary review
+- ACID compliance check
+- Deadlock risk assessment
+
+### Clean Code
+**File**: `.claude/skills/clean-code/skill.md`
+**Use for**: Code readability, maintainability standards
+**Capabilities**:
+- Code quality review
+- Readability assessment
+- Maintainability evaluation
+
+### Test Coverage
+**File**: `.claude/skills/test-coverage/skill.md`
+**Use for**: Coverage requirements, quality gates
+**Capabilities**:
+- Coverage threshold enforcement
+- Quality gate definition
+- Gap analysis
+
+### Test-Driven Development
+**File**: `.claude/skills/tdd-test-driven-development/skill.md`
+**Use for**: TDD practices, test quality
+**Capabilities**:
+- TDD practice review
+- Test quality assessment
+- Test-first verification
+
+### CI/CD Deployment
+**File**: `.claude/skills/deploy-ci-cd/skill.md`
+**Use for**: CI/CD design, deployment strategies
+**Capabilities**:
+- Pipeline design review
+- Deployment strategy eval
+- Rollback verification
+
+### Docker Deployment
+**File**: `.claude/skills/deploy-docker/skill.md`
+**Use for**: Container architecture, image design
+**Capabilities**:
+- Dockerfile review
+- Image optimization
+- Security verification
+
+### Deployment Monitoring
+**File**: `.claude/skills/deploy-monitoring/skill.md`
+**Use for**: Observability requirements, SLIs/SLOs
+**Capabilities**:
+- Observability review
+- SLI/SLO definition
+- Alerting configuration
+
+### UI Accessibility
+**File**: `.claude/skills/ui-accessibility/skill.md`
+**Use for**: Accessibility standards for code review
+**Capabilities**:
+- WCAG compliance review
+- Accessibility verification
+- Screen reader check
+
+### UI Responsive Design
+**File**: `.claude/skills/ui-responsive-design/skill.md`
+**Use for**: Responsive design review criteria
+**Capabilities**:
+- Responsive pattern review
+- Breakpoint evaluation
+- Mobile-first verification
+
+### Component Generation
+**File**: `.claude/skills/component-generation/skill.md`
+**Use for**: Component architecture patterns
+**Capabilities**:
+- Component architecture review
+- Reusability assessment
+- Design system adherence
+
+**How to Use**: When making decisions or reviewing code, reference relevant skills. For example:
+- Architectural decision? → Use `.claude/skills/clean-architecture/skill.md`, `.claude/skills/ddd-domain-driven-design/skill.md`, `.claude/skills/vertical-slice-architecture/skill.md`
+- Code review? → Use `.claude/skills/clean-code/skill.md`, `.claude/skills/solid-principles/skill.md`, `.claude/skills/design-patterns/skill.md`
+- API design review? → Use `.claude/skills/api-authentication/skill.md`, `.claude/skills/api-error-handling/skill.md`, `.claude/skills/api-versioning/skill.md`
+- Database review? → Use `.claude/skills/database-optimization/skill.md`, `.claude/skills/db-indexes/skill.md`, `.claude/skills/db-migrations/skill.md`
+
 ## MCP Server Access
 
 ### Available Servers

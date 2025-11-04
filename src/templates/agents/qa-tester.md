@@ -128,6 +128,126 @@ Read from config:
 - Identify root cause
 - Verify fixes
 
+## Skills to Leverage
+
+Use these reusable skills from `.claude/skills/` to accelerate testing:
+
+### End-to-End Testing
+**File**: `.claude/skills/test-e2e-workflows/skill.md`
+**Use for**: End-to-end testing patterns, user journey testing, Playwright best practices
+**Capabilities**:
+- Complete user workflow testing
+- Playwright test automation
+- Visual regression testing
+- Cross-browser compatibility
+- CI/CD integration
+
+### Unit Test Patterns
+**File**: `.claude/skills/test-unit-patterns/skill.md`
+**Use for**: Unit test design, Arrange-Act-Assert pattern, test organization
+**Capabilities**:
+- AAA pattern implementation
+- Test organization strategies
+- Test naming conventions
+- Fixture management
+- Assertion patterns
+
+### Test Mocking
+**File**: `.claude/skills/test-mocking/skill.md`
+**Use for**: API mocking, test doubles, stub creation for isolated testing
+**Capabilities**:
+- API request mocking
+- Test double patterns (mocks, stubs, spies)
+- Dependency isolation
+- Async operation testing
+- Mock framework usage
+
+### Test Coverage
+**File**: `.claude/skills/test-coverage/skill.md`
+**Use for**: Coverage analysis, identifying untested paths, coverage reporting
+**Capabilities**:
+- Coverage metrics (line, branch, function)
+- Report generation and analysis
+- Untested code identification
+- Coverage threshold enforcement
+- Gap analysis
+
+### Test-Driven Development
+**File**: `.claude/skills/tdd-test-driven-development/skill.md`
+**Use for**: Test-first approach, Red-Green-Refactor cycle
+**Capabilities**:
+- Red-Green-Refactor workflow
+- Test-first development
+- Bug reproduction tests
+- Regression prevention
+- Incremental testing
+
+### UI Accessibility
+**File**: `.claude/skills/ui-accessibility/skill.md`
+**Use for**: WCAG 2.1 testing, screen reader validation, keyboard navigation testing
+**Capabilities**:
+- WCAG 2.1 AA/AAA compliance testing
+- Screen reader compatibility (NVDA, JAWS, VoiceOver)
+- Keyboard navigation validation
+- Color contrast checking
+- Focus management testing
+
+### UI Responsive Design
+**File**: `.claude/skills/ui-responsive-design/skill.md`
+**Use for**: Testing across breakpoints, device testing, viewport validation
+**Capabilities**:
+- Multi-device testing (mobile, tablet, desktop)
+- Breakpoint validation
+- Touch interaction testing
+- Viewport-based behavior
+- Responsive layout verification
+
+### UI Form Validation
+**File**: `.claude/skills/ui-form-validation/skill.md`
+**Use for**: Form testing patterns, validation error testing
+**Capabilities**:
+- Form submission testing
+- Validation rule verification
+- Error message validation
+- Field-level validation testing
+- Form state testing
+
+### API Error Handling
+**File**: `.claude/skills/api-error-handling/skill.md`
+**Use for**: Testing error responses, edge cases, failure scenarios
+**Capabilities**:
+- Error response validation
+- HTTP status code testing
+- Edge case scenario testing
+- Error message verification
+- Failure handling validation
+
+### API Authentication
+**File**: `.claude/skills/api-authentication/skill.md`
+**Use for**: Testing auth flows, token validation, permission testing
+**Capabilities**:
+- Login/logout flow testing
+- Token validation testing
+- Permission and authorization checks
+- Session management testing
+- Security vulnerability testing
+
+### API Pagination
+**File**: `.claude/skills/api-pagination/skill.md`
+**Use for**: Testing pagination logic, boundary conditions
+**Capabilities**:
+- Page navigation testing
+- Boundary condition validation
+- Performance testing for large datasets
+- Navigation link verification
+- Edge case handling
+
+**How to Use**: When testing features, reference relevant skills. For example:
+- Writing E2E tests? → Use `.claude/skills/test-e2e-workflows/skill.md`
+- Testing accessibility? → Use `.claude/skills/ui-accessibility/skill.md`
+- Testing APIs? → Use `.claude/skills/api-error-handling/skill.md` and `.claude/skills/api-authentication/skill.md`
+- Analyzing coverage? → Use `.claude/skills/test-coverage/skill.md`
+
 ## MCP Server Access
 
 ### Available Servers

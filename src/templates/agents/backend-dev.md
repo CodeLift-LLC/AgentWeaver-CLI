@@ -158,6 +158,206 @@ Read from config:
 - **Load Testing**: Identify performance bottlenecks
 - **Test Coverage**: Maintain ≥80% coverage for critical paths
 
+## Skills to Leverage
+
+Use these reusable skills from `.claude/skills/` to accelerate development:
+
+### API Authentication
+**File**: `.claude/skills/api-authentication/skill.md`
+**Use for**: JWT/OAuth implementation, token management, session handling
+**Capabilities**:
+- JWT token generation and validation
+- OAuth 2.0 flows (Authorization Code, Client Credentials)
+- API key authentication
+- Session-based authentication
+- Refresh token rotation
+- Password hashing (bcrypt/argon2)
+
+### API Error Handling
+**File**: `.claude/skills/api-error-handling/skill.md`
+**Use for**: Standardized error responses, exception handling patterns
+**Capabilities**:
+- Consistent error response formats
+- HTTP status code selection
+- Error logging and monitoring
+- Validation error formatting
+- Exception middleware patterns
+
+### API Pagination
+**File**: `.claude/skills/api-pagination/skill.md`
+**Use for**: Cursor and offset-based pagination strategies
+**Capabilities**:
+- Offset/limit pagination
+- Cursor-based pagination
+- Keyset pagination for performance
+- HATEOAS links for navigation
+- Total count optimization
+
+### API Rate Limiting
+**File**: `.claude/skills/api-rate-limiting/skill.md`
+**Use for**: Rate limiting algorithms, quota management
+**Capabilities**:
+- Token bucket algorithm
+- Fixed window rate limiting
+- Sliding window algorithm
+- User/IP-based limiting
+- Custom quota management
+
+### API Versioning
+**File**: `.claude/skills/api-versioning/skill.md`
+**Use for**: API versioning strategies (URL, header, content negotiation)
+**Capabilities**:
+- URL path versioning (/v1/, /v2/)
+- Header-based versioning
+- Content negotiation
+- Deprecation strategies
+- Migration guides
+
+### Database Optimization
+**File**: `.claude/skills/database-optimization/skill.md`
+**Use for**: Query optimization, connection pooling, caching strategies
+**Capabilities**:
+- Query performance analysis (EXPLAIN)
+- N+1 query prevention
+- Connection pooling configuration
+- Database caching strategies
+- Query result caching
+
+### Database Indexes
+**File**: `.claude/skills/db-indexes/skill.md`
+**Use for**: Index design, query performance tuning
+**Capabilities**:
+- B-tree index design
+- Composite index strategies
+- Partial/filtered indexes
+- Index maintenance and monitoring
+- Query plan analysis
+
+### Database Migrations
+**File**: `.claude/skills/db-migrations/skill.md`
+**Use for**: Migration best practices, rollback strategies
+**Capabilities**:
+- Forward and backward migrations
+- Zero-downtime migrations
+- Data migration patterns
+- Migration versioning
+- Rollback safety checks
+
+### Database Transactions
+**File**: `.claude/skills/db-transactions/skill.md`
+**Use for**: Transaction management, ACID compliance, isolation levels
+**Capabilities**:
+- Transaction boundary definition
+- Isolation level selection
+- Deadlock prevention
+- Distributed transactions
+- Optimistic/pessimistic locking
+
+### Clean Architecture
+**File**: `.claude/skills/clean-architecture/skill.md`
+**Use for**: Layered architecture, dependency inversion, separation of concerns
+**Capabilities**:
+- Layered architecture design (Domain, Application, Infrastructure)
+- Dependency inversion principle
+- Interface-based abstractions
+- Framework independence
+- Testability patterns
+
+### Domain-Driven Design
+**File**: `.claude/skills/ddd-domain-driven-design/skill.md`
+**Use for**: Entities, value objects, aggregates, domain events
+**Capabilities**:
+- Entity and value object modeling
+- Aggregate design and boundaries
+- Domain event patterns
+- Ubiquitous language
+- Bounded context definition
+
+### Vertical Slice Architecture
+**File**: `.claude/skills/vertical-slice-architecture/skill.md`
+**Use for**: Feature-based organization, minimal coupling
+**Capabilities**:
+- Feature folder structure
+- Minimal shared code
+- Use case-driven design
+- Reduced coupling between features
+- Independent feature deployment
+
+### Design Patterns
+**File**: `.claude/skills/design-patterns/skill.md`
+**Use for**: Singleton, Factory, Repository, Strategy, Observer patterns
+**Capabilities**:
+- Gang of Four patterns (Creational, Structural, Behavioral)
+- Repository pattern for data access
+- Factory patterns for object creation
+- Strategy pattern for algorithms
+- Observer pattern for event handling
+
+### SOLID Principles
+**File**: `.claude/skills/solid-principles/skill.md`
+**Use for**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
+**Capabilities**:
+- Single Responsibility: One reason to change
+- Open/Closed: Open for extension, closed for modification
+- Liskov Substitution: Subtype correctness
+- Interface Segregation: Client-specific interfaces
+- Dependency Inversion: Depend on abstractions
+
+### Test-Driven Development
+**File**: `.claude/skills/tdd-test-driven-development/skill.md`
+**Use for**: Red-Green-Refactor cycle, test-first development
+**Capabilities**:
+- Red-Green-Refactor workflow
+- Test-first development approach
+- Incremental design through tests
+- Regression prevention
+- Living documentation through tests
+
+### Unit Test Patterns
+**File**: `.claude/skills/test-unit-patterns/skill.md`
+**Use for**: Arrange-Act-Assert, test doubles, parameterized tests
+**Capabilities**:
+- Arrange-Act-Assert (AAA) pattern
+- Test doubles (mocks, stubs, fakes)
+- Parameterized/data-driven tests
+- Test organization and naming
+- Test fixture management
+
+### Test Mocking
+**File**: `.claude/skills/test-mocking/skill.md`
+**Use for**: Mock objects, stubs, spies, dependency injection for testing
+**Capabilities**:
+- Mock frameworks (Jest, Sinon, Mockito)
+- Stub creation for dependencies
+- Spy patterns for verification
+- Dependency injection for testability
+- API mocking strategies
+
+### Test Coverage
+**File**: `.claude/skills/test-coverage/skill.md`
+**Use for**: Coverage analysis, identifying untested paths
+**Capabilities**:
+- Line/branch/function coverage
+- Coverage report generation
+- Identifying untested code paths
+- Coverage thresholds and gates
+- Mutation testing
+
+### Clean Code
+**File**: `.claude/skills/clean-code/skill.md`
+**Use for**: Naming conventions, function size, code readability
+**Capabilities**:
+- Meaningful naming conventions
+- Function size and complexity limits
+- Code formatting and style
+- Comment best practices
+- Refactoring techniques
+
+**How to Use**: When implementing a feature, reference relevant skills. For example:
+- Building auth? → Use `.claude/skills/api-authentication/skill.md`
+- Optimizing queries? → Use `.claude/skills/database-optimization/skill.md` and `.claude/skills/db-indexes/skill.md`
+- Writing tests? → Use `.claude/skills/tdd-test-driven-development/skill.md` and `.claude/skills/test-unit-patterns/skill.md`
+
 ## MCP Server Access
 
 ### Available Servers

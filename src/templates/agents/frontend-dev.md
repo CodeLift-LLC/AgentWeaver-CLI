@@ -166,6 +166,146 @@ Read from config:
 - **Responsive Typography**: Fluid typography, proper line-height
 - **Animations**: Smooth transitions, respect prefers-reduced-motion
 
+## Skills to Leverage
+
+Use these reusable skills from `.claude/skills/` to accelerate development:
+
+### Component Generation
+**File**: `.claude/skills/component-generation/skill.md`
+**Use for**: Generate accessible, responsive React/Vue/Svelte components
+**Capabilities**:
+- Multi-framework support (React, Vue, Svelte)
+- Tailwind CSS styling with design tokens
+- WCAG 2.1 AA accessibility
+- Responsive design patterns
+- Dark mode support
+
+### Design Systems
+**File**: `.claude/skills/design-systems/skill.md`
+**Use for**: Apply design tokens, maintain brand consistency
+**Capabilities**:
+- Design token extraction
+- Component library pattern matching
+- Brand consistency enforcement
+- Style guide adherence
+- Theme configuration
+
+### UI Accessibility
+**File**: `.claude/skills/ui-accessibility/skill.md`
+**Use for**: WCAG 2.1 AA compliance, screen reader support, keyboard navigation
+**Capabilities**:
+- Semantic HTML usage
+- ARIA labels and roles
+- Keyboard navigation patterns
+- Screen reader compatibility
+- Color contrast validation
+
+### UI Responsive Design
+**File**: `.claude/skills/ui-responsive-design/skill.md`
+**Use for**: Mobile-first approach, breakpoint systems, flexible layouts
+**Capabilities**:
+- Mobile-first CSS architecture
+- Responsive breakpoint systems
+- Flexbox and Grid layouts
+- Touch-friendly interactions (44x44px)
+- Viewport-based sizing
+
+### UI State Management
+**File**: `.claude/skills/ui-state-management/skill.md`
+**Use for**: Redux, Zustand, Context patterns, global state strategies
+**Capabilities**:
+- Redux/Zustand patterns
+- Context API best practices
+- Local vs global state decisions
+- State normalization
+- Optimistic updates
+
+### UI Form Validation
+**File**: `.claude/skills/ui-form-validation/skill.md`
+**Use for**: Form handling, validation patterns, error messaging
+**Capabilities**:
+- Schema-based validation (Zod, Yup)
+- Real-time validation patterns
+- Error message formatting
+- Accessible error handling
+- Form submission handling
+
+### End-to-End Testing
+**File**: `.claude/skills/test-e2e-workflows/skill.md`
+**Use for**: End-to-end testing with Playwright, user flow testing
+**Capabilities**:
+- Playwright test patterns
+- User journey testing
+- Visual regression testing
+- Cross-browser testing
+- CI/CD integration
+
+### Unit Test Patterns
+**File**: `.claude/skills/test-unit-patterns/skill.md`
+**Use for**: Component testing, React Testing Library patterns
+**Capabilities**:
+- Arrange-Act-Assert (AAA) pattern
+- Component testing with RTL
+- User-centric testing approach
+- Test organization and naming
+- Test fixture management
+
+### Test Mocking
+**File**: `.claude/skills/test-mocking/skill.md`
+**Use for**: API mocking, dependency injection for tests
+**Capabilities**:
+- API request mocking (MSW)
+- Module mocking patterns
+- Dependency injection
+- Test doubles (mocks, stubs, spies)
+- Async operation testing
+
+### Test Coverage
+**File**: `.claude/skills/test-coverage/skill.md`
+**Use for**: Coverage analysis for components and logic
+**Capabilities**:
+- Component coverage analysis
+- Line/branch/function coverage
+- Coverage report generation
+- Coverage thresholds
+- Identifying untested paths
+
+### Clean Code
+**File**: `.claude/skills/clean-code/skill.md`
+**Use for**: Component naming, function composition, code organization
+**Capabilities**:
+- Component naming conventions
+- Function size and complexity
+- Code formatting and style
+- Comment best practices
+- Refactoring techniques
+
+### SOLID Principles
+**File**: `.claude/skills/solid-principles/skill.md`
+**Use for**: Component design, single responsibility, dependency management
+**Capabilities**:
+- Single Responsibility for components
+- Open/Closed principle for extensibility
+- Component composition patterns
+- Interface-based design
+- Dependency management
+
+### Design Patterns
+**File**: `.claude/skills/design-patterns/skill.md`
+**Use for**: Component patterns (compound, render props, hooks)
+**Capabilities**:
+- Compound component pattern
+- Render props pattern
+- Custom hooks patterns
+- Higher-Order Components (HOC)
+- Provider/Consumer patterns
+
+**How to Use**: When building features, reference relevant skills. For example:
+- Creating components? → Use `.claude/skills/component-generation/skill.md` and `.claude/skills/ui-accessibility/skill.md`
+- Building forms? → Use `.claude/skills/ui-form-validation/skill.md` and `.claude/skills/ui-state-management/skill.md`
+- Writing tests? → Use `.claude/skills/test-e2e-workflows/skill.md` and `.claude/skills/test-unit-patterns/skill.md`
+- Ensuring responsive design? → Use `.claude/skills/ui-responsive-design/skill.md`
+
 ## MCP Server Access
 
 ### Available Servers
