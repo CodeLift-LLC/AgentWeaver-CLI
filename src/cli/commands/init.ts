@@ -228,11 +228,12 @@ export async function initCommand(options: InitOptions) {
     }
 
     // Step 7: Install skills
+    let skillResult: any = { installed: [] };
     if (selectedSkills.length > 0 || (!options.skills && !options.yes) || (options.yes && selectedSkills.length === 0)) {
       const skillsInstaller = new SkillsInstaller(path.join(templatesDir, 'skills'));
       const skillSpinner = ora('Installing skills...').start();
 
-      const skillResult = await skillsInstaller.installSkills({
+      skillResult = await skillsInstaller.installSkills({
         targetDirectory: skillsDir,
         skillsToInstall: selectedSkills.length > 0 ? selectedSkills : undefined,
         overwrite: true,
@@ -240,7 +241,7 @@ export async function initCommand(options: InitOptions) {
 
       if (skillResult.errors.length > 0) {
         skillSpinner.fail(`Skill installation completed with errors`);
-        skillResult.errors.forEach((err) => {
+        skillResult.errors.forEach((err: any) => {
           console.log(chalk.red(`  ✗ ${err.skill}: ${err.error}`));
         });
       } else {
@@ -260,10 +261,10 @@ export async function initCommand(options: InitOptions) {
         includeSupabase: mcpServers.includes('supabase'),
       });
 
-      await ConfigGenerator.writeMcpConfig(path.join(projectRoot, '.mcp.json'), mcpConfig);
-      mcpSpinner.succeed('Generated .mcp.json');
+      await ConfigGenerator.writeMcpConfig(path.join(claudeDir, '.mcp.json'), mcpConfig);
+      mcpSpinner.succeed('Generated .claude/.mcp.json');
 
-      // Generate .env.example
+      // Generate .env.example (keep at project root for visibility)
       const envExample = ConfigGenerator.generateEnvExample(mcpConfig);
       const { writeFile: writeFileUtil } = await import('../../utils/file-operations.js');
       await writeFileUtil(path.join(projectRoot, '.env.example'), envExample);
@@ -272,24 +273,41 @@ export async function initCommand(options: InitOptions) {
     const configSpinner = ora('Generating AgentWeaver configuration...').start();
     const agentWeaverConfig = ConfigGenerator.generateAgentWeaverConfig(detectedTech, techMode);
     await ConfigGenerator.writeAgentWeaverConfig(
-      path.join(projectRoot, 'agentweaver.config.yml'),
+      path.join(claudeDir, 'agentweaver.config.yml'),
       agentWeaverConfig
     );
-    configSpinner.succeed('Generated agentweaver.config.yml');
+    configSpinner.succeed('Generated .claude/agentweaver.config.yml');
+
+    // Generate CLAUDE.md
+    const claudeMdSpinner = ora('Generating CLAUDE.md...').start();
+    const installedAgentNames = agentResult.installed.map((agent: any) => agent.name);
+    const installedSkillDirNames = skillResult.installed.map((skill: any) => skill.dirName);
+
+    const claudeMdContent = ConfigGenerator.generateClaudeMd(
+      detectedTech,
+      installedAgentNames,
+      installedSkillDirNames
+    );
+    await ConfigGenerator.writeClaudeMd(path.join(claudeDir, 'CLAUDE.md'), claudeMdContent);
+    claudeMdSpinner.succeed('Generated .claude/CLAUDE.md');
 
     // Success message
     console.log(chalk.green.bold('\n✅ Installation complete!\n'));
 
     console.log(chalk.cyan('📁 Created:'));
-    console.log(chalk.gray(`  ├── .claude/agents/        (${agentResult.installed.length} agents)`));
-    if (selectedSkills.length > 0 || (!options.skills && !options.yes)) {
-      console.log(chalk.gray(`  ├── .claude/skills/        (3 skills)`));
+    console.log(chalk.gray(`  .claude/`));
+    console.log(chalk.gray(`  ├── agents/                (${agentResult.installed.length} agents)`));
+    if (skillResult.installed.length > 0) {
+      console.log(chalk.gray(`  ├── skills/                (${skillResult.installed.length} skills)`));
     }
+    console.log(chalk.gray(`  ├── CLAUDE.md              (Project context)`));
     if (mcpServers.length > 0) {
-      console.log(chalk.gray(`  ├── .mcp.json             (MCP server config)`));
-      console.log(chalk.gray(`  ├── .env.example          (Environment variables template)`));
+      console.log(chalk.gray(`  ├── .mcp.json              (MCP servers)`));
     }
-    console.log(chalk.gray(`  └── agentweaver.config.yml (Tech stack config)`));
+    console.log(chalk.gray(`  └── agentweaver.config.yml (Tech stack)`));
+    if (mcpServers.length > 0) {
+      console.log(chalk.gray(`  .env.example               (at project root)`));
+    }
 
     console.log(chalk.cyan('\n🎯 Next steps:\n'));
     if (mcpServers.length > 0) {
@@ -302,11 +320,13 @@ export async function initCommand(options: InitOptions) {
       }
       console.log('');
     }
-    console.log(chalk.white('  2. Open Claude Code and use your agents:'));
-    console.log(chalk.gray('     @backend-dev implement user authentication'));
-    console.log(chalk.gray('     @frontend-dev create dashboard layout'));
+    console.log(chalk.white('  2. Restart Claude Code to load the new agents'));
     console.log('');
-    console.log(chalk.white('  3. Browse skills in .claude/skills/ for reusable patterns'));
+    console.log(chalk.white('  3. Open .claude/CLAUDE.md to see all available agents and their usage'));
+    console.log('');
+    console.log(chalk.white('  4. Start using your agents:'));
+    console.log(chalk.gray('     "Build a REST API for users"  (automatic invocation)'));
+    console.log(chalk.gray('     @backend-dev implement authentication  (manual invocation)'));
     console.log('');
     console.log(chalk.cyan('📚 Documentation: https://github.com/CodeLift-LLC/AgentWeaver-CLI'));
     console.log('');
