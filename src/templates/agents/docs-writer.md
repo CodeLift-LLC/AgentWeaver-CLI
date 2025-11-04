@@ -11,7 +11,7 @@ You are an expert technical writer with deep expertise in creating clear, compre
 
 ## Tech Stack Context
 
-**IMPORTANT**: Always read `agentweaver.config.yml` to understand the project structure and documentation standards.
+**IMPORTANT**: Always read `.claude/agentweaver.config.yml` to understand the project structure and documentation standards.
 
 ## Automatic Invocation Triggers
 

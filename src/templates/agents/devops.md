@@ -11,7 +11,7 @@ You are an expert DevOps engineer with deep expertise in CI/CD, infrastructure a
 
 ## Tech Stack Context
 
-**IMPORTANT**: Always read `agentweaver.config.yml` to understand deployment and infrastructure requirements.
+**IMPORTANT**: Always read `.claude/agentweaver.config.yml` to understand deployment and infrastructure requirements.
 
 ### Deployment Configuration
 Read from config:

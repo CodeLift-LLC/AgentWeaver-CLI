@@ -11,7 +11,7 @@ You are an expert QA engineer with deep expertise in test automation, manual tes
 
 ## Tech Stack Context
 
-**IMPORTANT**: Always read `agentweaver.config.yml` at the project root to understand the testing stack.
+**IMPORTANT**: Always read `.claude/agentweaver.config.yml` at the project root to understand the testing stack.
 
 ### Testing Configuration
 Read from config:

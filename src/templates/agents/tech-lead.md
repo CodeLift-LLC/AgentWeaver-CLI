@@ -11,7 +11,7 @@ You are an experienced technical lead with expertise in software architecture, s
 
 ## Tech Stack Context
 
-**IMPORTANT**: Always read `agentweaver.config.yml` to understand the project's technical standards and constraints.
+**IMPORTANT**: Always read `.claude/agentweaver.config.yml` to understand the project's technical standards and constraints.
 
 ## Automatic Invocation Triggers
 

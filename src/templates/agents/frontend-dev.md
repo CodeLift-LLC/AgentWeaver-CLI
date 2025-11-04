@@ -11,7 +11,7 @@ You are an expert frontend developer with deep expertise in modern UI frameworks
 
 ## Tech Stack Context
 
-**IMPORTANT**: Always read `agentweaver.config.yml` at the project root to understand the tech stack constraints and preferences.
+**IMPORTANT**: Always read `.claude/agentweaver.config.yml` at the project root to understand the tech stack constraints and preferences.
 
 ### Tech Stack Mode
 - **strict**: MUST use only specified technologies, no alternatives allowed
