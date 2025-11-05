@@ -82,9 +82,48 @@ Before marking the overall task as done:
 
 ### Testing Configuration
 Read from config:
-- `{{techStack.testing.unit}}` - Unit testing framework (Jest, Vitest, pytest, etc.)
-- `{{techStack.testing.e2e}}` - E2E testing tool (Playwright, Cypress, Selenium)
+- `{{techStack.testing.unit}}` - Unit testing framework
+  - **JavaScript/TypeScript**: Jest, Vitest, Mocha, Jasmine, AVA, uvu, Node Test Runner
+  - **Python**: pytest, unittest, nose2, Robot Framework
+  - **Go**: testing package (built-in), Testify, Ginkgo, GoConvey
+  - **Java**: JUnit 5, TestNG, Spock, AssertJ
+  - **C#**: xUnit, NUnit, MSTest, SpecFlow
+  - **Ruby**: RSpec, Minitest, Test::Unit
+  - **PHP**: PHPUnit, Pest, Codeception, Behat
+  - **Rust**: built-in test framework, quickcheck
+
+- `{{techStack.testing.e2e}}` - End-to-end testing tool
+  - **Modern**: Playwright, Cypress, Puppeteer, WebdriverIO
+  - **Traditional**: Selenium WebDriver, Appium (mobile)
+  - **API Testing**: Postman, REST Assured, Supertest, Hoppscotch
+  - **Visual Regression**: Percy, Chromatic, BackstopJS, Playwright screenshots
+  - **Mobile**: Detox (React Native), Appium, Espresso (Android), XCUITest (iOS)
+
+- `{{techStack.testing.component}}` - Component testing
+  - **React**: React Testing Library, Enzyme, @testing-library/react
+  - **Vue**: Vue Test Utils, @testing-library/vue
+  - **Angular**: Jasmine + Karma, Jest, @testing-library/angular
+  - **Svelte**: @testing-library/svelte
+  - **Web Components**: Web Test Runner, Open WC Testing
+
 - `{{techStack.testing.coverage}}` - Coverage tool and target thresholds
+  - **JavaScript/TypeScript**: Istanbul (nyc), c8, Vitest coverage, Jest coverage
+  - **Python**: Coverage.py, pytest-cov
+  - **Go**: go test -cover, gocov
+  - **Java**: JaCoCo, Cobertura
+  - **C#**: coverlet, dotCover
+  - **Target**: ≥80% line coverage, ≥70% branch coverage
+
+- `{{techStack.testing.performance}}` - Performance & load testing
+  - **Load Testing**: k6, Artillery, Gatling, Apache JMeter, Locust
+  - **Lighthouse**: Web performance auditing
+  - **Web Vitals**: Core Web Vitals monitoring
+  - **APM**: New Relic, DataDog, AppDynamics
+
+- `{{techStack.testing.accessibility}}` - Accessibility testing
+  - **Automated**: axe-core, Pa11y, Lighthouse, WAVE
+  - **Manual**: Screen readers (NVDA, JAWS, VoiceOver), Keyboard navigation
+  - **CI Integration**: axe-playwright, jest-axe, cypress-axe
 
 ## Automatic Invocation Triggers
 
@@ -265,10 +304,12 @@ Use these reusable skills from `.claude/skills/` to accelerate testing:
 #### **Context7** - Testing Documentation & Best Practices
 **Use for**: Looking up testing framework documentation, test patterns, best practices
 **Examples**:
-- "Playwright best practices for E2E testing"
-- "Jest mock patterns for API calls"
-- "Cypress custom commands and utilities"
-- "Testing Library query priorities and patterns"
+- "[Your E2E Tool] best practices for end-to-end testing"
+- "[Your Unit Test Framework] mock patterns for API calls"
+- "[Your E2E Tool] custom commands and utilities"
+- "[Your Component Testing Library] query priorities and patterns"
+- "[Your Coverage Tool] configuration and thresholds"
+- "[Your Performance Tool] load testing strategies"
 
 #### **Sequential Thinking** - Complex Test Planning
 **Use for**: Planning complex test scenarios, debugging test failures, test strategy

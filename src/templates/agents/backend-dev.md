@@ -85,16 +85,56 @@ Before marking the overall task as done:
 
 ### Backend Configuration
 Read from config:
-- `{{techStack.backend.framework}}` - Backend framework (Express, FastAPI, NestJS, Django, etc.)
-- `{{techStack.backend.language}}` - Programming language (TypeScript, Python, Go, etc.)
-- `{{techStack.backend.apiStyle}}` - API style (REST, GraphQL, gRPC, tRPC)
-- `{{techStack.backend.validation}}` - Validation library (Zod, Joi, Pydantic, etc.)
+- `{{techStack.backend.framework}}` - Backend framework
+  - **JavaScript/TypeScript**: Express.js, NestJS, Fastify, Koa, Hapi, AdonisJS, Sails.js
+  - **Python**: FastAPI, Django, Flask, Pyramid, Tornado, Falcon, Sanic
+  - **Go**: Gin, Echo, Fiber, Chi, Buffalo, Revel
+  - **Java**: Spring Boot, Micronaut, Quarkus, Vert.x, Dropwizard
+  - **C#**: ASP.NET Core, ServiceStack, Nancy
+  - **Ruby**: Ruby on Rails, Sinatra, Hanami, Grape
+  - **PHP**: Laravel, Symfony, Slim, Lumen, CodeIgniter
+  - **Rust**: Actix Web, Rocket, Axum, Warp
+
+- `{{techStack.backend.language}}` - Programming language
+  - TypeScript, JavaScript, Python, Go, Java, Kotlin, C#, Ruby, PHP, Rust, Elixir, Scala
+
+- `{{techStack.backend.apiStyle}}` - API style
+  - REST, GraphQL, gRPC, tRPC, WebSockets, Server-Sent Events (SSE)
+
+- `{{techStack.backend.validation}}` - Validation library
+  - **JavaScript/TypeScript**: Zod, Joi, Yup, Ajv, class-validator, io-ts
+  - **Python**: Pydantic, Marshmallow, Cerberus, Voluptuous
+  - **Go**: validator, govalidator, ozzo-validation
+  - **Java**: Hibernate Validator, Bean Validation, AssertJ
+  - **C#**: FluentValidation, DataAnnotations
+  - **Ruby**: ActiveModel Validations, Dry-Validation
+  - **PHP**: Laravel Validation, Symfony Validator, Respect/Validation
 
 ### Database Configuration
-- `{{techStack.database.primary}}` - Primary database (PostgreSQL, MongoDB, MySQL, etc.)
-- `{{techStack.database.orm}}` - ORM/ODM (Prisma, TypeORM, Mongoose, SQLAlchemy, etc.)
-- `{{techStack.database.cache}}` - Caching layer (Redis, Memcached, etc.)
+- `{{techStack.database.primary}}` - Primary database
+  - **Relational**: PostgreSQL, MySQL, MariaDB, SQLite, Microsoft SQL Server, Oracle
+  - **NoSQL Document**: MongoDB, CouchDB, RavenDB
+  - **NoSQL Key-Value**: Redis (persistent), DynamoDB, RocksDB
+  - **NoSQL Column-Family**: Cassandra, HBase, ScyllaDB
+  - **NoSQL Graph**: Neo4j, ArangoDB, OrientDB
+  - **Time-Series**: InfluxDB, TimescaleDB, QuestDB
+
+- `{{techStack.database.orm}}` - ORM/ODM (Object-Relational/Document Mapper)
+  - **JavaScript/TypeScript**: Prisma, TypeORM, Sequelize, Mongoose (MongoDB), Drizzle, MikroORM, Objection.js
+  - **Python**: SQLAlchemy, Django ORM, Tortoise ORM, Peewee, Pony ORM, mongoengine (MongoDB)
+  - **Go**: GORM, Ent, Bun, sqlx, sqlc, upper/db
+  - **Java**: Hibernate, JPA, MyBatis, jOOQ, Spring Data JPA
+  - **C#**: Entity Framework Core, Dapper, NHibernate
+  - **Ruby**: ActiveRecord, Sequel, ROM, Mongoid (MongoDB)
+  - **PHP**: Eloquent (Laravel), Doctrine, Propel, RedBeanPHP
+  - **Rust**: Diesel, SeaORM, sqlx
+
+- `{{techStack.database.cache}}` - Caching layer
+  - Redis, Memcached, Hazelcast, Ehcache, Caffeine, in-memory caching
+
 - `{{techStack.database.migrations}}` - Migration tool
+  - **Framework-Integrated**: Prisma Migrate, TypeORM migrations, Django migrations, ActiveRecord migrations, Entity Framework migrations
+  - **Standalone**: Flyway, Liquibase, golang-migrate, Alembic (Python), dbmate, Atlas
 
 ## Automatic Invocation Triggers
 
@@ -365,10 +405,12 @@ Use these reusable skills from `.claude/skills/` to accelerate development:
 #### **Context7** - Documentation & Best Practices
 **Use for**: Looking up framework documentation, API references, best practices
 **Examples**:
-- "How to implement rate limiting in Express.js?"
-- "FastAPI authentication middleware patterns"
-- "Prisma transaction best practices"
-- "TypeORM migration strategies"
+- "How to implement rate limiting in [Your Framework]?"
+- "[Your Framework] authentication middleware patterns"
+- "[Your ORM] transaction best practices"
+- "[Your ORM] migration strategies"
+- "Best practices for [Your Database] connection pooling"
+- "[Your Validation Library] schema definition patterns"
 
 #### **Sequential Thinking** - Complex Problem Solving
 **Use for**: Breaking down complex architectural decisions, debugging intricate issues

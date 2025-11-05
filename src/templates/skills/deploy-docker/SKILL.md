@@ -79,205 +79,523 @@ Docker caches each layer in a Dockerfile. Order commands from least to most freq
 - Don't include secrets in images
 - Use specific image tags, not `latest`
 
-## Implementation Examples
+## Universal Multi-Stage Build Pattern
 
-### Node.js Multi-Stage Dockerfile
+Multi-stage builds follow a consistent pattern across ALL languages and frameworks:
+
+### Universal Dockerfile Structure
+
+```
+┌─────────────────────────────────────────────────┐
+│ Stage 1: Build Stage                            │
+│                                                 │
+│ ├─> Use full build image with tooling          │
+│ ├─> Install build dependencies                 │
+│ ├─> Copy dependency manifests                  │
+│ ├─> Install/download dependencies              │
+│ ├─> Copy source code                           │
+│ └─> Build/compile application                  │
+└─────────────────────────────────────────────────┘
+                     ↓
+┌─────────────────────────────────────────────────┐
+│ Stage 2: Production Stage                       │
+│                                                 │
+│ ├─> Use minimal runtime image (alpine/slim)    │
+│ ├─> Install security updates                   │
+│ ├─> Create non-root user                       │
+│ ├─> Copy artifacts from build stage            │
+│ ├─> Copy runtime dependencies                  │
+│ ├─> Switch to non-root user                    │
+│ ├─> Define health check                        │
+│ └─> Set startup command                        │
+└─────────────────────────────────────────────────┘
+```
+
+### Dockerfile Template (Conceptual)
+
+```dockerfile
+# ==========================================
+# Stage 1: Build
+# ==========================================
+FROM [base-build-image:version] AS builder
+
+# Install build tools (compilers, package managers, etc.)
+RUN [install build dependencies]
+
+WORKDIR /app
+
+# Copy dependency manifest files first (for layer caching)
+COPY [dependency-manifest-files] ./
+
+# Install/download dependencies
+RUN [install-dependencies-command]
+
+# Copy application source code
+COPY . .
+
+# Build/compile application (if needed)
+RUN [build-command]
+
+# ==========================================
+# Stage 2: Production
+# ==========================================
+FROM [base-runtime-image:version] AS production
+
+# Install security updates
+RUN [update-system-packages]
+
+# Create non-root user for security
+RUN [create-non-root-user-command]
+
+WORKDIR /app
+
+# Copy built artifacts from builder stage
+COPY --from=builder --chown=[user]:[group] /app/[build-output] ./[destination]
+
+# Copy runtime dependencies if needed
+COPY --chown=[user]:[group] [runtime-files] ./
+
+# Switch to non-root user
+USER [non-root-user]
+
+# Expose application port
+EXPOSE [port]
+
+# Define health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD [health-check-command]
+
+# Set environment variables
+ENV [ENV_VAR]=[value]
+
+# Start application
+CMD ["[runtime-command]", "[args]"]
+```
+
+### Key Optimization Principles
+
+**1. Layer Caching Optimization:**
+```
+Order of operations (least to most frequently changing):
+1. Base image selection
+2. System package installation
+3. Dependency manifest copy
+4. Dependency installation
+5. Source code copy
+6. Application build
+```
+
+**2. Size Reduction Techniques:**
+- Use multi-stage builds (70-90% size reduction)
+- Choose minimal base images (alpine, slim, distroless)
+- Remove package manager caches
+- Combine RUN commands to reduce layers
+- Use .dockerignore to exclude unnecessary files
+
+**3. Security Hardening:**
+- Always use specific image versions (not `latest`)
+- Run as non-root user
+- Apply security updates
+- Scan for vulnerabilities
+- Don't include secrets in images
+
+## Framework-Specific Examples
+
+> **Note**: The examples below show how to apply the universal pattern to specific technology stacks. Use Context7 MCP for the latest framework-specific Docker best practices:
+>
+> ```
+> Query Context7: "[Your Language/Framework] Docker best practices"
+> ```
+
+### Example: Compiled Language Pattern (Go, Rust, Java, C#)
+
+**Characteristics:**
+- Requires compilation step
+- Can produce single binary
+- Smaller runtime images (can use distroless)
+
+**Pattern:**
+1. Build stage: Full SDK/compiler image
+2. Production stage: Minimal runtime or distroless image
+3. Copy only compiled binary/artifacts
+
+### Example: Interpreted Language Pattern (Node.js, Python, Ruby, PHP)
+
+**Characteristics:**
+- No compilation needed (or optional transpilation)
+- Requires runtime environment
+- May need virtual environment isolation
+
+**Pattern:**
+1. Build stage: Install dependencies, run build steps (TypeScript, webpack, etc.)
+2. Production stage: Runtime image with minimal dependencies
+3. Copy source + dependencies (or bundled assets)
+
+### Example: JVM Language Pattern (Java, Kotlin, Scala)
+
+**Characteristics:**
+- Requires JVM runtime
+- Can produce JAR/WAR artifacts
+- Gradle/Maven build systems
+
+**Pattern:**
+1. Build stage: Full JDK with build tools
+2. Production stage: JRE (runtime-only) image
+3. Copy JAR/WAR artifact
+
+### Language-Specific Reference Examples
+
+Below are reference implementations showing the universal pattern applied to popular tech stacks:
+
+<details>
+<summary>Node.js / TypeScript Multi-Stage Build</summary>
 
 ```dockerfile
 # Stage 1: Build
 FROM node:20-alpine AS builder
-
-# Install build dependencies
 RUN apk add --no-cache python3 make g++
-
-# Set working directory
 WORKDIR /app
-
-# Copy dependency definitions
 COPY package.json package-lock.json ./
-
-# Install dependencies
-RUN npm ci --only=production && \
-    npm cache clean --force
-
-# Copy application source
+RUN npm ci --only=production && npm cache clean --force
 COPY . .
-
-# Build application (if using TypeScript or similar)
 RUN npm run build
 
 # Stage 2: Production
 FROM node:20-alpine AS production
-
-# Install security updates
 RUN apk upgrade --no-cache
-
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-# Set working directory
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 WORKDIR /app
-
-# Copy package files
 COPY package.json package-lock.json ./
-
-# Install production dependencies only
-RUN npm ci --only=production && \
-    npm cache clean --force
-
-# Copy built application from builder stage
+RUN npm ci --only=production && npm cache clean --force
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-
-# Copy other necessary files
-COPY --chown=nodejs:nodejs ./public ./public
-
-# Switch to non-root user
 USER nodejs
-
-# Expose port
 EXPOSE 3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
-
-# Set environment to production
+HEALTHCHECK --interval=30s --timeout=3s CMD node healthcheck.js
 ENV NODE_ENV=production
-
-# Start application
 CMD ["node", "dist/server.js"]
 ```
+</details>
 
-### Python FastAPI Multi-Stage Dockerfile
+<details>
+<summary>Python / FastAPI Multi-Stage Build</summary>
 
 ```dockerfile
-# Stage 1: Build dependencies
+# Stage 1: Build
 FROM python:3.11-slim AS builder
-
-# Install build dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc && \
-    rm -rf /var/lib/apt/lists/*
-
-# Set working directory
+RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-
-# Create virtual environment
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-
-# Copy and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Production
 FROM python:3.11-slim AS production
-
-# Install security updates
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    rm -rf /var/lib/apt/lists/*
-
-# Create non-root user
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
 RUN useradd -m -u 1001 appuser
-
-# Set working directory
 WORKDIR /app
-
-# Copy virtual environment from builder
 COPY --from=builder /opt/venv /opt/venv
-
-# Copy application
 COPY --chown=appuser:appuser . .
-
-# Switch to non-root user
 USER appuser
-
-# Set PATH to use venv
-ENV PATH="/opt/venv/bin:$PATH"
-ENV PYTHONUNBUFFERED=1
-
-# Expose port
+ENV PATH="/opt/venv/bin:$PATH" PYTHONUNBUFFERED=1
 EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD python -c "import requests; requests.get('http://localhost:8000/health', timeout=2)"
-
-# Start application
+HEALTHCHECK --interval=30s CMD python -c "import requests; requests.get('http://localhost:8000/health', timeout=2)"
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
+</details>
 
-### Go Multi-Stage Dockerfile
+<details>
+<summary>Go Multi-Stage Build</summary>
 
 ```dockerfile
 # Stage 1: Build
 FROM golang:1.21-alpine AS builder
-
-# Install build dependencies
 RUN apk add --no-cache git ca-certificates tzdata
-
-# Set working directory
 WORKDIR /src
-
-# Copy go mod files
 COPY go.mod go.sum ./
-
-# Download dependencies
 RUN go mod download && go mod verify
-
-# Copy source code
 COPY . .
-
-# Build binary with optimizations
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -ldflags='-w -s -extldflags "-static"' \
-    -a -installsuffix cgo \
+    go build -ldflags='-w -s -extldflags "-static"' -a -installsuffix cgo \
     -o /bin/app ./cmd/server
 
-# Stage 2: Production (distroless for minimal footprint)
+# Stage 2: Production (distroless)
 FROM gcr.io/distroless/static-debian11:nonroot
-
-# Copy timezone data
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
-# Copy CA certificates
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-
-# Copy binary
 COPY --from=builder /bin/app /app
-
-# Expose port
 EXPOSE 8080
-
-# Health check not available in distroless, implement in orchestration layer
-
-# Use nonroot user (65532)
 USER nonroot:nonroot
-
-# Start application
 ENTRYPOINT ["/app"]
 ```
+</details>
 
-### Docker Compose for Development
+<details>
+<summary>Java / Spring Boot Multi-Stage Build</summary>
+
+```dockerfile
+# Stage 1: Build
+FROM eclipse-temurin:21-jdk-alpine AS builder
+WORKDIR /app
+COPY gradle/ gradle/
+COPY build.gradle settings.gradle gradlew ./
+RUN ./gradlew dependencies --no-daemon
+COPY src ./src
+RUN ./gradlew bootJar --no-daemon
+
+# Stage 2: Production
+FROM eclipse-temurin:21-jre-alpine AS production
+RUN apk upgrade --no-cache
+RUN addgroup -g 1001 -S spring && adduser -S spring -u 1001 -G spring
+WORKDIR /app
+COPY --from=builder --chown=spring:spring /app/build/libs/*.jar app.jar
+USER spring
+EXPOSE 8080
+HEALTHCHECK --interval=30s CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+CMD ["java", "-jar", "app.jar"]
+```
+</details>
+
+<details>
+<summary>C# / .NET Multi-Stage Build</summary>
+
+```dockerfile
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS builder
+WORKDIR /app
+COPY *.csproj ./
+RUN dotnet restore
+COPY . .
+RUN dotnet publish -c Release -o out
+
+# Stage 2: Production
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS production
+RUN apk upgrade --no-cache
+RUN addgroup -g 1001 -S dotnet && adduser -S dotnet -u 1001 -G dotnet
+WORKDIR /app
+COPY --from=builder --chown=dotnet:dotnet /app/out .
+USER dotnet
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+CMD ["dotnet", "YourApp.dll"]
+```
+</details>
+
+<details>
+<summary>Ruby / Rails Multi-Stage Build</summary>
+
+```dockerfile
+# Stage 1: Build
+FROM ruby:3.3-alpine AS builder
+RUN apk add --no-cache build-base postgresql-dev nodejs yarn
+WORKDIR /app
+COPY Gemfile Gemfile.lock ./
+RUN bundle install --without development test
+COPY package.json yarn.lock ./
+RUN yarn install --production
+COPY . .
+RUN bundle exec rake assets:precompile
+
+# Stage 2: Production
+FROM ruby:3.3-alpine AS production
+RUN apk upgrade --no-cache && apk add --no-cache postgresql-client
+RUN addgroup -g 1001 -S rails && adduser -S rails -u 1001 -G rails
+WORKDIR /app
+COPY --from=builder --chown=rails:rails /usr/local/bundle /usr/local/bundle
+COPY --from=builder --chown=rails:rails /app ./
+USER rails
+EXPOSE 3000
+ENV RAILS_ENV=production RAILS_LOG_TO_STDOUT=1
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
+```
+</details>
+
+<details>
+<summary>PHP / Laravel Multi-Stage Build</summary>
+
+```dockerfile
+# Stage 1: Build
+FROM composer:2 AS builder
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --prefer-dist
+COPY . .
+RUN composer dump-autoload --optimize
+
+# Stage 2: Production
+FROM php:8.3-fpm-alpine AS production
+RUN apk upgrade --no-cache && apk add --no-cache libpq
+RUN docker-php-ext-install pdo pdo_mysql opcache
+RUN addgroup -g 1001 -S www && adduser -S www -u 1001 -G www
+WORKDIR /var/www
+COPY --from=builder --chown=www:www /app ./
+USER www
+EXPOSE 9000
+CMD ["php-fpm"]
+```
+</details>
+
+<details>
+<summary>Rust Multi-Stage Build</summary>
+
+```dockerfile
+# Stage 1: Build
+FROM rust:1.75-alpine AS builder
+RUN apk add --no-cache musl-dev
+WORKDIR /app
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src && echo "fn main() {}" > src/main.rs && cargo build --release
+COPY src ./src
+RUN touch src/main.rs && cargo build --release
+
+# Stage 2: Production
+FROM alpine:3.18 AS production
+RUN apk upgrade --no-cache && apk add --no-cache ca-certificates
+RUN addgroup -g 1001 -S rust && adduser -S rust -u 1001 -G rust
+WORKDIR /app
+COPY --from=builder --chown=rust:rust /app/target/release/app ./
+USER rust
+EXPOSE 8080
+CMD ["./app"]
+```
+</details>
+
+## Docker Compose Orchestration
+
+Docker Compose follows a universal pattern for multi-container applications.
+
+### Universal Docker Compose Structure
 
 ```yaml
 version: '3.9'
 
 services:
-  # Application service
+  # ==========================================
+  # Application Service
+  # ==========================================
   app:
     build:
       context: .
       dockerfile: Dockerfile
-      target: development  # Use development stage
+      target: [stage-name]  # development, production, etc.
+    container_name: [app-name]
+    ports:
+      - "[host-port]:[container-port]"
+    volumes:
+      # Mount source code for development hot reload
+      - ./src:/app/src:ro
+      # Named volume for dependencies (prevents overwriting)
+      - [dependencies-volume]:/app/[dependencies-dir]
+    environment:
+      - [ENV_NAME]=[value]
+      - DATABASE_URL=[database-connection-string]
+      - CACHE_URL=[cache-connection-string]
+    env_file:
+      - .env.[environment]
+    depends_on:
+      [service-name]:
+        condition: service_healthy
+    networks:
+      - [network-name]
+    restart: unless-stopped
+    # Optional: Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '[cpu-limit]'
+          memory: [memory-limit]
+
+  # ==========================================
+  # Database Service
+  # ==========================================
+  db:
+    image: [database-image]:[version]
+    container_name: [db-name]
+    ports:
+      - "[host-port]:[container-port]"
+    environment:
+      - [DB_USER_VAR]=[username]
+      - [DB_PASSWORD_VAR]=[password]
+      - [DB_NAME_VAR]=[database-name]
+    volumes:
+      - [db-volume]:/[db-data-path]
+      - ./scripts/[init-script]:/[db-init-path]:ro
+    healthcheck:
+      test: ["CMD-SHELL", "[health-check-command]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - [network-name]
+    restart: unless-stopped
+
+  # ==========================================
+  # Cache Service (Optional)
+  # ==========================================
+  cache:
+    image: [cache-image]:[version]
+    container_name: [cache-name]
+    ports:
+      - "[host-port]:[container-port]"
+    volumes:
+      - [cache-volume]:/data
+    healthcheck:
+      test: ["CMD", "[health-check-command]"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - [network-name]
+    restart: unless-stopped
+
+volumes:
+  [db-volume]:
+    driver: local
+  [cache-volume]:
+    driver: local
+  [dependencies-volume]:
+    driver: local
+
+networks:
+  [network-name]:
+    driver: bridge
+```
+
+### Common Service Patterns
+
+**Database Services:**
+- PostgreSQL: `postgres:16-alpine` (port 5432)
+- MySQL: `mysql:8-alpine` (port 3306)
+- MongoDB: `mongo:7-alpine` (port 27017)
+- MariaDB: `mariadb:11-alpine` (port 3306)
+
+**Cache Services:**
+- Redis: `redis:7-alpine` (port 6379)
+- Memcached: `memcached:1-alpine` (port 11211)
+
+**Message Queues:**
+- RabbitMQ: `rabbitmq:3-management-alpine` (port 5672, 15672)
+- Kafka: `confluentinc/cp-kafka:latest` (port 9092)
+
+### Reference Example: Full Development Stack
+
+<details>
+<summary>Node.js Development Stack (PostgreSQL + Redis + Nginx)</summary>
+
+```yaml
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
     container_name: myapp
     ports:
       - "3000:3000"
     volumes:
-      # Mount source code for hot reload
       - ./src:/app/src:ro
-      # Named volume for node_modules
       - node_modules:/app/node_modules
     environment:
       - NODE_ENV=development
@@ -294,7 +612,6 @@ services:
       - app-network
     restart: unless-stopped
 
-  # PostgreSQL database
   db:
     image: postgres:16-alpine
     container_name: myapp-db
@@ -316,7 +633,6 @@ services:
       - app-network
     restart: unless-stopped
 
-  # Redis cache
   redis:
     image: redis:7-alpine
     container_name: myapp-redis
@@ -333,7 +649,6 @@ services:
       - app-network
     restart: unless-stopped
 
-  # Nginx reverse proxy
   nginx:
     image: nginx:alpine
     container_name: myapp-nginx
@@ -351,18 +666,76 @@ services:
 
 volumes:
   postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-  node_modules:
-    driver: local
+    redis_data:
+    node_modules:
 
 networks:
   app-network:
     driver: bridge
 ```
+</details>
 
-### Docker Compose for Production
+### Universal Production Deployment (Docker Swarm/Stack)
+
+```yaml
+version: '3.9'
+
+services:
+  app:
+    image: [registry]/[app-name]:${VERSION:-latest}
+    deploy:
+      replicas: [number-of-replicas]
+      update_config:
+        parallelism: 1  # Update one container at a time
+        delay: 10s      # Wait 10s between updates
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: '[cpu-limit]'
+          memory: [memory-limit]
+        reservations:
+          cpus: '[cpu-reservation]'
+          memory: [memory-reservation]
+    ports:
+      - "[host-port]:[container-port]"
+    environment:
+      - [ENV_NAME]=production
+    env_file:
+      - .env.production
+    secrets:
+      - [secret-name-1]
+      - [secret-name-2]
+    healthcheck:
+      test: ["CMD", "[health-check-command]"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - [network-name]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+secrets:
+  [secret-name-1]:
+    external: true
+  [secret-name-2]:
+    external: true
+
+networks:
+  [network-name]:
+    driver: overlay  # For swarm mode
+```
+
+<details>
+<summary>Production Example: Node.js with Swarm</summary>
 
 ```yaml
 version: '3.9'
@@ -420,6 +793,7 @@ networks:
   app-network:
     driver: overlay
 ```
+</details>
 
 ## Best Practices
 
@@ -516,7 +890,30 @@ docker build --platform linux/amd64 -t myapp:latest .
 
 ### 4. Health Checks
 
-**Application-level health check**
+**Universal Health Check Pattern:**
+
+Health checks verify that your container is running and ready to serve traffic.
+
+```dockerfile
+HEALTHCHECK --interval=[check-frequency] \
+            --timeout=[timeout-duration] \
+            --start-period=[startup-grace-period] \
+            --retries=[retry-count] \
+  CMD [health-check-command]
+```
+
+**Common Health Check Approaches:**
+
+1. **HTTP Endpoint Check**: Query application's /health endpoint
+2. **TCP Port Check**: Verify port is listening
+3. **Process Check**: Verify application process is running
+4. **Custom Script**: Run application-specific validation
+
+**Health Check Examples by Language:**
+
+<details>
+<summary>Node.js HTTP Health Check</summary>
+
 ```javascript
 // healthcheck.js
 const http = require('http');
@@ -541,9 +938,132 @@ request.on('error', (err) => {
 request.end();
 ```
 
+```dockerfile
+HEALTHCHECK --interval=30s --timeout=3s CMD node healthcheck.js
+```
+</details>
+
+<details>
+<summary>Python HTTP Health Check</summary>
+
+```python
+# healthcheck.py
+import sys
+import requests
+
+try:
+    response = requests.get('http://localhost:8000/health', timeout=2)
+    sys.exit(0 if response.status_code == 200 else 1)
+except Exception as e:
+    print(f"ERROR: {e}", file=sys.stderr)
+    sys.exit(1)
+```
+
+```dockerfile
+HEALTHCHECK --interval=30s --timeout=3s CMD python healthcheck.py
+```
+</details>
+
+<details>
+<summary>Simple curl-based Health Check</summary>
+
+```dockerfile
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:[port]/health || exit 1
+```
+</details>
+
+<details>
+<summary>wget-based Health Check (when curl unavailable)</summary>
+
+```dockerfile
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:[port]/health || exit 1
+```
+</details>
+
+<details>
+<summary>Go HTTP Health Check</summary>
+
+```go
+// healthcheck.go
+package main
+
+import (
+    "net/http"
+    "os"
+    "time"
+)
+
+func main() {
+    client := &http.Client{Timeout: 2 * time.Second}
+    resp, err := client.Get("http://localhost:8080/health")
+    if err != nil || resp.StatusCode != 200 {
+        os.Exit(1)
+    }
+    os.Exit(0)
+}
+```
+
+```dockerfile
+HEALTHCHECK --interval=30s --timeout=3s CMD /app/healthcheck
+```
+</details>
+
 ### 5. Environment-Specific Builds
 
-**Multi-target Dockerfile**
+**Universal Multi-Target Pattern:**
+
+Use Docker build stages to create environment-specific images from a single Dockerfile.
+
+```dockerfile
+# ==========================================
+# Development Stage
+# ==========================================
+FROM [base-image] AS development
+
+WORKDIR /app
+
+# Install ALL dependencies (including dev dependencies)
+COPY [dependency-manifest] ./
+RUN [install-all-dependencies]
+
+# Copy source code
+COPY . .
+
+# Start with hot-reload/watch mode
+CMD ["[dev-command]", "[watch-flag]"]
+
+# ==========================================
+# Production Stage
+# ==========================================
+FROM [base-image] AS production
+
+WORKDIR /app
+
+# Install ONLY production dependencies
+COPY [dependency-manifest] ./
+RUN [install-production-dependencies]
+
+# Copy application
+COPY . .
+
+# Start in production mode
+CMD ["[start-command]"]
+```
+
+**Build Specific Stage:**
+```bash
+# Build development image
+docker build --target development -t myapp:dev .
+
+# Build production image
+docker build --target production -t myapp:prod .
+```
+
+<details>
+<summary>Node.js Multi-Target Example</summary>
+
 ```dockerfile
 # Development stage
 FROM node:20-alpine AS development
@@ -561,6 +1081,29 @@ RUN npm ci --only=production
 COPY . .
 CMD ["npm", "start"]
 ```
+</details>
+
+<details>
+<summary>Python Multi-Target Example</summary>
+
+```dockerfile
+# Development stage
+FROM python:3.11-slim AS development
+WORKDIR /app
+COPY requirements.txt requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements-dev.txt
+COPY . .
+CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0"]
+
+# Production stage
+FROM python:3.11-slim AS production
+WORKDIR /app
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+</details>
 
 ## Common Commands
 

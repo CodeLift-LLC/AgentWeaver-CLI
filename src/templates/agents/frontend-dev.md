@@ -88,12 +88,45 @@ Before marking the overall task as done:
 
 ### Frontend Configuration
 Read from config:
-- `{{techStack.frontend.framework}}` - Frontend framework (Next.js, React, Vue, Angular, Svelte)
-- `{{techStack.frontend.language}}` - Language (TypeScript, JavaScript)
-- `{{techStack.frontend.styling}}` - Styling solution (Tailwind, CSS Modules, Styled Components, etc.)
-- `{{techStack.frontend.uiLibrary}}` - UI library (shadcn/ui, MUI, Ant Design, etc.)
-- `{{techStack.frontend.stateManagement}}` - State management (Zustand, Redux, Pinia, etc.)
-- `{{techStack.frontend.routing}}` - Routing solution (Next.js App Router, React Router, etc.)
+- `{{techStack.frontend.framework}}` - Frontend framework
+  - **React Ecosystem**: React, Next.js, Remix, Gatsby, Astro (with React)
+  - **Vue Ecosystem**: Vue 3, Nuxt.js, Quasar, Vite + Vue
+  - **Angular**: Angular 17+, AnalogJS
+  - **Svelte**: Svelte, SvelteKit, Astro (with Svelte)
+  - **Solid**: Solid.js, SolidStart
+  - **Other**: Qwik, Preact, Lit, Alpine.js, Htmx
+
+- `{{techStack.frontend.language}}` - Programming language
+  - TypeScript (recommended), JavaScript (ES6+), Flow
+
+- `{{techStack.frontend.styling}}` - Styling solution
+  - **Utility-First**: Tailwind CSS, UnoCSS, Windi CSS
+  - **CSS-in-JS**: styled-components, Emotion, Linaria, Vanilla Extract, Panda CSS
+  - **CSS Modules**: CSS Modules, SCSS Modules, Less Modules
+  - **Traditional**: Sass/SCSS, Less, PostCSS, plain CSS
+  - **Framework-Specific**: Vue Scoped CSS, Svelte style blocks, Angular Component Styles
+
+- `{{techStack.frontend.uiLibrary}}` - UI component library
+  - **React**: shadcn/ui, Material-UI (MUI), Ant Design, Chakra UI, Mantine, Radix UI, Headless UI, React Aria, Park UI
+  - **Vue**: Vuetify, Quasar, PrimeVue, Element Plus, Naive UI, Nuxt UI, Radix Vue
+  - **Angular**: Angular Material, PrimeNG, NG-ZORRO, Clarity
+  - **Svelte**: shadcn-svelte, Skeleton UI, Carbon Components Svelte, Flowbite Svelte
+  - **Agnostic**: Shoelace, Web Components, Bootstrap
+
+- `{{techStack.frontend.stateManagement}}` - State management
+  - **React**: Zustand, Redux Toolkit, Jotai, Recoil, XState, Context API, TanStack Query (React Query), SWR
+  - **Vue**: Pinia, Vuex, VueUse, Harlem
+  - **Angular**: NgRx, Akita, Elf
+  - **Svelte**: Svelte Stores, XState
+  - **Solid**: Solid Stores, XState
+  - **Universal**: MobX, XState
+
+- `{{techStack.frontend.routing}}` - Routing solution
+  - **React**: Next.js App Router, Next.js Pages Router, React Router v6, TanStack Router, Wouter
+  - **Vue**: Vue Router, Nuxt Router, Vite-Plugin-Pages
+  - **Angular**: Angular Router
+  - **Svelte**: SvelteKit Router, svelte-routing
+  - **Solid**: Solid Router, SolidStart Router
 
 ## Automatic Invocation Triggers
 
@@ -321,10 +354,12 @@ Use these reusable skills from `.claude/skills/` to accelerate development:
 #### **Context7** - Framework Documentation
 **Use for**: Looking up framework docs, UI patterns, best practices
 **Examples**:
-- "Next.js App Router data fetching patterns"
-- "React Server Components best practices"
-- "Tailwind CSS responsive design utilities"
-- "Vue 3 Composition API patterns"
+- "[Your Framework] data fetching patterns"
+- "[Your Framework] best practices for server components"
+- "[Your Styling Solution] responsive design utilities"
+- "[Your Framework] composition/hooks patterns"
+- "[Your UI Library] component customization guide"
+- "[Your State Management] async state handling"
 
 #### **Sequential Thinking** - Complex UI Logic
 **Use for**: Planning complex component architecture, state management strategies
