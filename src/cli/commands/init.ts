@@ -217,52 +217,101 @@ export async function initCommand(options: InitOptions) {
       }
     }
 
-    // Step 1: Detect tech stack (using enhanced detector)
-    const spinner = ora('Detecting project tech stack...').start();
-    const enhancedDetector = new EnhancedTechDetector(projectRoot);
-    const enhancedTech = await enhancedDetector.detectAll();
-    spinner.succeed('Tech stack detected');
+    // Step 1: Detect tech stack (use template if installed, otherwise detect)
+    let enhancedTech: any;
+    let detectedTech: any;
 
-    // Display detected technologies
-    console.log(chalk.gray('\n📊 Detected Technologies:'));
+    if (templateInstallResult && templateInstallResult.success) {
+      // Use template's tech stack
+      const template = templateInstallResult.template;
+      console.log(chalk.gray('\n📊 Tech Stack (from template):'));
 
-    // Show architecture info
-    if (enhancedTech.architecture) {
-      console.log(chalk.cyan(`  Architecture: ${enhancedTech.architecture.type} (${enhancedTech.architecture.style})`));
-      if (enhancedTech.architecture.workspaceTool) {
-        console.log(chalk.gray(`  Monorepo: ${enhancedTech.architecture.workspaceTool}`));
+      console.log(chalk.cyan(`  Architecture: ${template.architecture}`));
+
+      if (template.techStack.frontend?.framework) {
+        console.log(chalk.gray(`  Frontend: ${template.techStack.frontend.framework} ${template.techStack.frontend.version || ''}`));
       }
-    }
+      if (template.techStack.backend?.framework) {
+        console.log(chalk.gray(`  Backend: ${template.techStack.backend.framework} ${template.techStack.backend.version || ''} (${template.techStack.backend.language})`));
+      }
+      if (template.techStack.database?.primary) {
+        console.log(chalk.gray(`  Database: ${template.techStack.database.primary} (${template.techStack.database.orm})`));
+      }
+      if (template.techStack.testing) {
+        console.log(chalk.gray(`  Testing: ${template.techStack.testing.unit || 'N/A'}`));
+      }
+      console.log('');
 
-    // Show all detected projects
-    if (enhancedTech.projects.length > 0) {
-      console.log(chalk.cyan(`\n  Detected ${enhancedTech.projects.length} project(s):`));
-      enhancedTech.projects.forEach((project, idx) => {
-        const frameworkInfo = project.framework ? ` (${project.framework})` : '';
-        console.log(chalk.gray(`    ${idx + 1}. ${project.language}${frameworkInfo} - ${(project.confidence * 100).toFixed(0)}% confidence`));
-      });
-    }
+      // Convert template tech stack to detectedTech format
+      detectedTech = {
+        frontend: template.techStack.frontend || undefined,
+        backend: template.techStack.backend || undefined,
+        database: template.techStack.database || undefined,
+        testing: template.techStack.testing || undefined,
+        deployment: template.techStack.deployment || undefined,
+      };
 
-    // Legacy display for backward compatibility
-    if (enhancedTech.frontend?.framework) {
-      console.log(chalk.gray(`\n  Frontend: ${enhancedTech.frontend.framework}`));
-    }
-    if (enhancedTech.backend?.framework) {
-      console.log(chalk.gray(`  Backend: ${enhancedTech.backend.framework} (${enhancedTech.backend.language})`));
-    }
-    if (enhancedTech.database?.primary) {
-      console.log(chalk.gray(`  Database: ${enhancedTech.database.primary}`));
-    }
-    console.log('');
+      // Create enhanced tech for compatibility
+      enhancedTech = {
+        frontend: template.techStack.frontend,
+        backend: template.techStack.backend,
+        database: template.techStack.database,
+        testing: template.techStack.testing,
+        deployment: template.techStack.deployment,
+        architecture: {
+          type: template.architecture === 'vertical-slice' ? 'monorepo' : 'monolith',
+          style: template.architecture,
+        },
+        projects: [],
+      };
+    } else {
+      // Detect tech stack from existing project
+      const spinner = ora('Detecting project tech stack...').start();
+      const enhancedDetector = new EnhancedTechDetector(projectRoot);
+      enhancedTech = await enhancedDetector.detectAll();
+      spinner.succeed('Tech stack detected');
 
-    // Use legacy format for config generation (backward compatibility)
-    const detectedTech = {
-      frontend: enhancedTech.frontend,
-      backend: enhancedTech.backend,
-      database: enhancedTech.database,
-      testing: enhancedTech.testing,
-      deployment: enhancedTech.deployment,
-    };
+      // Display detected technologies
+      console.log(chalk.gray('\n📊 Detected Technologies:'));
+
+      // Show architecture info
+      if (enhancedTech.architecture) {
+        console.log(chalk.cyan(`  Architecture: ${enhancedTech.architecture.type} (${enhancedTech.architecture.style})`));
+        if (enhancedTech.architecture.workspaceTool) {
+          console.log(chalk.gray(`  Monorepo: ${enhancedTech.architecture.workspaceTool}`));
+        }
+      }
+
+      // Show all detected projects
+      if (enhancedTech.projects.length > 0) {
+        console.log(chalk.cyan(`\n  Detected ${enhancedTech.projects.length} project(s):`));
+        enhancedTech.projects.forEach((project: any, idx: number) => {
+          const frameworkInfo = project.framework ? ` (${project.framework})` : '';
+          console.log(chalk.gray(`    ${idx + 1}. ${project.language}${frameworkInfo} - ${(project.confidence * 100).toFixed(0)}% confidence`));
+        });
+      }
+
+      // Legacy display for backward compatibility
+      if (enhancedTech.frontend?.framework) {
+        console.log(chalk.gray(`\n  Frontend: ${enhancedTech.frontend.framework}`));
+      }
+      if (enhancedTech.backend?.framework) {
+        console.log(chalk.gray(`  Backend: ${enhancedTech.backend.framework} (${enhancedTech.backend.language})`));
+      }
+      if (enhancedTech.database?.primary) {
+        console.log(chalk.gray(`  Database: ${enhancedTech.database.primary}`));
+      }
+      console.log('');
+
+      // Use legacy format for config generation
+      detectedTech = {
+        frontend: enhancedTech.frontend,
+        backend: enhancedTech.backend,
+        database: enhancedTech.database,
+        testing: enhancedTech.testing,
+        deployment: enhancedTech.deployment,
+      };
+    }
 
     // Step 2: Agent selection
     let selectedAgents: string[] = [];
