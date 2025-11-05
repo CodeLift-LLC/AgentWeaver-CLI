@@ -23,12 +23,14 @@ describe('Stack Templates Installation', () => {
     const templates = await installer.listTemplates();
 
     expect(templates).toBeDefined();
-    expect(templates.length).toBeGreaterThanOrEqual(3);
+    expect(templates.length).toBeGreaterThanOrEqual(5);
 
     const templateIds = templates.map((t) => t.id);
     expect(templateIds).toContain('nextjs-mvp');
     expect(templateIds).toContain('nestjs-backend');
     expect(templateIds).toContain('fastapi-backend');
+    expect(templateIds).toContain('nextjs-nestjs-monorepo');
+    expect(templateIds).toContain('nextjs-fastapi-monorepo');
   });
 
   it('should have valid manifest for nextjs-mvp', async () => {
@@ -70,6 +72,10 @@ describe('Stack Templates Installation', () => {
       selectedFeatures: {},
       environmentVariables: {},
     });
+
+    if (!result.success) {
+      console.log('NestJS installation errors:', result.errors);
+    }
 
     expect(result.success).toBe(true);
     expect(result.template?.techStack.backend?.framework).toBe('nestjs');
@@ -138,8 +144,8 @@ describe('Stack Templates Installation', () => {
     expect(dockerComposeContent).toContain('gotrue'); // authentication
     expect(dockerComposeContent).toContain('langfuse'); // AI integration
 
-    // Should NOT include disabled features
-    expect(dockerComposeContent).not.toContain('mailhog'); // email disabled
+    // Should NOT include disabled features - check for service definition, not just the word
+    expect(dockerComposeContent).not.toMatch(/mailhog:\s*\n\s*image:\s*mailhog\/mailhog/); // email service disabled
   });
 
   it('should replace projectName variable', async () => {
@@ -169,5 +175,49 @@ describe('Stack Templates Installation', () => {
 
     expect(result.success).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
+  });
+
+  it('should install nextjs-nestjs-monorepo template', async () => {
+    const result = await installer.installTemplate('nextjs-nestjs-monorepo', testDir, {
+      projectName: 'test-monorepo',
+      projectPath: testDir,
+      selectedFeatures: {},
+      environmentVariables: {},
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.template?.architecture).toBe('monorepo');
+    expect(result.template?.techStack.frontend?.framework).toBe('nextjs');
+    expect(result.template?.techStack.backend?.framework).toBe('nestjs');
+
+    // Verify monorepo structure
+    expect(await fs.pathExists(path.join(testDir, 'package.json'))).toBe(true);
+    expect(await fs.pathExists(path.join(testDir, 'turbo.json'))).toBe(true);
+    expect(await fs.pathExists(path.join(testDir, 'apps/frontend/package.json'))).toBe(true);
+    expect(await fs.pathExists(path.join(testDir, 'apps/backend/package.json'))).toBe(true);
+    expect(await fs.pathExists(path.join(testDir, 'packages/shared/package.json'))).toBe(true);
+  });
+
+  it('should install nextjs-fastapi-monorepo template', async () => {
+    const result = await installer.installTemplate('nextjs-fastapi-monorepo', testDir, {
+      projectName: 'test-fastapi-monorepo',
+      projectPath: testDir,
+      selectedFeatures: {},
+      environmentVariables: {},
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.template?.architecture).toBe('monorepo');
+    expect(result.template?.techStack.frontend?.framework).toBe('nextjs');
+    expect(result.template?.techStack.backend?.framework).toBe('fastapi');
+    expect(result.template?.techStack.backend?.language).toBe('python');
+
+    // Verify monorepo structure
+    expect(await fs.pathExists(path.join(testDir, 'package.json'))).toBe(true);
+    expect(await fs.pathExists(path.join(testDir, 'pyproject.toml'))).toBe(true);
+    expect(await fs.pathExists(path.join(testDir, '.python-version'))).toBe(true);
+    expect(await fs.pathExists(path.join(testDir, 'apps/frontend/package.json'))).toBe(true);
+    expect(await fs.pathExists(path.join(testDir, 'apps/backend/pyproject.toml'))).toBe(true);
+    expect(await fs.pathExists(path.join(testDir, 'apps/backend/alembic.ini'))).toBe(true);
   });
 });

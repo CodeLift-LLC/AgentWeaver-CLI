@@ -1,0 +1,247 @@
+# Next.js + FastAPI Monorepo Template
+# Production-ready monorepo with Next.js frontend and FastAPI backend
+
+id: nextjs-fastapi-monorepo
+name: Next.js + FastAPI Monorepo
+description: Full-stack monorepo with Next.js 15 frontend and FastAPI backend. Features Python async, type safety, and modern tooling. Best for AI-powered applications and rapid API development.
+complexity: intermediate
+architecture: monorepo
+
+tags:
+  - nextjs
+  - fastapi
+  - react
+  - python
+  - typescript
+  - monorepo
+  - full-stack
+  - ai
+
+requirements:
+  docker: true
+  dockerCompose: "2.20.0"
+  node: "18.0.0"
+  pnpm: true
+  python: "3.11.0"
+  uv: true
+
+techStack:
+  frontend:
+    framework: nextjs
+    version: "15.0.0"
+    language: typescript
+    styling: tailwindcss
+    uiLibrary: shadcn-ui
+    stateManagement: zustand
+  backend:
+    framework: fastapi
+    version: "0.109.0"
+    language: python
+    runtime: python
+    apiStyle: rest
+  database:
+    primary: supabase
+    version: "15"
+    orm: sqlalchemy
+    migrations: alembic
+    vector: pgvector
+  testing:
+    unit: vitest
+    integration: pytest
+    e2e: playwright
+  deployment:
+    containerization: docker
+    ci: github-actions
+  ai:
+    provider: openai
+    sdk: openai
+    observability: langfuse
+  packageManager:
+    node: pnpm
+    python: uv
+
+features:
+  authentication: true
+  aiIntegration: false
+  vectorSearch: false
+  payments: false
+  email: false
+  fileStorage: true
+  realtime: true
+  analytics: false
+
+files:
+  # Root configuration
+  - source: package.json
+    destination: package.json
+    type: template
+    required: true
+
+  - source: pyproject.toml
+    destination: pyproject.toml
+    type: template
+    required: true
+
+  - source: .python-version
+    destination: .python-version
+    type: copy
+    required: true
+
+  # Docker
+  - source: docker-compose.yml
+    destination: docker-compose.yml
+    type: template
+    required: true
+
+  - source: Dockerfile.frontend
+    destination: apps/frontend/Dockerfile
+    type: template
+    required: true
+
+  - source: Dockerfile.backend
+    destination: apps/backend/Dockerfile
+    type: template
+    required: true
+
+  # Frontend (Next.js)
+  - source: apps/frontend/package.json
+    destination: apps/frontend/package.json
+    type: template
+    required: true
+
+  - source: apps/frontend/next.config.ts
+    destination: apps/frontend/next.config.ts
+    type: copy
+    required: true
+
+  - source: apps/frontend/tsconfig.json
+    destination: apps/frontend/tsconfig.json
+    type: copy
+    required: true
+
+  - source: apps/frontend/tailwind.config.ts
+    destination: apps/frontend/tailwind.config.ts
+    type: copy
+    required: true
+
+  - source: apps/frontend/.env.example
+    destination: apps/frontend/.env.example
+    type: template
+    required: true
+
+  # Backend (FastAPI)
+  - source: apps/backend/pyproject.toml
+    destination: apps/backend/pyproject.toml
+    type: template
+    required: true
+
+  - source: apps/backend/alembic.ini
+    destination: apps/backend/alembic.ini
+    type: template
+    required: true
+
+  - source: apps/backend/.env.example
+    destination: apps/backend/.env.example
+    type: template
+    required: true
+
+  # CI/CD
+  - source: .github/workflows/ci.yml
+    destination: .github/workflows/ci.yml
+    type: copy
+    required: true
+
+  # Documentation
+  - source: README.md
+    destination: README.md
+    type: template
+    required: true
+
+  - source: docs/structure.md
+    destination: docs/structure.md
+    type: copy
+    required: true
+
+  # Git
+  - source: .gitignore
+    destination: .gitignore
+    type: copy
+    required: true
+
+  - source: .env.example
+    destination: .env.example
+    type: template
+    required: true
+
+dockerServices:
+  - name: postgres
+    image: supabase/postgres:15.1.0.147
+    ports:
+      - "54322:5432"
+    required: true
+
+  - name: supabase-auth
+    image: supabase/gotrue:v2.132.3
+    ports:
+      - "54321:9999"
+    required: true
+    features:
+      - authentication
+
+  - name: supabase-storage
+    image: supabase/storage-api:v0.43.11
+    ports:
+      - "54324:5000"
+    required: false
+    features:
+      - fileStorage
+
+  - name: supabase-realtime
+    image: supabase/realtime:v2.25.50
+    ports:
+      - "54323:4000"
+    required: false
+    features:
+      - realtime
+
+  - name: redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    required: true
+
+  - name: langfuse
+    image: langfuse/langfuse:latest
+    ports:
+      - "3001:3000"
+    required: false
+    features:
+      - aiIntegration
+
+  - name: mailhog
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    required: false
+    features:
+      - email
+
+setupCommands:
+  - description: Install Node.js dependencies
+    command: pnpm install
+
+  - description: Install Python dependencies
+    command: uv sync
+
+  - description: Run database migrations
+    command: cd apps/backend && uv run alembic upgrade head
+
+  - description: Start development servers
+    command: pnpm dev
+
+metadata:
+  author: AgentWeaver Team
+  version: 1.0.0
+  lastUpdated: "2025-11-05"
+  documentationUrl: https://github.com/CodeLift-LLC/AgentWeaver-CLI

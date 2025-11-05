@@ -67,10 +67,6 @@ files:
     type: template
     required: true
 
-  - source: docker-compose.prod.yml
-    destination: docker-compose.prod.yml
-    type: template
-    required: false
 
   - source: Dockerfile
     destination: Dockerfile
@@ -132,10 +128,6 @@ files:
     type: template
     required: true
 
-  - source: .github/workflows/deploy.yml
-    destination: .github/workflows/deploy.yml
-    type: template
-    required: false
 
   # Environment
   - source: .env.example

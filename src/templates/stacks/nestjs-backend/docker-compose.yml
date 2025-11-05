@@ -47,7 +47,7 @@ services:
       GOTRUE_SMTP_USER: ${SMTP_USER:-}
       GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
       GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-admin@example.com}
-      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-{{projectName}}}
+      GOTRUE_SMTP_SENDER_NAME: {{projectName}}
     depends_on:
       postgres:
         condition: service_healthy
@@ -99,8 +99,8 @@ services:
     environment:
       STUDIO_PG_META_URL: http://postgres:5432
       POSTGRES_PASSWORD: ${DB_PASSWORD:-your-super-secret-password}
-      DEFAULT_ORGANIZATION_NAME: ${STUDIO_DEFAULT_ORGANIZATION:-{{projectName}}}
-      DEFAULT_PROJECT_NAME: ${STUDIO_DEFAULT_PROJECT:-{{projectName}}}
+      DEFAULT_ORGANIZATION_NAME: {{projectName}}
+      DEFAULT_PROJECT_NAME: {{projectName}}
       SUPABASE_URL: http://localhost:54321
       SUPABASE_PUBLIC_URL: ${PUBLIC_SUPABASE_URL:-http://localhost:54321}
       SUPABASE_ANON_KEY: ${ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0}
