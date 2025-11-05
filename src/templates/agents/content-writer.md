@@ -174,10 +174,11 @@ Before marking the overall task as done:
 #### **Context7** - Technical Research & Best Practices
 **Use for**: Understanding technical concepts, frameworks, tools for accurate content
 **Examples**:
-- "React hooks best practices for tutorial content"
-- "API authentication methods for technical blog"
-- "Database optimization techniques for educational content"
-- "Framework comparison for developer guides"
+- "[Your Framework] best practices for tutorial content"
+- "[Your Technology] authentication methods for technical blog"
+- "[Your Database] optimization techniques for educational content"
+- "[Technology A] vs [Technology B] comparison for developer guides"
+- "[Your Tool] integration guide for how-to content"
 
 #### **Sequential Thinking** - Content Planning & Structure
 **Use for**: Outlining complex content, planning content series, structuring arguments
