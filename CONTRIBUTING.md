@@ -140,6 +140,139 @@ export class FileOperationError extends Error {
 }
 ```
 
+## 🌐 Tech Stack Agnostic Guidelines
+
+**CRITICAL**: AgentWeaver-CLI must support ANY technology stack without bias. All agent and skill templates must be tech-stack agnostic.
+
+### Core Principles
+
+1. **Universal First** - Always lead with universal concepts before specific examples
+2. **Use Placeholders** - Replace hardcoded technologies with placeholders like `[Your Framework]`
+3. **Context7 MCP** - Guide users to query Context7 MCP for framework-specific docs
+4. **Comprehensive Coverage** - Support 8+ language ecosystems with 3-7 options each
+5. **Mark Examples** - Clearly mark specific technology lists as non-exhaustive examples
+
+### Required Patterns
+
+✅ **Good - Universal Pattern:**
+```markdown
+### API Error Handling Flow
+
+Request → Validation → Business Logic → Response
+    ↓          ↓              ↓            ↓
+[Validation] [Domain]    [System]   [Transform]
+[Error]      [Error]     [Error]    [to standard format]
+
+Query Context7 MCP: "[Your Framework] error handling middleware patterns"
+```
+
+❌ **Bad - Hardcoded Framework:**
+```markdown
+### Express Error Handling
+
+```javascript
+app.use((err, req, res, next) => {
+  res.status(500).json({ error: err.message });
+});
+```
+```
+
+### Placeholder Syntax
+
+Use these placeholders throughout templates:
+- `[Your Framework]` - For frameworks (React, Django, Spring Boot, etc.)
+- `[Your Language]` - For programming languages (TypeScript, Python, Go, etc.)
+- `[Your Database]` - For databases (PostgreSQL, MongoDB, MySQL, etc.)
+- `[Your Tool]` - For general tools
+- `[Option A]` vs `[Option B]` - For comparisons
+- `{{techStack.category.property}}` - For template variables
+
+### Example Lists
+
+When listing specific technologies, always include a disclaimer:
+
+```markdown
+### Testing Framework Examples
+
+> **Note**: AgentWeaver-CLI supports ALL testing frameworks. Query Context7 MCP for "[Your Testing Framework] best practices".
+
+- **JavaScript/TypeScript**: Jest, Vitest, Mocha, Ava, Jasmine
+- **Python**: pytest, unittest, nose2, Robot Framework
+- **Go**: testing (built-in), Testify, Ginkgo, GoConvey
+- **Java**: JUnit, TestNG, Spock, AssertJ
+- **C#**: xUnit, NUnit, MSTest
+- **Ruby**: RSpec, Minitest
+- **PHP**: PHPUnit, Pest, Codeception
+- **Rust**: cargo test (built-in), rstest
+```
+
+### Comprehensive Coverage Requirements
+
+All templates must support these language ecosystems:
+1. **TypeScript/JavaScript** - Node.js, Deno, Bun
+2. **Python** - CPython, PyPy
+3. **Go** - Standard Go
+4. **Java/Kotlin** - JVM ecosystem
+5. **C#** - .NET ecosystem
+6. **Ruby** - Ruby ecosystem
+7. **PHP** - PHP ecosystem
+8. **Rust** - Rust ecosystem
+
+Provide 3-7 framework/tool options per language ecosystem.
+
+### Context7 MCP Integration
+
+Always reference Context7 MCP for framework-specific documentation:
+
+```markdown
+#### **Context7** - Framework Documentation
+**Use for**: Looking up framework docs, patterns, best practices
+**Examples**:
+- "[Your Framework] authentication patterns"
+- "[Your ORM] migration best practices"
+- "[Framework A] vs [Framework B] comparison"
+- "[Your Tool] configuration guide"
+```
+
+### Collapsible Reference Examples
+
+Use `<details>` tags for language-specific code:
+
+```markdown
+<details>
+<summary>TypeScript Example</summary>
+
+```typescript
+// TypeScript-specific implementation
+```
+</details>
+
+<details>
+<summary>Python Example</summary>
+
+```python
+# Python-specific implementation
+```
+</details>
+```
+
+### Validation Checklist
+
+Before submitting agent/skill templates, verify:
+
+- [ ] No hardcoded language/framework in critical logic
+- [ ] All technology mentions use placeholders
+- [ ] Universal patterns presented before specific examples
+- [ ] Context7 MCP queries use placeholders
+- [ ] Minimum 8 language ecosystems covered
+- [ ] Specific technology lists marked as "Examples" with disclaimer
+- [ ] Language-specific code in `<details>` tags
+
+### Resources
+
+- **[TECH_AGNOSTIC_GUIDE.md](./TECH_AGNOSTIC_GUIDE.md)** - Complete style guide with examples
+- **[PROGRESS_SUMMARY.md](./PROGRESS_SUMMARY.md)** - Refactoring progress and patterns
+
 ## 📝 Creating New Agent Templates
 
 Agent templates are markdown files with YAML frontmatter located in `src/templates/agents/`.
