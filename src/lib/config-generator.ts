@@ -24,7 +24,14 @@ export interface McpConfig {
 }
 
 export interface AgentWeaverConfig {
-  version: string;
+  version?: string;
+  project?: {
+    name?: string;
+    type?: string;
+    description?: string;
+    path?: string;
+    architecture?: string;
+  };
   techStack: {
     mode: 'strict' | 'flexible' | 'adaptive';
     frontend?: {
@@ -397,6 +404,182 @@ export class ConfigGenerator {
     }
 
     return lines.join('\n');
+  }
+
+  /**
+   * Generates tech-stack.md markdown documentation from config
+   * This provides a human-readable view of the tech stack for users
+   */
+  static generateTechStackMarkdown(config: AgentWeaverConfig): string {
+    const lines: string[] = [];
+    const timestamp = new Date().toISOString().split('T')[0];
+
+    // Header with warning
+    lines.push('# Tech Stack Overview');
+    lines.push('');
+    lines.push('<!-- AUTO-GENERATED from agentweaver.config.yml -->');
+    lines.push('<!-- DO NOT EDIT MANUALLY - Changes will be overwritten -->');
+    lines.push('<!-- To update: Edit agentweaver.config.yml or ask @tech-lead -->');
+    lines.push('');
+    lines.push(`Last updated: ${timestamp}`);
+    lines.push('');
+
+    // Stack Mode section
+    const modeDescriptions: Record<string, string> = {
+      strict: 'Agents **MUST** use only the specified technologies without exceptions.',
+      flexible:
+        'Agents **prefer** the specified stack but can suggest alternatives with clear justification (default).',
+      adaptive: 'Agents **auto-detect** and adapt to project patterns, using config as guidance.',
+    };
+
+    lines.push(`## Stack Mode: ${this.capitalize(config.techStack.mode)}`);
+    lines.push('');
+    lines.push(modeDescriptions[config.techStack.mode]);
+    lines.push('');
+
+    // Technologies table
+    lines.push('## Technologies');
+    lines.push('');
+    lines.push('| Category | Technology | Details |');
+    lines.push('|----------|------------|---------|');
+
+    // Helper to add table row
+    const addRow = (category: string, technology: string, details?: string) => {
+      const detailsText = details || '';
+      lines.push(`| ${category} | ${technology} | ${detailsText} |`);
+    };
+
+    // Frontend section
+    if (config.techStack.frontend) {
+      lines.push('| **Frontend** | | |');
+      if (config.techStack.frontend.language) {
+        addRow('Language', config.techStack.frontend.language, 'Frontend programming language');
+      }
+      if (config.techStack.frontend.framework) {
+        addRow('Framework', config.techStack.frontend.framework, 'UI framework');
+      }
+      if (config.techStack.frontend.styling) {
+        addRow('Styling', config.techStack.frontend.styling, 'CSS solution');
+      }
+      if (config.techStack.frontend.uiLibrary) {
+        addRow('UI Library', config.techStack.frontend.uiLibrary, 'Component library');
+      }
+      if (config.techStack.frontend.stateManagement) {
+        addRow('State Management', config.techStack.frontend.stateManagement, 'Client state');
+      }
+      if (config.techStack.frontend.routing) {
+        addRow('Routing', config.techStack.frontend.routing, 'Client-side routing');
+      }
+    }
+
+    // Backend section
+    if (config.techStack.backend) {
+      lines.push('| **Backend** | | |');
+      if (config.techStack.backend.language) {
+        addRow('Language', config.techStack.backend.language, 'Backend programming language');
+      }
+      if (config.techStack.backend.framework) {
+        addRow('Framework', config.techStack.backend.framework, 'Server framework');
+      }
+      if (config.techStack.backend.apiStyle) {
+        addRow('API Style', config.techStack.backend.apiStyle, 'API architecture');
+      }
+      if (config.techStack.backend.validation) {
+        addRow('Validation', config.techStack.backend.validation, 'Request validation');
+      }
+    }
+
+    // Database section
+    if (config.techStack.database) {
+      lines.push('| **Database** | | |');
+      if (config.techStack.database.primary) {
+        addRow('Primary', config.techStack.database.primary, 'Main database');
+      }
+      if (config.techStack.database.orm) {
+        addRow('ORM/ODM', config.techStack.database.orm, 'Database client');
+      }
+      if (config.techStack.database.cache) {
+        addRow('Cache', config.techStack.database.cache, 'Caching layer');
+      }
+      if (config.techStack.database.migrations) {
+        addRow('Migrations', config.techStack.database.migrations, 'Schema migrations');
+      }
+    }
+
+    // Testing section
+    if (config.techStack.testing) {
+      lines.push('| **Testing** | | |');
+      if (config.techStack.testing.unit) {
+        addRow('Unit Testing', config.techStack.testing.unit, 'Unit test framework');
+      }
+      if (config.techStack.testing.e2e) {
+        addRow('E2E Testing', config.techStack.testing.e2e, 'End-to-end testing');
+      }
+      if (config.techStack.testing.coverage) {
+        const coverageText = config.techStack.testing.coverage.enabled
+          ? `Enabled (${config.techStack.testing.coverage.threshold || 80}% threshold)`
+          : 'Disabled';
+        addRow('Coverage', coverageText, 'Code coverage tracking');
+      }
+    }
+
+    // Deployment section
+    if (config.techStack.deployment) {
+      lines.push('| **Deployment** | | |');
+      if (config.techStack.deployment.platform) {
+        addRow('Platform', config.techStack.deployment.platform, 'Hosting platform');
+      }
+      if (config.techStack.deployment.containerization) {
+        addRow(
+          'Containerization',
+          config.techStack.deployment.containerization,
+          'Container technology'
+        );
+      }
+      if (config.techStack.deployment.cicd) {
+        addRow('CI/CD', config.techStack.deployment.cicd, 'Continuous integration/deployment');
+      }
+    }
+
+    lines.push('');
+
+    // Quick reference section
+    lines.push('## Quick Reference');
+    lines.push('');
+    lines.push('**Commands:**');
+    lines.push('```bash');
+    lines.push('# View detailed configuration');
+    lines.push('cat .claude/agentweaver.config.yml');
+    lines.push('');
+    lines.push('# Update tech stack via tech-lead agent');
+    lines.push('@tech-lead update backend framework to NestJS');
+    lines.push('```');
+    lines.push('');
+    lines.push('**For Agents:**');
+    lines.push(
+      'Read `.claude/agentweaver.config.yml` for programmatic access to tech stack configuration.'
+    );
+    lines.push('');
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Writes tech-stack.md markdown file
+   */
+  static async writeTechStackMarkdown(
+    filePath: string,
+    config: AgentWeaverConfig
+  ): Promise<void> {
+    const content = this.generateTechStackMarkdown(config);
+    await writeFile(filePath, content);
+  }
+
+  /**
+   * Capitalizes first letter of a string
+   */
+  private static capitalize(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   /**

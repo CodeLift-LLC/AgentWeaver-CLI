@@ -144,6 +144,155 @@ Before marking the overall task as done:
 - **Conflict Resolution**: Technical disagreements
 - **Documentation**: Ensure technical decisions are documented
 
+### 6. Tech Stack Management
+- **Configuration Updates**: Maintain `.claude/agentweaver.config.yml` as source of truth
+- **Documentation Generation**: Regenerate `.claude/tech-stack.md` after config updates
+- **Brownfield Detection**: Analyze existing codebases and update tech stack configuration
+- **Technology Evaluation**: Assess new technologies before adding to stack
+- **Version Updates**: Keep technology versions current and secure
+
+## Tech Stack Update Workflow
+
+When updating the project's tech stack configuration:
+
+### 1. Read Current Configuration
+```bash
+# Read existing config to understand current stack
+cat .claude/agentweaver.config.yml
+```
+
+### 2. For Brownfield Projects (Auto-Detection)
+When user requests tech stack detection for existing project:
+
+**Step 1: Analyze Project Structure**
+- Use Glob to identify framework/language indicators:
+  - `package.json` → Node.js/TypeScript project
+  - `requirements.txt`, `pyproject.toml` → Python project
+  - `go.mod` → Go project
+  - `pom.xml`, `build.gradle` → Java project
+  - `*.csproj` → C#/.NET project
+
+**Step 2: Detect Specific Technologies**
+- **Frontend**: Look for React/Vue/Angular/Svelte in package.json, imports, config files
+- **Backend**: Identify Express/Fastify/NestJS/Django/FastAPI/Spring Boot from dependencies
+- **Database**: Check for PostgreSQL/MongoDB/MySQL client libraries, connection configs
+- **Testing**: Detect Jest/Vitest/Pytest/JUnit from test files and configs
+- **Deployment**: Find Docker files, CI/CD configs, cloud deployment manifests
+
+**Step 3: Document Findings**
+Create summary of detected technologies with confidence levels:
+```markdown
+## Detected Tech Stack
+
+### High Confidence (95%+)
+- Frontend Framework: React 18.2 (package.json, JSX imports)
+- Backend Framework: Express.js 4.18 (server.js, middleware)
+- Database: PostgreSQL 15 (pg client, migrations)
+
+### Medium Confidence (70-95%)
+- State Management: Redux Toolkit (likely, needs confirmation)
+- Testing: Jest (config found, usage varies)
+
+### Low Confidence (<70%)
+- Deployment: Docker (Dockerfile exists but may not be active)
+```
+
+### 3. Update Configuration File
+Use **Edit** tool to update `.claude/agentweaver.config.yml`:
+
+**For Adding New Technology:**
+```yaml
+# Example: Adding Redis for caching
+techStack:
+  database:
+    primary: postgresql
+    cache: redis  # Added
+    cacheVersion: "7.2"  # Added
+```
+
+**For Updating Versions:**
+```yaml
+# Example: Upgrading framework version
+techStack:
+  frontend:
+    framework: react
+    version: "18.3.0"  # Updated from 18.2.0
+```
+
+**For Changing Stack Mode:**
+```yaml
+# Example: Switching from flexible to strict mode
+techStack:
+  mode: strict  # Changed from flexible
+```
+
+**IMPORTANT**:
+- Maintain YAML syntax and indentation
+- Preserve existing comments
+- Validate YAML structure before saving
+- Add comments explaining rationale for major changes
+
+### 4. Regenerate Documentation
+After updating `agentweaver.config.yml`, regenerate the human-readable overview:
+
+```bash
+# Run regenerate command (once implemented)
+npx agentweaver regenerate-docs
+```
+
+**Manual Alternative** (until command exists):
+```bash
+# Rebuild project to regenerate templates
+npm run build
+
+# Re-run init in test mode to verify generation
+cd /tmp/test-project
+npx agentweaver init
+```
+
+### 5. Validate Changes
+Before confirming updates:
+- [ ] YAML syntax is valid (no parse errors)
+- [ ] All required fields are present
+- [ ] Versions are accurate and available
+- [ ] Tech stack mode is appropriate (strict/flexible/adaptive)
+- [ ] Comments explain major changes
+- [ ] `.claude/tech-stack.md` regenerated successfully
+- [ ] No breaking changes to existing agent references
+
+### 6. Communicate Changes
+Inform user and team of tech stack updates:
+
+```markdown
+## Tech Stack Updated
+
+**Changes:**
+- ✅ Added Redis 7.2 for caching layer
+- ✅ Updated React from 18.2.0 to 18.3.0
+- ⚠️ Changed mode from "flexible" to "strict"
+
+**Impact:**
+- Agents will now strictly enforce use of specified technologies
+- Redis caching patterns now available to backend-dev
+- React 18.3 features (useOptimistic, useFormStatus) now supported
+
+**Files Updated:**
+- `.claude/agentweaver.config.yml` - Configuration source of truth
+- `.claude/tech-stack.md` - Human-readable overview (regenerated)
+
+**Next Steps:**
+- Update dependencies: `npm install react@18.3.0`
+- Configure Redis connection in environment
+- Update agent workflows to leverage new technologies
+```
+
+### 7. Update Architecture Documentation
+If tech stack changes affect architecture:
+- Update ADRs (Architecture Decision Records)
+- Document migration paths for breaking changes
+- Update system architecture diagrams
+- Inform @backend-dev, @frontend-dev, @devops of changes
+
 ## Skills to Leverage
 
 Use these reusable skills from `.claude/skills/` for architectural decisions and code reviews:

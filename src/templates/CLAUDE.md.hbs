@@ -373,36 +373,18 @@ Test-Driven Development methodology and practices
 
 ### Tech Stack Configuration
 
-Your project's tech stack is configured in `agentweaver.config.yml`:
+**Quick Reference**: {{#if techStack.frontend.framework}}{{techStack.frontend.framework}}{{/if}}{{#if techStack.backend.framework}}, {{techStack.backend.framework}}{{/if}}{{#if techStack.database.primary}}, {{techStack.database.primary}}{{/if}}{{#if techStack.testing.unit}}, {{techStack.testing.unit}}{{/if}}
 
-```yaml
-techStack:
-  mode: {{techStack.mode}}  # strict | flexible | adaptive
+**Detailed Information:**
+- **Configuration**: [`.claude/agentweaver.config.yml`](.claude/agentweaver.config.yml) - Source of truth for agents
+- **Overview**: [`.claude/tech-stack.md`](.claude/tech-stack.md) - Human-readable tech stack overview
 
-  frontend:
-    framework: {{techStack.frontend.framework}}
-    language: {{techStack.frontend.language}}
-    styling: {{techStack.frontend.styling}}
-    uiLibrary: {{techStack.frontend.uiLibrary}}
-
-  backend:
-    framework: {{techStack.backend.framework}}
-    language: {{techStack.backend.language}}
-    apiStyle: {{techStack.backend.apiStyle}}
-
-  database:
-    primary: {{techStack.database.primary}}
-    orm: {{techStack.database.orm}}
-
-  testing:
-    unit: {{techStack.testing.unit}}
-    e2e: {{techStack.testing.e2e}}
-```
-
-**Tech Stack Modes:**
+**Tech Stack Mode**: **{{techStack.mode}}**
 - **strict**: Agents MUST use only specified technologies
 - **flexible**: Agents prefer specified stack but can suggest alternatives with justification (default)
 - **adaptive**: Agents auto-detect and adapt to project patterns
+
+**For Agents**: Always read `.claude/agentweaver.config.yml` when tech stack information is needed.
 
 ### MCP Servers
 

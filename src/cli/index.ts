@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { initCommand } from './commands/init.js';
 import { validateCommand } from './commands/validate.js';
+import { regenerateDocsCommand } from './commands/regenerate-docs.js';
 
 const program = new Command();
 
@@ -31,6 +32,12 @@ program
   .option('--pack <pack>', 'Validate a specific template pack directory')
   .option('-v, --verbose', 'Show detailed validation information')
   .action(validateCommand);
+
+// Regenerate docs command
+program
+  .command('regenerate-docs')
+  .description('Regenerate documentation files (tech-stack.md) from agentweaver.config.yml')
+  .action(regenerateDocsCommand);
 
 // Global error handling
 program.exitOverride();

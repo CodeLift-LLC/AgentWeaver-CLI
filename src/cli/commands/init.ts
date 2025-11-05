@@ -363,6 +363,14 @@ export async function initCommand(options: InitOptions) {
     );
     configSpinner.succeed('Generated .claude/agentweaver.config.yml');
 
+    // Generate tech-stack.md (human-readable view)
+    const techStackSpinner = ora('Generating tech stack documentation...').start();
+    await ConfigGenerator.writeTechStackMarkdown(
+      path.join(claudeDir, 'tech-stack.md'),
+      agentWeaverConfig
+    );
+    techStackSpinner.succeed('Generated .claude/tech-stack.md');
+
     // Generate CLAUDE.md
     const claudeMdSpinner = ora('Generating CLAUDE.md...').start();
     const installedAgentNames = agentResult.installed.map((agent: any) => agent.name);
@@ -394,7 +402,8 @@ export async function initCommand(options: InitOptions) {
     }
     console.log(chalk.gray(`  ├── CLAUDE.md              (Project context)`));
     console.log(chalk.gray(`  ├── WORKFLOWS.md           (Agent workflows)`));
-    console.log(chalk.gray(`  └── agentweaver.config.yml (Tech stack)`));
+    console.log(chalk.gray(`  ├── agentweaver.config.yml (Tech stack config)`));
+    console.log(chalk.gray(`  └── tech-stack.md          (Tech stack overview)`));
     if (mcpServers.length > 0) {
       console.log(chalk.gray(`  .mcp.json                  (MCP servers at root)`));
       console.log(chalk.gray(`  .env.example               (Environment variables)`));
