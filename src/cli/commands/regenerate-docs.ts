@@ -96,12 +96,9 @@ function findClaudeDirectory(): string | null {
  * Validate config structure
  */
 function validateConfig(config: AgentWeaverConfig): void {
-  if (!config.project) {
-    throw new Error('Missing "project" section in configuration');
-  }
-
-  if (!config.project.name || typeof config.project.name !== 'string') {
-    throw new Error('Missing or invalid "project.name" in configuration');
+  // Project section is optional
+  if (config.project && config.project.name && typeof config.project.name !== 'string') {
+    throw new Error('Invalid "project.name" in configuration - must be a string');
   }
 
   if (!config.techStack) {
