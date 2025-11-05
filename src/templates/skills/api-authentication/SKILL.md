@@ -78,747 +78,435 @@ This skill focuses on authentication patterns. Combine with authorization middle
 6. **Use short-lived access tokens** with refresh tokens
 7. **Implement account lockout** after failed attempts
 
-## Implementation Examples
+## Universal Implementation Pattern
 
-### 1. JWT Authentication (Express.js + TypeScript)
+### 1. JWT Authentication Pattern (Language-Agnostic)
 
-```typescript
-// types/auth.ts
-export interface TokenPayload {
-  userId: string;
-  email: string;
-  role: string;
-}
+#### Conceptual Flow
 
-export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: number;
-}
+```
+1. User Registration:
+   ├─> Receive credentials (email, password)
+   ├─> Validate input format
+   ├─> Check if user already exists
+   ├─> Hash password (bcrypt/argon2)
+   └─> Store user in database
 
-// utils/jwt.ts
-import jwt from 'jsonwebtoken';
-import { TokenPayload } from '../types/auth';
+2. User Login:
+   ├─> Receive credentials
+   ├─> Find user by email
+   ├─> Compare hashed password
+   ├─> Generate access token (short-lived, e.g., 15min)
+   ├─> Generate refresh token (long-lived, e.g., 7 days)
+   └─> Return tokens to client
 
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
-const ACCESS_TOKEN_EXPIRY = '15m';
-const REFRESH_TOKEN_EXPIRY = '7d';
+3. Protected Route Access:
+   ├─> Extract token from request (header/cookie)
+   ├─> Verify token signature
+   ├─> Decode token payload
+   ├─> Validate expiration
+   ├─> Extract user info
+   └─> Proceed to route handler
 
-export const generateTokenPair = (payload: TokenPayload): TokenPair => {
-  const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
-    expiresIn: ACCESS_TOKEN_EXPIRY,
-    issuer: 'api.example.com',
-    audience: 'api.example.com',
-  });
-
-  const refreshToken = jwt.sign(
-    { userId: payload.userId },
-    REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: REFRESH_TOKEN_EXPIRY,
-      issuer: 'api.example.com',
-    }
-  );
-
-  return {
-    accessToken,
-    refreshToken,
-    expiresIn: 15 * 60, // 15 minutes in seconds
-  };
-};
-
-export const verifyAccessToken = (token: string): TokenPayload => {
-  try {
-    return jwt.verify(token, ACCESS_TOKEN_SECRET, {
-      issuer: 'api.example.com',
-      audience: 'api.example.com',
-    }) as TokenPayload;
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      throw new Error('TOKEN_EXPIRED');
-    }
-    throw new Error('INVALID_TOKEN');
-  }
-};
-
-export const verifyRefreshToken = (token: string): { userId: string } => {
-  try {
-    return jwt.verify(token, REFRESH_TOKEN_SECRET, {
-      issuer: 'api.example.com',
-    }) as { userId: string };
-  } catch (error) {
-    throw new Error('INVALID_REFRESH_TOKEN');
-  }
-};
-
-// middleware/authenticate.ts
-import { Request, Response, NextFunction } from 'express';
-import { verifyAccessToken } from '../utils/jwt';
-import { UnauthorizedError } from '../errors';
-
-export interface AuthRequest extends Request {
-  user?: TokenPayload;
-}
-
-export const authenticate = (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    // Extract token from Authorization header
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
-      throw new UnauthorizedError('Missing or invalid authorization header');
-    }
-
-    const token = authHeader.substring(7);
-    const payload = verifyAccessToken(token);
-
-    // Attach user to request
-    req.user = payload;
-    next();
-  } catch (error) {
-    if (error.message === 'TOKEN_EXPIRED') {
-      return res.status(401).json({
-        error: {
-          code: 'TOKEN_EXPIRED',
-          message: 'Access token has expired',
-        },
-      });
-    }
-    next(new UnauthorizedError('Invalid or expired token'));
-  }
-};
-
-// routes/auth.ts
-import express from 'express';
-import bcrypt from 'bcrypt';
-import { generateTokenPair, verifyRefreshToken } from '../utils/jwt';
-import { User } from '../models/User';
-import { RefreshToken } from '../models/RefreshToken';
-
-const router = express.Router();
-
-// Login endpoint
-router.post('/auth/login', async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-
-    // Find user
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({
-        error: {
-          code: 'INVALID_CREDENTIALS',
-          message: 'Invalid email or password',
-        },
-      });
-    }
-
-    // Verify password
-    const isValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isValid) {
-      // Increment failed login attempts
-      await user.incrementFailedLogins();
-      return res.status(401).json({
-        error: {
-          code: 'INVALID_CREDENTIALS',
-          message: 'Invalid email or password',
-        },
-      });
-    }
-
-    // Check if account is locked
-    if (user.isLocked) {
-      return res.status(423).json({
-        error: {
-          code: 'ACCOUNT_LOCKED',
-          message: 'Account locked due to too many failed login attempts',
-        },
-      });
-    }
-
-    // Generate tokens
-    const tokens = generateTokenPair({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-    });
-
-    // Store refresh token
-    await RefreshToken.create({
-      token: tokens.refreshToken,
-      userId: user.id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
-
-    // Reset failed login attempts
-    await user.resetFailedLogins();
-
-    res.json({
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-        },
-        tokens,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Refresh token endpoint
-router.post('/auth/refresh', async (req, res, next) => {
-  try {
-    const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      return res.status(400).json({
-        error: {
-          code: 'MISSING_REFRESH_TOKEN',
-          message: 'Refresh token is required',
-        },
-      });
-    }
-
-    // Verify refresh token
-    const payload = verifyRefreshToken(refreshToken);
-
-    // Check if refresh token exists and is valid
-    const storedToken = await RefreshToken.findOne({
-      token: refreshToken,
-      userId: payload.userId,
-      revoked: false,
-    });
-
-    if (!storedToken || storedToken.expiresAt < new Date()) {
-      return res.status(401).json({
-        error: {
-          code: 'INVALID_REFRESH_TOKEN',
-          message: 'Refresh token is invalid or expired',
-        },
-      });
-    }
-
-    // Get user
-    const user = await User.findById(payload.userId);
-    if (!user) {
-      return res.status(401).json({
-        error: {
-          code: 'USER_NOT_FOUND',
-          message: 'User not found',
-        },
-      });
-    }
-
-    // Generate new token pair
-    const tokens = generateTokenPair({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-    });
-
-    // Revoke old refresh token and store new one
-    await storedToken.revoke();
-    await RefreshToken.create({
-      token: tokens.refreshToken,
-      userId: user.id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
-
-    res.json({ data: { tokens } });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Logout endpoint
-router.post('/auth/logout', authenticate, async (req, res, next) => {
-  try {
-    const { refreshToken } = req.body;
-
-    // Revoke refresh token
-    await RefreshToken.updateMany(
-      { token: refreshToken, userId: req.user.userId },
-      { revoked: true }
-    );
-
-    res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
-});
-
-export default router;
+4. Token Refresh:
+   ├─> Receive refresh token
+   ├─> Verify refresh token
+   ├─> Check if revoked (optional)
+   ├─> Generate new access token
+   └─> Return new access token
 ```
 
-### 2. JWT Authentication (FastAPI + Python)
+#### Data Structures
 
-```python
-# models/token.py
-from pydantic import BaseModel
-from datetime import datetime
-from typing import Optional
-
-class TokenPayload(BaseModel):
-    user_id: str
-    email: str
-    role: str
-    exp: datetime
-
-class TokenPair(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-    expires_in: int
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-class RefreshRequest(BaseModel):
-    refresh_token: str
-
-# utils/jwt.py
-from datetime import datetime, timedelta
-from typing import Dict
-import jwt
-from passlib.context import CryptContext
-import os
-
-ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
-REFRESH_TOKEN_SECRET = os.getenv("REFRESH_TOKEN_SECRET")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
-REFRESH_TOKEN_EXPIRE_DAYS = 7
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against its hash"""
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password: str) -> str:
-    """Hash a password"""
-    return pwd_context.hash(password)
-
-def create_access_token(data: Dict) -> str:
-    """Create JWT access token"""
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({
-        "exp": expire,
-        "iss": "api.example.com",
-        "aud": "api.example.com"
-    })
-    return jwt.encode(to_encode, ACCESS_TOKEN_SECRET, algorithm=ALGORITHM)
-
-def create_refresh_token(user_id: str) -> str:
-    """Create JWT refresh token"""
-    expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    to_encode = {
-        "user_id": user_id,
-        "exp": expire,
-        "iss": "api.example.com"
-    }
-    return jwt.encode(to_encode, REFRESH_TOKEN_SECRET, algorithm=ALGORITHM)
-
-def verify_access_token(token: str) -> Dict:
-    """Verify and decode access token"""
-    try:
-        payload = jwt.decode(
-            token,
-            ACCESS_TOKEN_SECRET,
-            algorithms=[ALGORITHM],
-            issuer="api.example.com",
-            audience="api.example.com"
-        )
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise ValueError("TOKEN_EXPIRED")
-    except jwt.InvalidTokenError:
-        raise ValueError("INVALID_TOKEN")
-
-def verify_refresh_token(token: str) -> Dict:
-    """Verify and decode refresh token"""
-    try:
-        payload = jwt.decode(
-            token,
-            REFRESH_TOKEN_SECRET,
-            algorithms=[ALGORITHM],
-            issuer="api.example.com"
-        )
-        return payload
-    except jwt.InvalidTokenError:
-        raise ValueError("INVALID_REFRESH_TOKEN")
-
-# dependencies/auth.py
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from utils.jwt import verify_access_token
-
-security = HTTPBearer()
-
-async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
-) -> Dict:
-    """Dependency to get current authenticated user"""
-    try:
-        token = credentials.credentials
-        payload = verify_access_token(token)
-        return payload
-    except ValueError as e:
-        if str(e) == "TOKEN_EXPIRED":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Access token has expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-# routes/auth.py
-from fastapi import APIRouter, HTTPException, status, Depends
-from models.token import TokenPair, LoginRequest, RefreshRequest
-from models.user import User
-from database import get_db
-from utils.jwt import (
-    verify_password,
-    create_access_token,
-    create_refresh_token,
-    verify_refresh_token
-)
-from dependencies.auth import get_current_user
-
-router = APIRouter(prefix="/auth", tags=["authentication"])
-
-@router.post("/login", response_model=TokenPair)
-async def login(request: LoginRequest, db = Depends(get_db)):
-    """Authenticate user and return token pair"""
-    # Find user
-    user = await User.find_by_email(db, request.email)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
-        )
-
-    # Verify password
-    if not verify_password(request.password, user.password_hash):
-        await user.increment_failed_logins(db)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
-        )
-
-    # Check if account is locked
-    if user.is_locked:
-        raise HTTPException(
-            status_code=status.HTTP_423_LOCKED,
-            detail="Account locked due to too many failed login attempts"
-        )
-
-    # Generate tokens
-    access_token = create_access_token({
-        "user_id": user.id,
-        "email": user.email,
-        "role": user.role
-    })
-    refresh_token = create_refresh_token(user.id)
-
-    # Store refresh token
-    await user.store_refresh_token(db, refresh_token)
-    await user.reset_failed_logins(db)
-
-    return TokenPair(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        expires_in=900  # 15 minutes
-    )
-
-@router.post("/refresh", response_model=TokenPair)
-async def refresh(request: RefreshRequest, db = Depends(get_db)):
-    """Refresh access token using refresh token"""
-    try:
-        payload = verify_refresh_token(request.refresh_token)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token"
-        )
-
-    # Verify refresh token exists and is valid
-    user = await User.find_by_id(db, payload["user_id"])
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found"
-        )
-
-    is_valid = await user.verify_refresh_token(db, request.refresh_token)
-    if not is_valid:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired refresh token"
-        )
-
-    # Generate new tokens
-    access_token = create_access_token({
-        "user_id": user.id,
-        "email": user.email,
-        "role": user.role
-    })
-    new_refresh_token = create_refresh_token(user.id)
-
-    # Revoke old and store new refresh token
-    await user.revoke_refresh_token(db, request.refresh_token)
-    await user.store_refresh_token(db, new_refresh_token)
-
-    return TokenPair(
-        access_token=access_token,
-        refresh_token=new_refresh_token,
-        expires_in=900
-    )
-
-@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-async def logout(
-    request: RefreshRequest,
-    current_user: Dict = Depends(get_current_user),
-    db = Depends(get_db)
-):
-    """Logout user by revoking refresh token"""
-    user = await User.find_by_id(db, current_user["user_id"])
-    await user.revoke_refresh_token(db, request.refresh_token)
-    return None
+**Token Payload Structure:**
 ```
-
-### 3. API Key Authentication
-
-```typescript
-// middleware/apiKey.ts
-import crypto from 'crypto';
-import { Request, Response, NextFunction } from 'express';
-import { ApiKey } from '../models/ApiKey';
-import { UnauthorizedError } from '../errors';
-
-export const authenticateApiKey = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const apiKey = req.headers['x-api-key'] as string;
-
-    if (!apiKey) {
-      throw new UnauthorizedError('API key is required');
-    }
-
-    // Hash the API key
-    const hashedKey = crypto
-      .createHash('sha256')
-      .update(apiKey)
-      .digest('hex');
-
-    // Find API key
-    const keyRecord = await ApiKey.findOne({
-      keyHash: hashedKey,
-      revoked: false,
-    });
-
-    if (!keyRecord) {
-      throw new UnauthorizedError('Invalid API key');
-    }
-
-    // Check expiration
-    if (keyRecord.expiresAt && keyRecord.expiresAt < new Date()) {
-      throw new UnauthorizedError('API key has expired');
-    }
-
-    // Update last used timestamp
-    await keyRecord.updateLastUsed();
-
-    // Attach API key info to request
-    req.apiKey = {
-      id: keyRecord.id,
-      name: keyRecord.name,
-      scopes: keyRecord.scopes,
-    };
-
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Generate API key
-export const generateApiKey = (): string => {
-  // Generate random 32-byte key
-  const key = crypto.randomBytes(32).toString('hex');
-  return `ak_${key}`;
-};
-
-export const hashApiKey = (key: string): string => {
-  return crypto.createHash('sha256').update(key).digest('hex');
-};
-```
-
-## Best Practices
-
-### 1. Token Security
-
-```typescript
-// Store tokens securely
-// ✅ GOOD - httpOnly cookie (for web apps)
-res.cookie('refreshToken', tokens.refreshToken, {
-  httpOnly: true,
-  secure: true,
-  sameSite: 'strict',
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
-
-// ❌ BAD - localStorage (vulnerable to XSS)
-localStorage.setItem('token', accessToken);
-```
-
-### 2. Password Requirements
-
-```typescript
-const passwordSchema = z.string()
-  .min(8, 'Password must be at least 8 characters')
-  .regex(/[A-Z]/, 'Password must contain uppercase letter')
-  .regex(/[a-z]/, 'Password must contain lowercase letter')
-  .regex(/[0-9]/, 'Password must contain number')
-  .regex(/[^A-Za-z0-9]/, 'Password must contain special character');
-```
-
-### 3. Rate Limiting Auth Endpoints
-
-```typescript
-import rateLimit from 'express-rate-limit';
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 requests per window
-  message: 'Too many login attempts, please try again later',
-});
-
-router.post('/auth/login', authLimiter, loginHandler);
-```
-
-### 4. Account Lockout
-
-```typescript
-// Lock account after 5 failed attempts
-const MAX_FAILED_ATTEMPTS = 5;
-const LOCK_DURATION = 30 * 60 * 1000; // 30 minutes
-
-if (user.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
-  user.lockedUntil = new Date(Date.now() + LOCK_DURATION);
-  await user.save();
+{
+  userId: <unique identifier>,
+  email: <user email>,
+  role: <user role/permissions>,
+  iat: <issued at timestamp>,
+  exp: <expiration timestamp>
 }
 ```
 
-## Testing Authentication
-
-```typescript
-describe('JWT Authentication', () => {
-  it('should login with valid credentials', async () => {
-    const response = await request(app)
-      .post('/auth/login')
-      .send({ email: 'user@example.com', password: 'password123' })
-      .expect(200);
-
-    expect(response.body.data.tokens.accessToken).toBeDefined();
-    expect(response.body.data.tokens.refreshToken).toBeDefined();
-  });
-
-  it('should reject invalid credentials', async () => {
-    const response = await request(app)
-      .post('/auth/login')
-      .send({ email: 'user@example.com', password: 'wrongpassword' })
-      .expect(401);
-
-    expect(response.body.error.code).toBe('INVALID_CREDENTIALS');
-  });
-
-  it('should access protected route with valid token', async () => {
-    const token = await generateTestToken();
-
-    await request(app)
-      .get('/api/protected')
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200);
-  });
-
-  it('should reject expired token', async () => {
-    const expiredToken = generateExpiredToken();
-
-    const response = await request(app)
-      .get('/api/protected')
-      .set('Authorization', `Bearer ${expiredToken}`)
-      .expect(401);
-
-    expect(response.body.error.code).toBe('TOKEN_EXPIRED');
-  });
-
-  it('should refresh access token', async () => {
-    const { refreshToken } = await loginUser();
-
-    const response = await request(app)
-      .post('/auth/refresh')
-      .send({ refreshToken })
-      .expect(200);
-
-    expect(response.body.data.tokens.accessToken).toBeDefined();
-  });
-});
+**Token Pair Response:**
 ```
+{
+  accessToken: <short-lived JWT>,
+  refreshToken: <long-lived JWT or opaque token>,
+  expiresIn: <seconds until expiration>,
+  tokenType: "Bearer"
+}
+```
+
+#### Core Functions (Pseudocode)
+
+**Generate Token:**
+```
+function generateToken(payload, secret, expiresIn):
+  token = JWT.sign(payload, secret, {
+    expiresIn: expiresIn,
+    algorithm: 'HS256' // or RS256 for asymmetric
+  })
+  return token
+```
+
+**Verify Token:**
+```
+function verifyToken(token, secret):
+  try:
+    payload = JWT.verify(token, secret)
+    return { valid: true, payload: payload }
+  catch (error):
+    return { valid: false, error: error.message }
+```
+
+**Hash Password:**
+```
+function hashPassword(plainPassword, saltRounds = 10):
+  salt = generateSalt(saltRounds)
+  hash = bcrypt.hash(plainPassword, salt)
+  return hash
+```
+
+**Compare Password:**
+```
+function comparePassword(plainPassword, hashedPassword):
+  isMatch = bcrypt.compare(plainPassword, hashedPassword)
+  return isMatch
+```
+
+#### Middleware Pattern (Pseudocode)
+
+```
+function authenticationMiddleware(request, response, next):
+  // 1. Extract token from header or cookie
+  authHeader = request.headers['authorization']
+  if not authHeader:
+    return response.status(401).json({ error: 'No token provided' })
+
+  token = authHeader.replace('Bearer ', '')
+
+  // 2. Verify token
+  result = verifyToken(token, SECRET_KEY)
+
+  if not result.valid:
+    return response.status(401).json({ error: 'Invalid or expired token' })
+
+  // 3. Attach user to request
+  request.user = result.payload
+
+  // 4. Proceed to next handler
+  next()
+```
+
+#### API Endpoints Pattern
+
+```
+POST /auth/register
+  Body: { email, password, name }
+  Response: { user: { id, email, name }, tokens: TokenPair }
+
+POST /auth/login
+  Body: { email, password }
+  Response: { user: { id, email, name }, tokens: TokenPair }
+
+POST /auth/refresh
+  Body: { refreshToken }
+  Response: { accessToken, expiresIn }
+
+POST /auth/logout
+  Headers: { Authorization: "Bearer <token>" }
+  Response: { message: "Logged out successfully" }
+
+GET /auth/me
+  Headers: { Authorization: "Bearer <token>" }
+  Response: { user: { id, email, name, role } }
+```
+
+### 2. OAuth 2.0 Pattern (Language-Agnostic)
+
+#### OAuth Flow Types
+
+**Authorization Code Flow (Most Common):**
+```
+1. Client redirects user to OAuth provider:
+   → GET /oauth/authorize?client_id=...&redirect_uri=...&scope=...&state=...
+
+2. User authenticates with provider
+
+3. Provider redirects back with auth code:
+   → GET /callback?code=...&state=...
+
+4. Client exchanges code for tokens:
+   → POST /oauth/token
+   Body: { code, client_id, client_secret, redirect_uri }
+   Response: { access_token, refresh_token, expires_in }
+
+5. Client uses access token:
+   → GET /api/resource
+   Headers: { Authorization: "Bearer <access_token>" }
+```
+
+**Client Credentials Flow (Machine-to-Machine):**
+```
+1. Application requests token:
+   → POST /oauth/token
+   Body: { grant_type: "client_credentials", client_id, client_secret, scope }
+
+2. Provider returns access token:
+   Response: { access_token, expires_in, token_type: "Bearer" }
+
+3. Application uses token:
+   → GET /api/resource
+   Headers: { Authorization: "Bearer <access_token>" }
+```
+
+### 3. API Key Authentication Pattern
+
+#### Conceptual Flow
+
+```
+1. Generate API Key:
+   ├─> Create random secure string (32+ chars)
+   ├─> Hash the key before storing
+   ├─> Store hashed key with metadata (user_id, scopes, created_at)
+   └─> Return plain key once (never shown again)
+
+2. Authenticate Request:
+   ├─> Extract API key from header (X-API-Key)
+   ├─> Hash the provided key
+   ├─> Find matching hashed key in database
+   ├─> Verify not expired
+   ├─> Attach user/service context
+   └─> Proceed to handler
+
+3. Key Rotation:
+   ├─> Generate new key
+   ├─> Mark old key as deprecated (grace period)
+   ├─> After grace period, revoke old key
+```
+
+#### API Key Middleware Pattern
+
+```
+function apiKeyMiddleware(request, response, next):
+  // 1. Extract API key
+  apiKey = request.headers['x-api-key']
+
+  if not apiKey:
+    return response.status(401).json({ error: 'API key required' })
+
+  // 2. Hash and lookup
+  hashedKey = hash(apiKey)
+  keyRecord = database.findApiKey(hashedKey)
+
+  if not keyRecord or keyRecord.revoked:
+    return response.status(401).json({ error: 'Invalid API key' })
+
+  // 3. Check expiration
+  if keyRecord.expiresAt < now():
+    return response.status(401).json({ error: 'API key expired' })
+
+  // 4. Attach context
+  request.apiKey = keyRecord
+  request.user = keyRecord.user
+
+  // 5. Log usage (optional)
+  logApiKeyUsage(keyRecord.id, request.path)
+
+  next()
+```
+
+### 4. Session-Based Authentication Pattern
+
+#### Conceptual Flow
+
+```
+1. Login:
+   ├─> Verify credentials
+   ├─> Create session in session store
+   ├─> Generate session ID (secure random)
+   ├─> Store session data: { userId, role, createdAt, expiresAt }
+   ├─> Set httpOnly cookie with session ID
+   └─> Return success
+
+2. Subsequent Requests:
+   ├─> Extract session ID from cookie
+   ├─> Lookup session in session store
+   ├─> Verify not expired
+   ├─> Load user data
+   ├─> Refresh session expiration (sliding)
+   └─> Proceed to handler
+
+3. Logout:
+   ├─> Extract session ID
+   ├─> Delete session from store
+   ├─> Clear cookie
+   └─> Return success
+```
+
+## Security Best Practices
+
+### Token Storage (Client-Side)
+
+**Web Applications:**
+- ✅ **Recommended**: HttpOnly cookies for auth tokens (prevents XSS)
+- ⚠️ **Acceptable**: localStorage/sessionStorage (vulnerable to XSS)
+- ❌ **Avoid**: Storing tokens in plain JavaScript variables
+
+**Mobile/Desktop Apps:**
+- Use secure storage (Keychain on iOS, Keystore on Android)
+- Encrypt tokens before storage
+- Clear tokens on app termination if required
+
+### Rate Limiting
+
+```
+Rate Limit Configuration:
+├─> Login endpoint: 5 attempts per 15 minutes per IP
+├─> Registration: 3 attempts per hour per IP
+├─> Password reset: 3 attempts per hour per email
+└─> Token refresh: 10 requests per minute per user
+```
+
+### CSRF Protection (for Cookie-Based Auth)
+
+```
+1. Generate CSRF token on login
+2. Store in session
+3. Send to client (separate from auth cookie)
+4. Require CSRF token in request headers for state-changing operations
+5. Validate CSRF token matches session
+```
+
+### Password Requirements
+
+```
+Minimum Requirements:
+├─> Length: 12+ characters
+├─> Complexity: Mix of uppercase, lowercase, numbers, symbols
+├─> Check against common passwords list
+├─> Check against previous passwords (history)
+└─> Enforce password expiration (optional, 90 days)
+```
+
+## Testing Strategies
+
+### Test Cases to Cover
+
+1. **Registration Tests:**
+   - Valid registration succeeds
+   - Duplicate email rejected
+   - Weak password rejected
+   - Invalid email format rejected
+
+2. **Login Tests:**
+   - Valid credentials succeed and return tokens
+   - Invalid password fails
+   - Non-existent user fails
+   - Account locked after X failed attempts
+
+3. **Token Tests:**
+   - Valid token grants access
+   - Expired token rejected
+   - Invalid signature rejected
+   - Missing token rejected
+   - Refresh token successfully generates new access token
+
+4. **Authorization Tests:**
+   - Authenticated user can access protected routes
+   - Unauthenticated user redirected/rejected
+   - Tokens work across different API endpoints
+
+5. **Security Tests:**
+   - Tokens expire correctly
+   - Rate limiting prevents brute force
+   - HTTPS enforced in production
+   - Password hashing verified (never store plain)
 
 ## Common Pitfalls
 
-### ❌ Pitfall 1: Storing Passwords in Plain Text
-Never store passwords without hashing.
+❌ **Don't:**
+- Store passwords in plaintext
+- Use weak JWT secrets (use 256+ bit random strings)
+- Allow unlimited login attempts
+- Store sensitive data in JWT payload
+- Use HTTP in production
+- Implement your own crypto (use established libraries)
 
-### ✅ Solution:
-```typescript
-import bcrypt from 'bcrypt';
-const passwordHash = await bcrypt.hash(password, 10);
-```
+✅ **Do:**
+- Use proven authentication libraries for your stack
+- Implement proper error handling
+- Log authentication events for security monitoring
+- Use environment variables for secrets
+- Implement token refresh mechanism
+- Test thoroughly including edge cases
 
-### ❌ Pitfall 2: Long-lived Access Tokens
-Using access tokens that don't expire creates security risks.
+## Framework-Specific Implementation Examples
 
-### ✅ Solution:
-Use short-lived access tokens (15-30 min) with refresh tokens.
+For framework-specific code examples, use the Context7 MCP to fetch documentation:
 
-### ❌ Pitfall 3: Not Validating Token Claims
-Accepting tokens without verifying issuer, audience, or expiration.
+**TypeScript/Node.js Stacks:**
+- Express.js + Passport.js
+- NestJS with JWT guards
+- Hono with JWT middleware
 
-### ✅ Solution:
-```typescript
-jwt.verify(token, secret, {
-  issuer: 'api.example.com',
-  audience: 'api.example.com',
-});
-```
+**Python Stacks:**
+- FastAPI + python-jose
+- Django REST Framework + SimpleJWT
+- Flask + Flask-JWT-Extended
 
-### ❌ Pitfall 4: Exposing Tokens in URLs
-Passing tokens as query parameters exposes them in logs.
+**Java Stacks:**
+- Spring Boot + Spring Security
+- Micronaut Security
+- Quarkus with SmallRye JWT
 
-### ✅ Solution:
-Always use Authorization header: `Authorization: Bearer <token>`
+**Go Stacks:**
+- Gin + jwt-go
+- Echo + JWT middleware
+- Fiber + JWT
 
-## References
+**.NET Stacks:**
+- ASP.NET Core Identity
+- ASP.NET Core JWT Bearer
 
-- [JWT.io - JSON Web Tokens](https://jwt.io/)
-- [OAuth 2.0 RFC 6749](https://tools.ietf.org/html/rfc6749)
-- [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
-- [NIST Password Guidelines](https://pages.nist.gov/800-63-3/sp800-63b.html)
+**PHP Stacks:**
+- Laravel Sanctum/Passport
+- Symfony Security
+
+**Ruby Stacks:**
+- Rails + Devise
+- Rails + JWT (jwt gem)
+
+## Reference Resources
+
+**Query Context7 MCP for:**
+- "[Your Framework] JWT authentication best practices"
+- "[Your Framework] OAuth 2.0 implementation"
+- "[Your ORM] password hashing with bcrypt"
+- "[Your Framework] authentication middleware patterns"
+
+**Security Standards:**
+- OWASP Authentication Cheat Sheet
+- OAuth 2.0 RFC 6749
+- JWT RFC 7519
+- NIST Password Guidelines
+
+## Implementation Checklist
+
+- [ ] Choose authentication strategy (JWT/OAuth/API Key/Session)
+- [ ] Implement secure password hashing (bcrypt/argon2)
+- [ ] Create token generation utilities
+- [ ] Implement token verification middleware
+- [ ] Add registration endpoint with validation
+- [ ] Add login endpoint with credential verification
+- [ ] Add token refresh endpoint
+- [ ] Add logout endpoint (if applicable)
+- [ ] Implement rate limiting on auth endpoints
+- [ ] Add CSRF protection (if using cookies)
+- [ ] Use HTTPS in production
+- [ ] Test all authentication flows
+- [ ] Test error cases and security scenarios
+- [ ] Scan dependencies for vulnerabilities (use Socket MCP)
+- [ ] Document API endpoints and token format

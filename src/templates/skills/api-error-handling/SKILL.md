@@ -109,265 +109,300 @@ Review existing error handling, design a consistent error format, implement cent
 - **path**: API endpoint where error occurred
 - **request_id**: Unique request identifier for troubleshooting
 
-## Implementation Examples
+## Universal Implementation Pattern
 
-### Express.js (TypeScript)
+### 1. Error Class Hierarchy (Language-Agnostic)
 
-```typescript
-// types/errors.ts
-export class AppError extends Error {
-  constructor(
-    public statusCode: number,
-    public code: string,
-    public message: string,
-    public details?: any[]
-  ) {
-    super(message);
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
+#### Conceptual Structure
 
-export class ValidationError extends AppError {
-  constructor(details: any[]) {
-    super(400, 'VALIDATION_ERROR', 'Validation failed', details);
-  }
-}
+```
+BaseError (extends native Error)
+├─> ValidationError (400)
+├─> AuthenticationError (401)
+├─> AuthorizationError (403)
+├─> NotFoundError (404)
+├─> ConflictError (409)
+├─> RateLimitError (429)
+└─> InternalServerError (500)
+```
 
-export class NotFoundError extends AppError {
-  constructor(resource: string) {
-    super(404, 'NOT_FOUND', `${resource} not found`);
-  }
-}
+#### Error Class Pattern (Pseudocode)
 
-export class UnauthorizedError extends AppError {
-  constructor(message: string = 'Unauthorized') {
-    super(401, 'UNAUTHORIZED', message);
-  }
-}
+```
+class BaseError extends Error:
+  constructor(statusCode, errorCode, message, details):
+    super(message)
+    this.statusCode = statusCode
+    this.errorCode = errorCode
+    this.message = message
+    this.details = details
+    this.timestamp = getCurrentTimestamp()
 
-// middleware/errorHandler.ts
-import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../types/errors';
-import logger from '../utils/logger';
+class ValidationError extends BaseError:
+  constructor(details):
+    super(400, 'VALIDATION_ERROR', 'Validation failed', details)
 
-export const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  // Log error
-  logger.error({
-    message: err.message,
-    stack: err.stack,
-    path: req.path,
-    method: req.method,
-    requestId: req.id,
-  });
+class NotFoundError extends BaseError:
+  constructor(resourceName):
+    super(404, 'NOT_FOUND', resourceName + ' not found', null)
 
-  // Handle known AppErrors
-  if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
+class UnauthorizedError extends BaseError:
+  constructor(message = 'Unauthorized'):
+    super(401, 'UNAUTHORIZED', message, null)
+
+class ForbiddenError extends BaseError:
+  constructor(message = 'Access forbidden'):
+    super(403, 'FORBIDDEN', message, null)
+
+class ConflictError extends BaseError:
+  constructor(message, details = null):
+    super(409, 'CONFLICT', message, details)
+
+class InternalError extends BaseError:
+  constructor(message = 'Internal server error'):
+    super(500, 'INTERNAL_SERVER_ERROR', message, null)
+```
+
+### 2. Error Handler Middleware Pattern (Universal)
+
+#### Conceptual Flow
+
+```
+1. Error caught by middleware
+   ├─> Extract error information
+   ├─> Log error with context
+   ├─> Determine error type
+   ├─> Format error response
+   └─> Send HTTP response
+
+2. Error Logging:
+   ├─> Log level based on status code
+   ├─> Include request context (path, method, headers)
+   ├─> Include error stack trace (server-side only)
+   ├─> Include request_id for correlation
+   └─> Use structured logging format
+
+3. Error Response:
+   ├─> Status code from error object
+   ├─> Standardized error format
+   ├─> Include request_id
+   ├─> Sanitize sensitive information
+   └─> Return to client
+```
+
+#### Error Handler Middleware (Pseudocode)
+
+```
+function errorHandlerMiddleware(error, request, response, next):
+  // 1. Generate request ID if not exists
+  requestId = request.id || generateUUID()
+
+  // 2. Log error with context
+  logError({
+    level: determineLogLevel(error.statusCode),
+    message: error.message,
+    stack: error.stack,
+    errorCode: error.errorCode,
+    statusCode: error.statusCode,
+    path: request.path,
+    method: request.method,
+    requestId: requestId,
+    userId: request.user?.id,
+    timestamp: getCurrentTimestamp()
+  })
+
+  // 3. Handle custom application errors
+  if error instanceof BaseError:
+    return response.status(error.statusCode).json({
       error: {
-        code: err.code,
-        message: err.message,
-        details: err.details,
-        timestamp: new Date().toISOString(),
-        path: req.path,
-        request_id: req.id,
-      },
-    });
-  }
+        code: error.errorCode,
+        message: error.message,
+        details: error.details,
+        timestamp: getCurrentTimestamp(),
+        path: request.path,
+        request_id: requestId
+      }
+    })
 
-  // Handle Joi/Zod validation errors
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({
+  // 4. Handle validation errors from validation libraries
+  if error.type === 'ValidationError':
+    details = formatValidationErrors(error)
+    return response.status(400).json({
       error: {
         code: 'VALIDATION_ERROR',
         message: 'Validation failed',
-        details: formatValidationErrors(err),
-        timestamp: new Date().toISOString(),
-        path: req.path,
-        request_id: req.id,
-      },
-    });
-  }
+        details: details,
+        timestamp: getCurrentTimestamp(),
+        path: request.path,
+        request_id: requestId
+      }
+    })
 
-  // Handle unexpected errors (don't leak internal details)
-  return res.status(500).json({
+  // 5. Handle unexpected errors (don't leak internals)
+  logError({
+    level: 'critical',
+    message: 'Unexpected error',
+    error: error,
+    requestId: requestId
+  })
+
+  return response.status(500).json({
     error: {
       code: 'INTERNAL_SERVER_ERROR',
       message: 'An unexpected error occurred',
-      timestamp: new Date().toISOString(),
-      path: req.path,
-      request_id: req.id,
-    },
-  });
-};
-
-// Usage in routes
-app.get('/api/users/:id', async (req, res, next) => {
-  try {
-    const user = await getUserById(req.params.id);
-    if (!user) {
-      throw new NotFoundError('User');
+      timestamp: getCurrentTimestamp(),
+      path: request.path,
+      request_id: requestId
     }
-    res.json(user);
-  } catch (error) {
-    next(error); // Pass to error handler
-  }
-});
+  })
+
+function determineLogLevel(statusCode):
+  if statusCode >= 500:
+    return 'error'
+  else if statusCode >= 400:
+    return 'warn'
+  else:
+    return 'info'
+
+function formatValidationErrors(validationError):
+  errors = []
+  for each field in validationError.fields:
+    errors.push({
+      field: field.name,
+      message: field.errorMessage
+    })
+  return errors
 ```
 
-### FastAPI (Python)
+### 3. Route-Level Error Handling Pattern (Pseudocode)
 
-```python
-# errors/exceptions.py
-from typing import Optional, List, Dict, Any
-from fastapi import HTTPException
-from pydantic import BaseModel
+```
+// Synchronous route handler
+function getUserHandler(request, response, next):
+  try:
+    userId = request.params.id
 
-class ErrorDetail(BaseModel):
-    field: str
-    message: str
+    // Validation
+    if not isValidId(userId):
+      throw new ValidationError([{
+        field: 'id',
+        message: 'Invalid user ID format'
+      }])
 
-class ErrorResponse(BaseModel):
-    code: str
-    message: str
-    details: Optional[List[ErrorDetail]] = None
-    timestamp: str
-    path: str
-    request_id: str
+    // Business logic
+    user = database.findUserById(userId)
 
-class AppException(HTTPException):
-    def __init__(
-        self,
-        status_code: int,
-        code: str,
-        message: str,
-        details: Optional[List[Dict[str, str]]] = None
-    ):
-        self.code = code
-        self.details = details
-        super().__init__(status_code=status_code, detail=message)
-
-class ValidationException(AppException):
-    def __init__(self, details: List[Dict[str, str]]):
-        super().__init__(
-            status_code=400,
-            code="VALIDATION_ERROR",
-            message="Validation failed",
-            details=details
-        )
-
-class NotFoundException(AppException):
-    def __init__(self, resource: str):
-        super().__init__(
-            status_code=404,
-            code="NOT_FOUND",
-            message=f"{resource} not found"
-        )
-
-# middleware/error_handler.py
-from fastapi import Request, status
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
-from datetime import datetime
-import logging
-import uuid
-
-logger = logging.getLogger(__name__)
-
-async def app_exception_handler(request: Request, exc: AppException):
-    """Handle custom application exceptions"""
-    request_id = request.state.request_id
-
-    logger.error(f"AppException: {exc.code} - {exc.detail}", extra={
-        "request_id": request_id,
-        "path": request.url.path,
-        "method": request.method
-    })
-
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
-            "error": {
-                "code": exc.code,
-                "message": exc.detail,
-                "details": exc.details,
-                "timestamp": datetime.utcnow().isoformat() + "Z",
-                "path": request.url.path,
-                "request_id": request_id
-            }
-        }
-    )
-
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Handle Pydantic validation errors"""
-    request_id = request.state.request_id
-
-    details = [
-        {
-            "field": ".".join(str(loc) for loc in error["loc"][1:]),
-            "message": error["msg"]
-        }
-        for error in exc.errors()
-    ]
-
-    return JSONResponse(
-        status_code=400,
-        content={
-            "error": {
-                "code": "VALIDATION_ERROR",
-                "message": "Validation failed",
-                "details": details,
-                "timestamp": datetime.utcnow().isoformat() + "Z",
-                "path": request.url.path,
-                "request_id": request_id
-            }
-        }
-    )
-
-async def generic_exception_handler(request: Request, exc: Exception):
-    """Handle unexpected exceptions"""
-    request_id = request.state.request_id
-
-    logger.exception("Unexpected error", extra={
-        "request_id": request_id,
-        "path": request.url.path,
-        "method": request.method
-    })
-
-    return JSONResponse(
-        status_code=500,
-        content={
-            "error": {
-                "code": "INTERNAL_SERVER_ERROR",
-                "message": "An unexpected error occurred",
-                "timestamp": datetime.utcnow().isoformat() + "Z",
-                "path": request.url.path,
-                "request_id": request_id
-            }
-        }
-    )
-
-# main.py - Register handlers
-from fastapi import FastAPI
-from fastapi.exceptions import RequestValidationError
-
-app = FastAPI()
-
-app.add_exception_handler(AppException, app_exception_handler)
-app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(Exception, generic_exception_handler)
-
-# Usage in routes
-@app.get("/api/users/{user_id}")
-async def get_user(user_id: str):
-    user = await get_user_by_id(user_id)
     if not user:
-        raise NotFoundException("User")
-    return user
+      throw new NotFoundError('User')
+
+    // Authorization check
+    if not canAccessUser(request.user, user):
+      throw new ForbiddenError('Cannot access this user')
+
+    response.status(200).json(user)
+
+  catch error:
+    next(error)  // Pass to error handler middleware
+
+// Asynchronous route handler
+async function createUserHandler(request, response, next):
+  try:
+    userData = request.body
+
+    // Validate input
+    validationResult = validateUserData(userData)
+    if not validationResult.valid:
+      throw new ValidationError(validationResult.errors)
+
+    // Check for conflicts
+    existingUser = await database.findUserByEmail(userData.email)
+    if existingUser:
+      throw new ConflictError('User with this email already exists')
+
+    // Create user
+    newUser = await database.createUser(userData)
+
+    response.status(201).json(newUser)
+
+  catch error:
+    next(error)  // Pass to error handler middleware
+```
+
+### 4. Request ID Middleware Pattern (Pseudocode)
+
+```
+function requestIdMiddleware(request, response, next):
+  // Check if client provided request ID
+  requestId = request.headers['x-request-id']
+
+  // Generate new ID if not provided
+  if not requestId:
+    requestId = generateUUID()
+
+  // Attach to request object
+  request.id = requestId
+
+  // Add to response headers for client correlation
+  response.setHeader('x-request-id', requestId)
+
+  next()
+```
+
+### 5. Validation Helper Pattern (Pseudocode)
+
+```
+function validateUserInput(data, schema):
+  errors = []
+
+  for each field in schema:
+    value = data[field.name]
+
+    // Required field check
+    if field.required and not value:
+      errors.push({
+        field: field.name,
+        message: field.name + ' is required'
+      })
+      continue
+
+    // Type validation
+    if value and not isCorrectType(value, field.type):
+      errors.push({
+        field: field.name,
+        message: field.name + ' must be of type ' + field.type
+      })
+      continue
+
+    // Custom validators
+    if field.validators:
+      for each validator in field.validators:
+        if not validator.validate(value):
+          errors.push({
+            field: field.name,
+            message: validator.errorMessage
+          })
+
+  if errors.length > 0:
+    throw new ValidationError(errors)
+
+  return data
+```
+
+## Error Code Naming Convention
+
+Use a consistent, hierarchical naming pattern:
+
+```
+RESOURCE_ACTION_REASON
+
+Examples:
+├─> USER_CREATE_DUPLICATE_EMAIL
+├─> PAYMENT_PROCESS_INSUFFICIENT_FUNDS
+├─> ORDER_UPDATE_INVALID_STATUS
+├─> AUTH_TOKEN_EXPIRED
+├─> RATE_LIMIT_EXCEEDED
+├─> DATABASE_CONNECTION_FAILED
+└─> EXTERNAL_API_TIMEOUT
 ```
 
 ## Best Practices
@@ -376,109 +411,292 @@ async def get_user(user_id: str):
 - Use the same error response structure across all endpoints
 - Include request_id for traceability
 - Add timestamp for debugging time-sensitive issues
+- Keep error structure flat and simple
 
 ### 2. Appropriate Status Codes
 - Use specific 4xx codes for client errors
 - Reserve 5xx for actual server errors
 - Don't use 500 for validation or authentication failures
+- Be consistent across similar error types
 
 ### 3. Security Considerations
-- **Never expose** stack traces in production
-- **Don't leak** sensitive information in error messages
-- **Use generic messages** for authentication failures
-- **Log details** server-side, return minimal info to client
 
-```javascript
-// ❌ BAD - Leaks information
-throw new Error('User john@example.com not found in database users table');
+**Never expose in production:**
+- Stack traces
+- Database query details
+- Internal file paths
+- Environment variables
+- Cryptographic details
 
-// ✅ GOOD - Generic message
-throw new NotFoundError('User');
+**Generic Messages for Security:**
+```
+❌ BAD - Leaks information:
+"User john@example.com not found in database table 'users'"
+
+✅ GOOD - Generic message:
+"User not found"
+
+❌ BAD - Reveals authentication details:
+"Password hash comparison failed for user ID 12345"
+
+✅ GOOD - Generic message:
+"Invalid credentials"
+
+❌ BAD - Exposes infrastructure:
+"MongoDB connection failed on host db-prod-01.internal:27017"
+
+✅ GOOD - Generic message:
+"Service temporarily unavailable"
 ```
 
 ### 4. Logging Strategy
-- Log all errors with full context
-- Include request_id for correlation
-- Use structured logging (JSON format)
-- Different log levels: error (5xx), warn (4xx), info (success)
+
+**What to log:**
+- All errors with full context
+- Request ID for correlation
+- User ID (if authenticated)
+- Request path and method
+- Stack trace (server-side only)
+- Timestamp
+
+**Log Format (Structured JSON):**
+```json
+{
+  "level": "error",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "message": "User not found",
+  "requestId": "req_abc123xyz",
+  "userId": "user_789",
+  "path": "/api/users/999",
+  "method": "GET",
+  "statusCode": 404,
+  "errorCode": "NOT_FOUND",
+  "stack": "Error: User not found\n    at getUserById (user-service.js:42)\n    ..."
+}
+```
+
+**Log Levels:**
+- `error`: 5xx errors (server failures)
+- `warn`: 4xx errors (client failures)
+- `info`: Successful requests
+- `debug`: Detailed debugging info
 
 ### 5. Validation Errors
-- Return all validation errors at once (not one at a time)
-- Include field names for easy client-side mapping
-- Use clear, actionable error messages
 
-## Error Code Conventions
-
-Use a consistent naming convention for error codes:
-
+**Return all errors at once:**
 ```
-RESOURCE_ACTION_REASON
+❌ BAD - One error at a time:
+{
+  "error": {
+    "message": "Email is required"
+  }
+}
 
-Examples:
-- USER_CREATE_DUPLICATE_EMAIL
-- PAYMENT_PROCESS_INSUFFICIENT_FUNDS
-- ORDER_UPDATE_INVALID_STATUS
-- AUTH_TOKEN_EXPIRED
-- RATE_LIMIT_EXCEEDED
+✅ GOOD - All errors together:
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": [
+      { "field": "email", "message": "Email is required" },
+      { "field": "age", "message": "Age must be at least 18" },
+      { "field": "phone", "message": "Invalid phone format" }
+    ]
+  }
+}
 ```
 
 ## Testing Error Handling
 
-```typescript
-// Example test suite
-describe('Error Handling', () => {
-  it('should return 404 for non-existent resource', async () => {
-    const response = await request(app)
-      .get('/api/users/999')
-      .expect(404);
+### Test Coverage Requirements
 
-    expect(response.body.error.code).toBe('NOT_FOUND');
-    expect(response.body.error.message).toContain('User not found');
-  });
+```
+1. Test each error type:
+   ├─> Validation errors (400)
+   ├─> Authentication errors (401)
+   ├─> Authorization errors (403)
+   ├─> Not found errors (404)
+   ├─> Conflict errors (409)
+   └─> Internal errors (500)
 
-  it('should return 400 for validation errors', async () => {
-    const response = await request(app)
-      .post('/api/users')
-      .send({ email: 'invalid-email' })
-      .expect(400);
+2. Test error response format:
+   ├─> Correct status code
+   ├─> Correct error code
+   ├─> Error message present
+   ├─> Request ID present
+   ├─> Timestamp present
+   └─> Details array (if applicable)
 
-    expect(response.body.error.code).toBe('VALIDATION_ERROR');
-    expect(response.body.error.details).toHaveLength(1);
-    expect(response.body.error.details[0].field).toBe('email');
-  });
+3. Test security:
+   ├─> No stack traces in response
+   ├─> No sensitive data leaked
+   ├─> Generic messages for auth failures
+   └─> Proper logging of errors
 
-  it('should include request_id in error response', async () => {
-    const response = await request(app)
-      .get('/api/users/999')
-      .expect(404);
+4. Test edge cases:
+   ├─> Malformed JSON in request
+   ├─> Missing required headers
+   ├─> Invalid content types
+   ├─> Oversized payloads
+   └─> Database connection failures
+```
 
-    expect(response.body.error.request_id).toBeDefined();
-  });
-});
+### Universal Test Pattern (Pseudocode)
+
+```
+test('should return 404 for non-existent resource'):
+  response = await httpClient.get('/api/users/999')
+
+  assert response.statusCode equals 404
+  assert response.body.error.code equals 'NOT_FOUND'
+  assert response.body.error.message contains 'not found'
+  assert response.body.error.request_id is defined
+  assert response.body.error.timestamp is defined
+
+test('should return 400 for validation errors'):
+  response = await httpClient.post('/api/users', {
+    email: 'invalid-email',
+    age: 15
+  })
+
+  assert response.statusCode equals 400
+  assert response.body.error.code equals 'VALIDATION_ERROR'
+  assert response.body.error.details.length >= 2
+  assert response.body.error.details contains field 'email'
+  assert response.body.error.details contains field 'age'
+
+test('should not expose stack traces in production'):
+  // Trigger internal error
+  response = await httpClient.get('/api/trigger-error')
+
+  assert response.statusCode equals 500
+  assert response.body.error.code equals 'INTERNAL_SERVER_ERROR'
+  assert response.body.error.stack is undefined
+  assert response.body.error.message equals 'An unexpected error occurred'
+
+test('should include request_id in all error responses'):
+  responses = [
+    await httpClient.get('/api/users/999'),  // 404
+    await httpClient.post('/api/users', {}),  // 400
+    await httpClient.get('/api/protected')    // 401
+  ]
+
+  for each response in responses:
+    assert response.body.error.request_id is defined
+    assert response.body.error.request_id matches UUID_PATTERN
 ```
 
 ## Common Pitfalls
 
 ### ❌ Pitfall 1: Inconsistent Error Formats
-Different endpoints return different error structures
+Different endpoints return different error structures:
+- `/api/users` returns `{ error: "message" }`
+- `/api/orders` returns `{ message: "error", code: 400 }`
+- `/api/products` returns `{ errors: [ ... ] }`
 
 ### ✅ Solution:
-Use centralized error handler middleware that formats all errors consistently
+Use centralized error handler middleware that formats ALL errors consistently
 
 ### ❌ Pitfall 2: Exposing Internal Details
-Returning database errors or stack traces to clients
+```
+Response: {
+  "error": "QueryFailedError: duplicate key value violates unique constraint users_email_key",
+  "stack": "at Connection.query (/app/node_modules/pg/lib/connection.js:12)"
+}
+```
 
 ### ✅ Solution:
-Catch all errors, log internally, return generic messages
+Catch all errors, log internally with full details, return generic user-facing messages
 
 ### ❌ Pitfall 3: Wrong Status Codes
-Using 500 for client errors or 200 for errors
+- Returning 500 for validation errors
+- Returning 200 with error in body
+- Using 401 when should use 403
 
 ### ✅ Solution:
-Use HTTP status codes correctly and consistently
+Follow HTTP semantics strictly and document status code usage
 
-## References
+### ❌ Pitfall 4: Validation One Error at a Time
+User fixes one field, submits, gets next error. Repeats 5 times.
 
+### ✅ Solution:
+Validate all fields and return all errors in a single response
+
+### ❌ Pitfall 5: No Request Tracing
+Customer reports error, no way to find it in logs
+
+### ✅ Solution:
+Always include request_id in responses and logs for correlation
+
+## Framework-Specific Implementation Examples
+
+For framework-specific code examples, use the Context7 MCP to fetch documentation:
+
+**TypeScript/Node.js Stacks:**
+- Express.js error middleware
+- NestJS exception filters
+- Hono error handling
+- Fastify error hooks
+
+**Python Stacks:**
+- FastAPI exception handlers
+- Django REST Framework exception handling
+- Flask error handlers
+- Sanic error handlers
+
+**Java Stacks:**
+- Spring Boot @ControllerAdvice
+- Micronaut @Error annotations
+- Quarkus ExceptionMapper
+- JAX-RS ExceptionMapper
+
+**Go Stacks:**
+- Gin recovery middleware
+- Echo HTTPErrorHandler
+- Fiber error handling
+- Chi middleware
+
+**.NET Stacks:**
+- ASP.NET Core exception middleware
+- ASP.NET Core ProblemDetails
+- Web API exception filters
+
+**PHP Stacks:**
+- Laravel exception handler
+- Symfony exception listeners
+- Slim error middleware
+
+**Ruby Stacks:**
+- Rails rescue_from
+- Sinatra error handlers
+- Grape error handling
+
+## Reference Resources
+
+**Query Context7 MCP for:**
+- "[Your Framework] error handling best practices"
+- "[Your Framework] custom exception handlers"
+- "[Your Framework] validation error formatting"
+- "[Your Framework] middleware error handling"
+
+**Standards:**
 - [RFC 7807 - Problem Details for HTTP APIs](https://tools.ietf.org/html/rfc7807)
 - [HTTP Status Code Definitions](https://httpstatuses.com/)
-- [REST API Error Handling Best Practices](https://www.baeldung.com/rest-api-error-handling-best-practices)
+- OWASP API Security - Error Handling
+
+## Implementation Checklist
+
+- [ ] Design consistent error response format
+- [ ] Create custom error class hierarchy
+- [ ] Implement centralized error handler middleware
+- [ ] Add request ID generation and tracking
+- [ ] Configure structured logging
+- [ ] Implement validation error formatting
+- [ ] Add security filters (no stack traces in production)
+- [ ] Set up proper HTTP status code mapping
+- [ ] Create error code naming convention
+- [ ] Test all error types and status codes
+- [ ] Test error response format consistency
+- [ ] Verify no sensitive data in error responses
+- [ ] Document error codes and meanings
+- [ ] Set up error monitoring and alerting

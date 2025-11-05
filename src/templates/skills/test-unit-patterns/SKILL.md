@@ -1,6 +1,6 @@
 ---
 name: Unit Testing Patterns
-description: Comprehensive patterns for writing effective unit tests using AAA pattern, test organization, and best practices for Jest/Vitest and Pytest.
+description: Comprehensive patterns for writing effective unit tests using AAA pattern, test organization, and best practices. Framework-agnostic guidance applicable to any testing library.
 allowed-tools:
   - Read
   - Write
@@ -11,19 +11,18 @@ allowed-tools:
 tags:
   - testing
   - unit-tests
-  - jest
-  - vitest
-  - pytest
   - tdd
   - quality
+  - best-practices
 mcp-servers:
   - playwright
   - socket
+  - context7
 ---
 
 # Unit Testing Patterns Skill
 
-Proven patterns for writing clean, maintainable unit tests that follow the AAA (Arrange-Act-Assert) pattern and industry best practices.
+Proven patterns for writing clean, maintainable unit tests that follow the AAA (Arrange-Act-Assert) pattern and industry best practices across any programming language and testing framework.
 
 ## 🎯 Before You Start
 
@@ -41,6 +40,7 @@ Identify functions/components to test, write tests using AAA pattern, organize t
 **Additional tools available**:
 - Use Playwright MCP for E2E testing integration
 - Use Socket MCP to scan test dependencies for security issues
+- Use Context7 MCP for framework-specific testing documentation
 
 ## When to Use
 
@@ -49,434 +49,823 @@ Identify functions/components to test, write tests using AAA pattern, organize t
 - Ensuring code reliability and preventing regressions
 - Documenting expected behavior through tests
 - Refactoring existing code with confidence
+- Verifying edge cases and error handling
 
 ## Core Principles
 
 ### 1. AAA Pattern (Arrange-Act-Assert)
 
-The foundational pattern for structuring unit tests:
+The universal foundational pattern for structuring unit tests across all languages:
 
-```typescript
-// Jest/Vitest Example
-test('calculateTotal applies discount correctly', () => {
+```
+Test Structure:
+├─> Arrange: Set up test data, dependencies, and preconditions
+├─> Act: Execute the function/method being tested
+└─> Assert: Verify the expected outcome
+
+Benefits:
+├─> Improves readability
+├─> Makes test intent clear
+├─> Separates setup from verification
+└─> Easy to maintain and debug
+```
+
+#### Universal AAA Pattern (Pseudocode)
+
+```
+test('calculateTotal applies discount correctly'):
   // Arrange: Set up test data and dependencies
-  const items = [
+  items = [
     { price: 100, quantity: 2 },
     { price: 50, quantity: 1 }
-  ];
-  const discount = 0.1; // 10% discount
+  ]
+  discount = 0.1  // 10% discount
 
   // Act: Execute the function being tested
-  const result = calculateTotal(items, discount);
+  result = calculateTotal(items, discount)
 
   // Assert: Verify the expected outcome
-  expect(result).toBe(225); // (200 + 50) * 0.9
-});
+  assert result equals 225  // (200 + 50) * 0.9
 ```
 
-```python
-# Pytest Example
-def test_calculate_total_applies_discount_correctly():
-    # Arrange
-    items = [
-        {"price": 100, "quantity": 2},
-        {"price": 50, "quantity": 1}
-    ]
-    discount = 0.1
-
-    # Act
-    result = calculate_total(items, discount)
-
-    # Assert
-    assert result == 225
-```
+**Why AAA Pattern Works:**
+- **Arrange** answers: "What's the starting state?"
+- **Act** answers: "What are we testing?"
+- **Assert** answers: "What should happen?"
 
 ### 2. Test Independence
 
-Each test should be completely independent and not rely on other tests:
+Each test must be completely independent and not rely on other tests:
 
-```typescript
-// ❌ Bad: Tests depend on shared state
-let counter = 0;
-
-test('increment counter', () => {
-  counter++;
-  expect(counter).toBe(1);
-});
-
-test('increment again', () => {
-  counter++; // Depends on previous test!
-  expect(counter).toBe(2);
-});
-
-// ✅ Good: Each test is independent
-test('increment counter from zero', () => {
-  const counter = 0;
-  const result = increment(counter);
-  expect(result).toBe(1);
-});
-
-test('increment counter from five', () => {
-  const counter = 5;
-  const result = increment(counter);
-  expect(result).toBe(6);
-});
 ```
+❌ BAD: Tests depend on shared state
+
+sharedCounter = 0
+
+test('increment counter'):
+  sharedCounter = sharedCounter + 1
+  assert sharedCounter equals 1
+
+test('increment again'):
+  sharedCounter = sharedCounter + 1  // Depends on previous test!
+  assert sharedCounter equals 2  // Fails if first test doesn't run
+
+✅ GOOD: Each test is independent
+
+test('increment counter from zero'):
+  counter = 0
+  result = increment(counter)
+  assert result equals 1
+
+test('increment counter from five'):
+  counter = 5
+  result = increment(counter)
+  assert result equals 6
+```
+
+**Independence Checklist:**
+- [ ] Test can run in isolation
+- [ ] Test doesn't modify global/shared state
+- [ ] Test order doesn't matter
+- [ ] Test doesn't depend on previous test results
+- [ ] Test has its own setup and teardown
 
 ### 3. Single Responsibility
 
 Each test should verify one specific behavior:
 
-```typescript
-// ❌ Bad: Testing multiple behaviors
-test('user registration', () => {
-  const user = createUser('john@example.com', 'password123');
-  expect(user.email).toBe('john@example.com');
-  expect(user.emailVerified).toBe(false);
-  expect(user.createdAt).toBeInstanceOf(Date);
-  expect(sendEmail).toHaveBeenCalled(); // Multiple concerns!
-});
-
-// ✅ Good: Separate tests for each behavior
-test('createUser sets email correctly', () => {
-  const user = createUser('john@example.com', 'password123');
-  expect(user.email).toBe('john@example.com');
-});
-
-test('createUser sets emailVerified to false by default', () => {
-  const user = createUser('john@example.com', 'password123');
-  expect(user.emailVerified).toBe(false);
-});
-
-test('createUser sends verification email', () => {
-  createUser('john@example.com', 'password123');
-  expect(sendEmail).toHaveBeenCalledWith('john@example.com', expect.any(String));
-});
 ```
+❌ BAD: Testing multiple behaviors in one test
+
+test('user registration'):
+  user = createUser('john@example.com', 'password123')
+  assert user.email equals 'john@example.com'
+  assert user.emailVerified equals false
+  assert user.createdAt is instanceof Date
+  assert sendEmailFunction was called  // Multiple concerns!
+
+✅ GOOD: Separate tests for each behavior
+
+test('createUser sets email correctly'):
+  user = createUser('john@example.com', 'password123')
+  assert user.email equals 'john@example.com'
+
+test('createUser sets emailVerified to false by default'):
+  user = createUser('john@example.com', 'password123')
+  assert user.emailVerified equals false
+
+test('createUser sets createdAt timestamp'):
+  user = createUser('john@example.com', 'password123')
+  assert user.createdAt is instanceof Date
+
+test('createUser sends verification email'):
+  createUser('john@example.com', 'password123')
+  assert sendEmailFunction was called with 'john@example.com'
+```
+
+**Single Responsibility Benefits:**
+- Easier to identify what broke when test fails
+- Simpler test logic
+- Better test names
+- Faster debugging
 
 ## Test Organization
 
-### File Structure
+### File Structure Patterns
 
 ```
+Option 1: Co-located tests (tests next to source)
 src/
 ├── utils/
-│   ├── calculator.ts
-│   └── __tests__/
-│       └── calculator.test.ts
+│   ├── calculator.{ext}
+│   └── calculator.test.{ext}
 ├── services/
-│   ├── userService.ts
-│   └── __tests__/
-│       └── userService.test.ts
+│   ├── userService.{ext}
+│   └── userService.test.{ext}
 └── components/
-    ├── Button.tsx
-    └── __tests__/
-        └── Button.test.tsx
+    ├── Button.{ext}
+    └── Button.test.{ext}
+
+Option 2: Separate test directory (mirrors source structure)
+src/
+├── utils/
+│   └── calculator.{ext}
+├── services/
+│   └── userService.{ext}
+└── components/
+    └── Button.{ext}
+
+tests/ (or __tests__)
+├── utils/
+│   └── calculator.test.{ext}
+├── services/
+│   └── userService.test.{ext}
+└── components/
+    └── Button.test.{ext}
+
+Choose based on:
+├─> Team preference
+├─> Language/framework conventions
+└─> Project size and complexity
 ```
 
-### Test Suite Organization
+### Test Suite Organization Pattern
 
-```typescript
-// Jest/Vitest: Use describe blocks for logical grouping
-describe('UserService', () => {
-  describe('createUser', () => {
-    test('creates user with valid data', () => { /* ... */ });
-    test('throws error when email is invalid', () => { /* ... */ });
-    test('throws error when password is too short', () => { /* ... */ });
-  });
+```
+Hierarchical Test Grouping:
 
-  describe('updateUser', () => {
-    test('updates user email successfully', () => { /* ... */ });
-    test('throws error when user not found', () => { /* ... */ });
-  });
-});
+TestSuite: UserService
+  ├─> TestGroup: createUser
+  │   ├─> Test: creates user with valid data
+  │   ├─> Test: throws error when email is invalid
+  │   └─> Test: throws error when password is too short
+  │
+  ├─> TestGroup: updateUser
+  │   ├─> Test: updates user email successfully
+  │   ├─> Test: throws error when user not found
+  │   └─> Test: validates new email format
+  │
+  └─> TestGroup: deleteUser
+      ├─> Test: deletes user successfully
+      ├─> Test: throws error when user not found
+      └─> Test: cascades deletion to related records
+
+Benefits:
+├─> Clear organization
+├─> Easy navigation
+├─> Logical grouping
+└─> Better test output readability
 ```
 
-```python
-# Pytest: Use classes for grouping
-class TestUserService:
-    class TestCreateUser:
-        def test_creates_user_with_valid_data(self):
-            pass
-
-        def test_throws_error_when_email_invalid(self):
-            pass
-
-    class TestUpdateUser:
-        def test_updates_user_email_successfully(self):
-            pass
-```
-
-## Common Testing Patterns
+## Universal Testing Patterns
 
 ### 1. Testing Exceptions/Errors
 
-```typescript
-// Jest/Vitest
-test('throws error when dividing by zero', () => {
-  expect(() => divide(10, 0)).toThrow('Cannot divide by zero');
-});
+```
+Pattern: Verify that code throws expected errors
 
-test('throws specific error type', () => {
-  expect(() => parseJSON('invalid')).toThrow(SyntaxError);
-});
+test('throws error when dividing by zero'):
+  // Arrange
+  numerator = 10
+  denominator = 0
+
+  // Act & Assert (combined for exception tests)
+  assertThrows(() => {
+    divide(numerator, denominator)
+  }, expectedError: 'Cannot divide by zero')
+
+test('throws specific error type'):
+  assertThrows(() => {
+    parseJSON('invalid json')
+  }, expectedErrorType: SyntaxError)
 ```
 
-```python
-# Pytest
-def test_raises_error_when_dividing_by_zero():
-    with pytest.raises(ValueError, match="Cannot divide by zero"):
-        divide(10, 0)
+**Error Testing Checklist:**
+- [ ] Test expected error is thrown
+- [ ] Test error message is correct
+- [ ] Test error type is correct (if applicable)
+- [ ] Test error contains useful context
+- [ ] Test code doesn't throw when it shouldn't
+
+### 2. Testing Async/Concurrent Code
+
+```
+Pattern: Handle asynchronous operations in tests
+
+test('fetches user data successfully'):
+  // Arrange
+  userId = 123
+
+  // Act
+  user = await fetchUser(userId)
+
+  // Assert
+  assert user.id equals 123
+  assert user.name is defined
+
+test('throws error when user not found'):
+  // Act & Assert
+  assertRejects(async () => {
+    await fetchUser(999)
+  }, expectedError: 'User not found')
+
+test('handles concurrent requests correctly'):
+  // Arrange
+  userIds = [1, 2, 3]
+
+  // Act
+  results = await Promise.all(
+    userIds.map(id => fetchUser(id))
+  )
+
+  // Assert
+  assert results.length equals 3
+  assert results[0].id equals 1
+  assert results[1].id equals 2
+  assert results[2].id equals 3
 ```
 
-### 2. Testing Async Code
+**Async Testing Checklist:**
+- [ ] Properly await async operations
+- [ ] Test successful resolution
+- [ ] Test rejection/error cases
+- [ ] Test timeout scenarios
+- [ ] Clean up pending operations in teardown
 
-```typescript
-// Jest/Vitest: async/await
-test('fetches user data successfully', async () => {
-  const user = await fetchUser(123);
-  expect(user.id).toBe(123);
-  expect(user.name).toBeDefined();
-});
+### 3. Parameterized/Data-Driven Tests
 
-// Testing rejections
-test('throws error when user not found', async () => {
-  await expect(fetchUser(999)).rejects.toThrow('User not found');
-});
+```
+Pattern: Run same test with multiple input combinations
+
+testCases = [
+  { input: { a: 1, b: 1 }, expected: 2 },
+  { input: { a: 2, b: 3 }, expected: 5 },
+  { input: { a: 10, b: -5 }, expected: 5 },
+  { input: { a: 0, b: 0 }, expected: 0 },
+  { input: { a: -5, b: -3 }, expected: -8 }
+]
+
+for each testCase in testCases:
+  test(`add(${testCase.input.a}, ${testCase.input.b}) returns ${testCase.expected}`):
+    // Arrange
+    a = testCase.input.a
+    b = testCase.input.b
+
+    // Act
+    result = add(a, b)
+
+    // Assert
+    assert result equals testCase.expected
 ```
 
-```python
-# Pytest: async tests with pytest-asyncio
-@pytest.mark.asyncio
-async def test_fetches_user_data_successfully():
-    user = await fetch_user(123)
-    assert user.id == 123
-    assert user.name is not None
-```
-
-### 3. Parameterized Tests
-
-```typescript
-// Jest/Vitest: test.each
-test.each([
-  [1, 1, 2],
-  [2, 3, 5],
-  [10, -5, 5],
-  [0, 0, 0],
-])('add(%i, %i) returns %i', (a, b, expected) => {
-  expect(add(a, b)).toBe(expected);
-});
-```
-
-```python
-# Pytest: parametrize decorator
-@pytest.mark.parametrize("a,b,expected", [
-    (1, 1, 2),
-    (2, 3, 5),
-    (10, -5, 5),
-    (0, 0, 0),
-])
-def test_add(a, b, expected):
-    assert add(a, b) == expected
-```
+**Parameterized Testing Benefits:**
+- Reduces test code duplication
+- Easy to add new test cases
+- Clear pattern recognition
+- Better edge case coverage
 
 ### 4. Setup and Teardown
 
-```typescript
-// Jest/Vitest: beforeEach/afterEach
-describe('DatabaseService', () => {
-  let db: Database;
-
-  beforeEach(() => {
-    // Runs before each test
-    db = new Database();
-    db.connect();
-  });
-
-  afterEach(() => {
-    // Runs after each test
-    db.disconnect();
-  });
-
-  test('saves record successfully', () => {
-    const result = db.save({ name: 'John' });
-    expect(result).toBeTruthy();
-  });
-});
 ```
+Pattern: Prepare and clean up test environment
 
-```python
-# Pytest: fixtures
-@pytest.fixture
-def db():
-    database = Database()
+TestSuite: DatabaseService
+
+  beforeEach():
+    // Runs before each test
+    database = createDatabase()
     database.connect()
-    yield database
+    database.seedTestData()
+
+  afterEach():
+    // Runs after each test
+    database.clearData()
     database.disconnect()
 
-def test_saves_record_successfully(db):
-    result = db.save({"name": "John"})
-    assert result is True
+  test('saves record successfully'):
+    // Arrange
+    record = { name: 'John', age: 30 }
+
+    // Act
+    result = database.save(record)
+
+    // Assert
+    assert result.id is defined
+    assert result.name equals 'John'
+
+  test('finds record by id'):
+    // Arrange
+    savedRecord = database.save({ name: 'Jane' })
+
+    // Act
+    foundRecord = database.findById(savedRecord.id)
+
+    // Assert
+    assert foundRecord.name equals 'Jane'
 ```
 
-## Frontend Component Testing
-
-### React Testing Library Example
-
-```typescript
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Button } from './Button';
-
-describe('Button', () => {
-  test('renders with correct text', () => {
-    render(<Button>Click me</Button>);
-    expect(screen.getByText('Click me')).toBeInTheDocument();
-  });
-
-  test('calls onClick handler when clicked', () => {
-    const handleClick = jest.fn();
-    render(<Button onClick={handleClick}>Click me</Button>);
-
-    fireEvent.click(screen.getByText('Click me'));
-
-    expect(handleClick).toHaveBeenCalledTimes(1);
-  });
-
-  test('is disabled when disabled prop is true', () => {
-    render(<Button disabled>Click me</Button>);
-    expect(screen.getByRole('button')).toBeDisabled();
-  });
-});
+**Setup/Teardown Levels:**
 ```
+beforeAll / afterAll:
+  ├─> Runs once per test suite
+  ├─> Use for expensive setup (start server, create DB connection pool)
+  └─> Shared across all tests
+
+beforeEach / afterEach:
+  ├─> Runs before/after each test
+  ├─> Use for test isolation (reset state, clear data)
+  └─> Ensures test independence
+```
+
+### 5. Mocking and Test Doubles
+
+```
+Types of Test Doubles:
+
+1. Stub: Returns predefined responses
+   emailService = createStub()
+   emailService.send.returns(true)
+
+2. Mock: Records interactions and has expectations
+   emailService = createMock()
+   emailService.send.shouldBeCalledWith('test@example.com')
+
+3. Spy: Wraps real object and records calls
+   emailService = createSpy(realEmailService)
+   emailService.send('test@example.com')
+   assert emailService.send.callCount equals 1
+
+4. Fake: Working implementation (simplified)
+   database = createFakeDatabase()  // In-memory instead of real DB
+```
+
+**Mocking Pattern:**
+```
+test('createUser sends welcome email'):
+  // Arrange
+  emailService = createMock()
+  userService = createUserService(emailService)
+  userData = { email: 'new@example.com', name: 'New User' }
+
+  // Act
+  user = userService.createUser(userData)
+
+  // Assert
+  assert emailService.send was called once
+  assert emailService.send was called with arguments:
+    - to: 'new@example.com'
+    - subject: 'Welcome!'
+    - template: 'welcome'
+```
+
+**Mocking Best Practices:**
+- Mock external dependencies (APIs, databases, file system)
+- Don't mock the code you're testing
+- Prefer stubs over mocks when you don't need assertions
+- Clean up mocks in afterEach
+- Don't over-mock (test becomes brittle)
+
+## Component/UI Testing Pattern
+
+```
+Pattern: Testing user interface components (framework-agnostic)
+
+test('button renders with correct text'):
+  // Arrange
+  buttonText = 'Click me'
+
+  // Act
+  component = renderComponent(Button, { text: buttonText })
+
+  // Assert
+  assert component contains text 'Click me'
+  assert component has role 'button'
+
+test('button calls onClick handler when clicked'):
+  // Arrange
+  clickHandler = createMockFunction()
+  component = renderComponent(Button, {
+    text: 'Click me',
+    onClick: clickHandler
+  })
+
+  // Act
+  simulateClick(component)
+
+  // Assert
+  assert clickHandler was called once
+
+test('button is disabled when disabled prop is true'):
+  // Arrange & Act
+  component = renderComponent(Button, {
+    text: 'Click me',
+    disabled: true
+  })
+
+  // Assert
+  assert component.getAttribute('disabled') equals true
+  assert component.getAttribute('aria-disabled') equals 'true'
+```
+
+**Component Testing Checklist:**
+- [ ] Test rendering with different props
+- [ ] Test user interactions (click, input, etc.)
+- [ ] Test accessibility attributes
+- [ ] Test conditional rendering
+- [ ] Test state changes
+- [ ] Test error states
+- [ ] Test loading states
 
 ## Best Practices
 
 ### Naming Conventions
 
-```typescript
-// ✅ Good: Descriptive test names
-test('createUser throws error when email is already registered', () => {});
-test('calculateDiscount returns 0 for non-premium users', () => {});
-test('formatDate returns ISO string when given valid date', () => {});
+```
+✅ GOOD: Descriptive test names
 
-// ❌ Bad: Vague test names
-test('user test 1', () => {});
-test('discount works', () => {});
-test('formats correctly', () => {});
+Test names should be complete sentences that describe:
+- What is being tested
+- Under what conditions
+- What the expected result is
+
+Examples:
+  test('createUser throws ValidationError when email is already registered')
+  test('calculateDiscount returns 0 for non-premium users')
+  test('formatDate returns ISO 8601 string when given valid Date object')
+  test('shoppingCart calculates correct total with multiple items and tax')
+
+❌ BAD: Vague test names
+
+Examples:
+  test('user test 1')
+  test('discount works')
+  test('formats correctly')
+  test('it should work')
 ```
 
-### Test Data
+**Naming Pattern:**
+```
+[FunctionName] [behavior] [condition]
 
-```typescript
-// Create test data factories for consistency
-function createTestUser(overrides = {}) {
+Examples:
+├─> authenticateUser returns JWT token when credentials are valid
+├─> authenticateUser throws UnauthorizedError when password is incorrect
+├─> calculateShipping returns 0 when order total exceeds free shipping threshold
+└─> validateEmail returns false when email format is invalid
+```
+
+### Test Data Factories
+
+```
+Pattern: Create reusable test data factories
+
+function createTestUser(overrides = {}):
   return {
-    id: 1,
+    id: generateUniqueId(),
     email: 'test@example.com',
     name: 'Test User',
-    createdAt: new Date(),
-    ...overrides
-  };
-}
+    role: 'user',
+    emailVerified: false,
+    createdAt: getCurrentTimestamp(),
+    ...overrides  // Allow custom values
+  }
 
-test('updates user name', () => {
-  const user = createTestUser({ name: 'Original Name' });
-  const updated = updateUserName(user, 'New Name');
-  expect(updated.name).toBe('New Name');
-});
+test('updates user name'):
+  // Arrange
+  user = createTestUser({ name: 'Original Name' })
+
+  // Act
+  updated = updateUserName(user, 'New Name')
+
+  // Assert
+  assert updated.name equals 'New Name'
+  assert updated.id equals user.id  // Other fields unchanged
+
+test('admin user has elevated permissions'):
+  // Arrange
+  adminUser = createTestUser({ role: 'admin' })
+
+  // Act
+  permissions = getUserPermissions(adminUser)
+
+  // Assert
+  assert permissions.includes('delete_users')
+  assert permissions.includes('modify_settings')
 ```
+
+**Factory Benefits:**
+- Consistent test data
+- Reduces duplication
+- Easy to modify default values
+- Clear data requirements
+- Supports builder pattern
 
 ### Assertions
 
-```typescript
-// ✅ Good: Specific assertions
-expect(result.status).toBe(200);
-expect(result.data).toEqual({ id: 1, name: 'John' });
-expect(result.errors).toHaveLength(0);
+```
+✅ GOOD: Specific assertions
 
-// ❌ Bad: Overly generic assertions
-expect(result).toBeTruthy();
-expect(result.data).toBeDefined();
+assert response.statusCode equals 200
+assert response.body.data equals { id: 1, name: 'John' }
+assert response.body.errors.length equals 0
+assert user.createdAt is instanceof Date
+assert email.subject contains 'Welcome'
+
+❌ BAD: Overly generic assertions
+
+assert response is truthy
+assert response.body.data is defined
+assert errors exists
+```
+
+**Assertion Best Practices:**
+- Use most specific assertion available
+- Assert on exact values when possible
+- Use type-checking assertions (instanceof, typeof)
+- Assert on array/collection length
+- Use pattern matching for partial objects
+
+### Test Coverage Guidelines
+
+```
+What to Test (Priority Order):
+
+1. Public API / Exported Functions
+   ├─> Functions used by other modules
+   ├─> Class methods
+   └─> Component props and events
+
+2. Business Logic
+   ├─> Calculations
+   ├─> Validations
+   ├─> Data transformations
+   └─> Conditional logic
+
+3. Edge Cases
+   ├─> Boundary values (0, -1, max, min)
+   ├─> Empty collections
+   ├─> Null/undefined inputs
+   └─> Special characters in strings
+
+4. Error Handling
+   ├─> Invalid inputs
+   ├─> Network failures
+   ├─> Permission denied
+   └─> Resource not found
+
+What NOT to Test:
+
+❌ Framework/library code
+❌ Third-party packages
+❌ Private implementation details
+❌ Trivial getters/setters
+❌ Constants and configuration
 ```
 
 ## Common Pitfalls
 
-❌ **Don't**: Test implementation details
-✅ **Do**: Test behavior and outcomes
+### Pitfall 1: Testing Implementation Instead of Behavior
 
-❌ **Don't**: Write tests that depend on execution order
-✅ **Do**: Make each test independent and isolated
+```
+❌ BAD: Testing implementation details
 
-❌ **Don't**: Use real external dependencies (databases, APIs)
-✅ **Do**: Use mocks, stubs, or in-memory alternatives
+test('user registration uses bcrypt with 10 salt rounds'):
+  // This test breaks if you change hashing library
+  assert bcrypt.hash was called with saltRounds: 10
 
-❌ **Don't**: Test framework code or third-party libraries
-✅ **Do**: Test your own business logic
+✅ GOOD: Testing behavior
 
-❌ **Don't**: Write tests after the code (usually)
-✅ **Do**: Consider Test-Driven Development (TDD)
+test('user registration stores hashed password'):
+  user = registerUser('user@example.com', 'password123')
+  assert user.password not equals 'password123'  // Password is hashed
+  assert validatePassword(user, 'password123') equals true  // Can authenticate
+```
+
+### Pitfall 2: Dependent Tests
+
+```
+❌ BAD: Tests depend on execution order
+
+test('create user'):
+  globalUser = createUser('test@example.com')
+
+test('update user'):  // Depends on previous test
+  updateUser(globalUser.id, { name: 'Updated' })
+
+✅ GOOD: Independent tests
+
+test('create user'):
+  user = createUser('test@example.com')
+  assert user.email equals 'test@example.com'
+
+test('update user'):
+  user = createUser('test@example.com')  // Create fresh user
+  updated = updateUser(user.id, { name: 'Updated' })
+  assert updated.name equals 'Updated'
+```
+
+### Pitfall 3: Testing Multiple Paths in One Test
+
+```
+❌ BAD: Complex conditional logic in tests
+
+test('user validation'):
+  if user.role === 'admin':
+    assert canDeleteUsers(user) equals true
+  else:
+    assert canDeleteUsers(user) equals false
+
+✅ GOOD: Separate tests for each path
+
+test('admin user can delete users'):
+  adminUser = createUser({ role: 'admin' })
+  assert canDeleteUsers(adminUser) equals true
+
+test('regular user cannot delete users'):
+  regularUser = createUser({ role: 'user' })
+  assert canDeleteUsers(regularUser) equals false
+```
+
+### Pitfall 4: Slow Tests
+
+```
+❌ BAD: Tests take minutes to run
+
+test('processes large dataset'):
+  data = generateMillionRecords()  // Very slow
+  result = processData(data)
+  assert result.length equals 1000000
+
+✅ GOOD: Fast, focused tests
+
+test('processes dataset correctly'):
+  data = [record1, record2, record3]  // Small representative sample
+  result = processData(data)
+  assert result.length equals 3
+  assert result[0].processed equals true
+
+Target: < 1 second per test, < 10 seconds for entire suite
+```
 
 ## Testing Checklist
 
-- [ ] Each test follows AAA pattern
+Before committing tests, verify:
+
+- [ ] Each test follows AAA pattern (Arrange-Act-Assert)
 - [ ] Tests are independent and can run in any order
 - [ ] Test names clearly describe what is being tested
-- [ ] One assertion per test (or closely related assertions)
+- [ ] One behavior per test (single responsibility)
 - [ ] No hardcoded values without clear reason
 - [ ] Edge cases are covered (null, undefined, empty, boundaries)
 - [ ] Error cases are tested
-- [ ] Async code is properly tested
+- [ ] Async code is properly handled (await, promises)
 - [ ] Tests run quickly (< 1 second per test)
-- [ ] No console warnings or errors during test execution
+- [ ] No console warnings or errors during execution
+- [ ] Mocks/stubs are cleaned up in afterEach
+- [ ] Test data is isolated and doesn't affect other tests
+- [ ] Assertions are specific, not generic
+- [ ] Code coverage meets team standards (typically 70-90%)
 
-## Framework-Specific Commands
+## Test-Driven Development (TDD) Workflow
 
-### Jest/Vitest
+```
+TDD Cycle (Red-Green-Refactor):
 
-```bash
-# Run all tests
-npm test
+1. RED: Write failing test
+   ├─> Write test for desired behavior
+   ├─> Run test (should fail)
+   └─> Confirm test fails for right reason
 
-# Run tests in watch mode
-npm test -- --watch
+2. GREEN: Make test pass
+   ├─> Write minimal code to pass test
+   ├─> Run test (should pass)
+   └─> Don't optimize yet
 
-# Run tests with coverage
-npm test -- --coverage
+3. REFACTOR: Improve code
+   ├─> Clean up code
+   ├─> Remove duplication
+   ├─> Improve names
+   └─> Run tests (should still pass)
 
-# Run specific test file
-npm test -- user.test.ts
+4. REPEAT: Next feature
 
-# Run tests matching pattern
-npm test -- --testNamePattern="createUser"
+Benefits:
+├─> Forces you to think about API before implementation
+├─> Ensures testable code
+├─> High test coverage by default
+├─> Refactoring confidence
+└─> Living documentation
 ```
 
-### Pytest
+## Framework-Specific Implementation Examples
 
-```bash
-# Run all tests
-pytest
+For framework-specific code examples, use the Context7 MCP to fetch documentation:
 
-# Run with verbose output
-pytest -v
+**JavaScript/TypeScript Testing Frameworks:**
+- Jest (React, Node.js ecosystem)
+- Vitest (Vite-based projects, faster Jest alternative)
+- Mocha + Chai (flexible, plugin-based)
+- Jasmine (behavior-driven, no dependencies)
+- AVA (concurrent test execution)
+- Tape (minimalist TAP producer)
 
-# Run specific test file
-pytest tests/test_user.py
+**Python Testing Frameworks:**
+- Pytest (most popular, fixture-based)
+- unittest (standard library, xUnit style)
+- nose2 (extends unittest)
+- Robot Framework (keyword-driven, acceptance testing)
 
-# Run specific test
-pytest tests/test_user.py::test_create_user
+**Java Testing Frameworks:**
+- JUnit 5 (standard, annotation-based)
+- TestNG (flexible, parallel execution)
+- Mockito (mocking framework)
+- AssertJ (fluent assertions)
 
-# Run tests matching pattern
-pytest -k "create_user"
+**C# / .NET Testing Frameworks:**
+- xUnit (modern, extensible)
+- NUnit (mature, feature-rich)
+- MSTest (Microsoft's official framework)
+- FluentAssertions (readable assertions)
 
-# Run with coverage
-pytest --cov=src --cov-report=html
-```
+**Go Testing:**
+- testing package (standard library)
+- testify (assertions and mocking)
+- Ginkgo (BDD style)
 
-## References
+**Ruby Testing:**
+- RSpec (BDD, most popular)
+- Minitest (standard library)
+- Test::Unit (xUnit style)
 
-- [Jest Documentation](https://jestjs.io/docs/getting-started)
-- [Vitest Documentation](https://vitest.dev/guide/)
-- [Pytest Documentation](https://docs.pytest.org/)
-- [React Testing Library](https://testing-library.com/react)
-- [Test-Driven Development by Example](https://www.amazon.com/Test-Driven-Development-Kent-Beck/dp/0321146530) - Kent Beck
-- [Unit Testing Principles](https://martinfowler.com/bliki/UnitTest.html) - Martin Fowler
+**PHP Testing:**
+- PHPUnit (standard, comprehensive)
+- Pest (modern, elegant syntax)
+- Codeception (full-stack)
+
+**Rust Testing:**
+- Built-in test framework (cargo test)
+- Criterion (benchmarking)
+
+## Resources
+
+**Query Context7 MCP for:**
+- "[Your Language] testing best practices"
+- "[Your Framework] unit testing guide"
+- "[Your Language] mocking libraries"
+- "[Your Framework] test coverage tools"
+
+**Books:**
+- "Test-Driven Development by Example" by Kent Beck
+- "Growing Object-Oriented Software, Guided by Tests" by Steve Freeman & Nat Pryce
+- "The Art of Unit Testing" by Roy Osherove
+- "xUnit Test Patterns" by Gerard Meszaros
+
+**Articles and References:**
+- Martin Fowler - Unit Testing (https://martinfowler.com/bliki/UnitTest.html)
+- Kent C. Dodds - Testing Trophy
+- Google Testing Blog
+- ThoughtWorks Technology Radar - Testing Tools and Techniques
+
+**Test Coverage Tools:**
+- JavaScript: Istanbul/nyc, c8
+- Python: Coverage.py
+- Java: JaCoCo, Cobertura
+- C#: Coverlet, OpenCover
+- Go: go test -cover
+- PHP: PHPUnit Coverage
+
+## Advanced Topics
+
+### Mutation Testing
+Verify test suite quality by introducing small code changes and checking if tests catch them.
+
+### Property-Based Testing
+Test with automatically generated inputs to find edge cases you didn't think of.
+
+### Contract Testing
+Verify integrations between services without testing actual implementation.
+
+### Snapshot Testing
+Capture component output and verify it doesn't change unexpectedly.
+
+Use Context7 MCP to research these topics for your specific language/framework.
