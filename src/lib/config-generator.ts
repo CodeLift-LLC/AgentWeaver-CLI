@@ -635,7 +635,7 @@ export class ConfigGenerator {
   ): Promise<string> {
     try {
       // Read the template file
-      const templatePath = path.join(__dirname, '../../templates/CLAUDE.md.hbs');
+      const templatePath = path.join(__dirname, '../templates/CLAUDE.md.hbs');
       const templateContent = await readFile(templatePath);
 
       // Compile the Handlebars template
@@ -756,7 +756,7 @@ export class ConfigGenerator {
   static async copyWorkflowsFile(targetDir: string): Promise<void> {
     try {
       const { copyFile: copyFileUtil } = await import('../utils/file-operations.js');
-      const workflowsTemplatePath = path.join(__dirname, '../../templates/WORKFLOWS.md');
+      const workflowsTemplatePath = path.join(__dirname, '../templates/WORKFLOWS.md');
       const workflowsTargetPath = path.join(targetDir, 'WORKFLOWS.md');
 
       await copyFileUtil(workflowsTemplatePath, workflowsTargetPath);
