@@ -61,12 +61,9 @@ techStack:
 features:
   authentication: true
   aiIntegration: false
-  vectorSearch: false
-  payments: false
   email: false
   fileStorage: true
   realtime: true
-  analytics: false
 
 files:
   # Docker configuration
