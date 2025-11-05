@@ -82,9 +82,36 @@ Before marking the overall task as done:
 
 ### Deployment Configuration
 Read from config:
-- `{{techStack.deployment.platform}}` - Platform (Vercel, AWS, GCP, Azure, Docker, etc.)
-- `{{techStack.deployment.containerization}}` - Container tool (Docker, Podman)
-- `{{techStack.deployment.cicd}}` - CI/CD platform (GitHub Actions, GitLab CI, CircleCI)
+- `{{techStack.deployment.platform}}` - Deployment platform
+  - **Serverless/PaaS**: Vercel, Netlify, Railway, Render, Fly.io, Heroku, AWS Amplify
+  - **Cloud Providers**: AWS (EC2, ECS, EKS, Lambda, Elastic Beanstalk), Google Cloud (GCE, GKE, Cloud Run, App Engine), Azure (VMs, AKS, Container Instances, App Service)
+  - **Container Orchestration**: Kubernetes (self-managed, EKS, GKE, AKS), Docker Swarm, Nomad, AWS ECS/Fargate
+  - **Edge Computing**: Cloudflare Workers, Deno Deploy, AWS Lambda@Edge, Vercel Edge Functions
+  - **Traditional**: VPS (DigitalOcean, Linode, Vultr), Bare Metal, On-Premise
+
+- `{{techStack.deployment.containerization}}` - Containerization tool
+  - Docker, Podman, Buildah, containerd, CRI-O
+
+- `{{techStack.deployment.cicd}}` - CI/CD platform
+  - **Git-Based**: GitHub Actions, GitLab CI/CD, Bitbucket Pipelines, Azure DevOps Pipelines
+  - **Standalone**: Jenkins, CircleCI, Travis CI, Drone CI, TeamCity, Bamboo
+  - **Cloud-Native**: AWS CodePipeline, GCP Cloud Build, Azure Pipelines
+  - **Modern**: BuildKite, Semaphore, Codefresh, Harness
+
+- `{{techStack.deployment.iac}}` - Infrastructure as Code
+  - **Declarative**: Terraform, OpenTofu, Pulumi, AWS CDK, CloudFormation, ARM Templates (Azure)
+  - **Configuration Management**: Ansible, Chef, Puppet, SaltStack
+  - **Kubernetes**: Helm, Kustomize, ArgoCD, FluxCD
+
+- `{{techStack.deployment.monitoring}}` - Monitoring & Observability
+  - **Metrics**: Prometheus, Grafana, Datadog, New Relic, Dynatrace, AppDynamics, CloudWatch, Azure Monitor, Google Cloud Monitoring
+  - **Logging**: ELK Stack (Elasticsearch, Logstash, Kibana), Loki, Splunk, CloudWatch Logs, Azure Log Analytics
+  - **APM**: New Relic, DataDog APM, Dynatrace, AppDynamics, Elastic APM
+  - **Tracing**: Jaeger, Zipkin, OpenTelemetry, AWS X-Ray
+  - **Alerting**: PagerDuty, Opsgenie, AlertManager, VictorOps, Better Uptime
+
+- `{{techStack.deployment.secrets}}` - Secrets Management
+  - HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, Google Secret Manager, 1Password, Doppler, Infisical, SOPS
 
 ## Automatic Invocation Triggers
 
@@ -251,10 +278,12 @@ Use these reusable skills from `.claude/skills/` to accelerate infrastructure wo
 #### **Context7** - DevOps Documentation
 **Use for**: Looking up tool documentation, best practices, configuration examples
 **Examples**:
-- "Docker multi-stage build best practices"
-- "Kubernetes deployment strategies"
-- "Terraform AWS provider documentation"
-- "GitHub Actions workflow syntax"
+- "[Your Containerization Tool] multi-stage build best practices"
+- "[Your Orchestration Platform] deployment strategies"
+- "[Your IaC Tool] [Your Cloud Provider] provider documentation"
+- "[Your CI/CD Platform] workflow syntax and configuration"
+- "[Your Monitoring Tool] alert configuration patterns"
+- "[Your Secrets Management Tool] integration best practices"
 
 #### **Sequential Thinking** - Infrastructure Planning
 **Use for**: Complex infrastructure architecture decisions
@@ -276,10 +305,11 @@ Use these reusable skills from `.claude/skills/` to accelerate infrastructure wo
 #### **WebFetch** - External Documentation & Research
 **Use for**: Researching cloud provider docs, security advisories, best practices
 **Examples**:
-- Reading AWS/GCP/Azure documentation
-- Checking Docker Hub for official images
-- Researching Kubernetes security guidelines
-- Reading infrastructure best practices
+- Reading [Your Cloud Provider] documentation
+- Checking container registries for official images
+- Researching [Your Orchestration Platform] security guidelines
+- Reading infrastructure and DevOps best practices
+- Checking CVE databases for security vulnerabilities
 
 #### **Playwright** - Smoke Testing & Health Checks
 **Use for**: Post-deployment validation, health checks, monitoring
