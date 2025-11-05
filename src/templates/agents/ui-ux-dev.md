@@ -114,49 +114,38 @@ Before marking the overall task as done:
 - **Props & Types**: Define clear TypeScript interfaces
 - **Documentation**: Include usage examples and prop documentation
 
-**Example Component Structure (React + Tailwind):**
-```tsx
-interface ButtonProps {
-  variant?: 'primary' | 'secondary' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
-  children: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-}
+**Component Structure Pattern (Framework-Agnostic):**
 
-export function Button({
-  variant = 'primary',
-  size = 'md',
-  children,
-  onClick,
-  disabled = false
-}: ButtonProps) {
-  const baseStyles = 'rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+Query the component-generation skill (`.claude/skills/component-generation/skill.md`) for universal component patterns, then adapt to your project's framework:
 
-  const variantStyles = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500'
-  };
-
-  const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg'
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} disabled:opacity-50 disabled:cursor-not-allowed`}
-      aria-disabled={disabled}
-    >
-      {children}
-    </button>
-  );
-}
 ```
+Component Interface Definition:
+├─> Props/Inputs (variant, size, disabled, onClick, children)
+├─> State Management (internal component state)
+├─> Styling Logic (compute classes based on props)
+├─> Event Handlers (onClick, keyboard events)
+├─> Accessibility (ARIA attributes, semantic HTML)
+└─> Render (template/JSX)
+
+Example: Button Component Pattern
+├─> Variants: primary, secondary, ghost, danger
+├─> Sizes: sm (small), md (medium), lg (large)
+├─> States: default, hover, focus, disabled, loading
+├─> Accessibility: keyboard navigation, ARIA labels, focus indicators
+└─> Responsive: touch-friendly sizing (44x44px minimum)
+```
+
+**Use Context7 MCP to get framework-specific implementation:**
+- "[Your Framework] component best practices"
+- "[Your Framework] TypeScript patterns"
+- "[Your Styling Library] component styling patterns"
+
+**Example frameworks to query:**
+- React: Functional components with hooks, TypeScript props
+- Vue: Composition API with `<script setup>`, TypeScript
+- Svelte: TypeScript exports, reactive declarations
+- Angular: Component decorators, @Input/@Output
+- Web Components: Custom Elements, Shadow DOM
 
 ### 2. Design System Integration
 - **Token Extraction**: Read design tokens from config (colors, spacing, typography)
@@ -465,74 +454,55 @@ Before submitting component to @tech-lead:
 
 3. **Research**: Query shadcn/ui for card patterns
 
-4. **Generate Component**:
-```tsx
-// BlogPostCard.tsx
-import { ArrowRight } from 'lucide-react';
+4. **Generate Component** (following universal patterns):
 
-interface BlogPostCardProps {
-  title: string;
-  excerpt: string;
-  author: string;
-  date: string;
-  imageUrl: string;
-  imageAlt: string;
-  href: string;
-}
-
-export function BlogPostCard({
-  title,
-  excerpt,
-  author,
-  date,
-  imageUrl,
-  imageAlt,
-  href
-}: BlogPostCardProps) {
-  return (
-    <article className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
-      <a href={href} className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-        <span className="sr-only">Read article: {title}</span>
-      </a>
-
-      {/* Image */}
-      <div className="aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
-        <img
-          src={imageUrl}
-          alt={imageAlt}
-          className="h-full w-full object-cover transition-transform group-hover:scale-105"
-          loading="lazy"
-        />
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-1 flex-col p-6">
-        <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
-          {title}
-        </h3>
-
-        <p className="mb-4 flex-1 text-gray-600 dark:text-gray-400">
-          {excerpt}
-        </p>
-
-        {/* Meta */}
-        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-          <div className="flex items-center gap-2">
-            <span>{author}</span>
-            <span aria-hidden="true">•</span>
-            <time dateTime={date}>{new Date(date).toLocaleDateString()}</time>
-          </div>
-
-          <span className="flex items-center gap-1 font-medium text-blue-600 dark:text-blue-400">
-            Read more
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-          </span>
-        </div>
-      </div>
-    </article>
-  );
-}
 ```
+Component Structure: BlogPostCard
+
+Props Interface:
+├─> title: string
+├─> excerpt: string
+├─> author: string
+├─> date: string (ISO format)
+├─> imageUrl: string
+├─> imageAlt: string
+└─> href: string
+
+Component Layout:
+├─> <article> (semantic HTML)
+│   ├─> <link wrapper> (clickable entire card)
+│   │   └─> Screen reader text: "Read article: {title}"
+│   ├─> <image container>
+│   │   └─> <img> with alt text, lazy loading
+│   ├─> <content container>
+│   │   ├─> <h3> title
+│   │   ├─> <p> excerpt
+│   │   └─> <meta info>
+│   │       ├─> author
+│   │       ├─> separator (aria-hidden)
+│   │       └─> <time> with datetime attribute
+│   └─> <call-to-action>
+│       └─> "Read more" with icon
+
+Styling Considerations:
+├─> Card: border, rounded corners, shadow, hover effect
+├─> Image: aspect ratio (16:9), object-fit cover, hover scale
+├─> Layout: flexbox column, responsive padding
+├─> Dark mode: background, text, border colors
+├─> Focus: visible ring on keyboard navigation
+└─> Responsive: adjust spacing on mobile/tablet/desktop
+
+Accessibility Features:
+├─> Semantic HTML (article, h3, time)
+├─> Descriptive alt text for image
+├─> Focus indicators (ring on tab)
+├─> Screen reader text for link
+├─> Proper time element with datetime attribute
+├─> WCAG AA color contrast
+└─> Keyboard navigation support
+```
+
+**Implementation**: Query Context7 MCP for "[Your Framework] card component patterns" to get framework-specific code following this structure.
 
 5. **Generate Preview**: Create HTML preview with multiple examples
 
@@ -540,7 +510,7 @@ export function BlogPostCard({
 
 7. **Submit**: Hand off to @tech-lead for code review
 
-8. **Document**:
+8. **Document** (framework-agnostic format):
 ```markdown
 # BlogPostCard Component
 
@@ -564,19 +534,18 @@ Responsive card component for displaying blog post previews.
 - Screen reader-friendly link text
 - WCAG AA color contrast
 
-## Usage
+## Usage Example
 
-```tsx
-<BlogPostCard
-  title="Getting Started with React"
-  excerpt="Learn the fundamentals of React in this comprehensive guide."
-  author="Jane Doe"
-  date="2025-11-04"
-  imageUrl="/images/react-guide.jpg"
-  imageAlt="React logo with code editor"
-  href="/blog/getting-started-with-react"
-/>
-```
+[Use your framework's component syntax]
+
+Props:
+  title: "Getting Started with [Your Framework]"
+  excerpt: "Learn the fundamentals in this comprehensive guide."
+  author: "Jane Doe"
+  date: "2025-11-04"
+  imageUrl: "/images/guide.jpg"
+  imageAlt: "[Framework] logo with code editor"
+  href: "/blog/getting-started"
 ```
 
 ---
