@@ -1,0 +1,222 @@
+# FastAPI Backend API Template
+# Production-ready Python backend with Vertical Slice Architecture
+
+id: fastapi-backend
+name: FastAPI Backend API
+description: High-performance Python backend API with FastAPI, Supabase, SQLAlchemy 2.0, and OpenAI integration. Best for ML/AI workloads and data-intensive APIs.
+complexity: intermediate
+architecture: vertical-slice
+tags:
+  - fastapi
+  - python
+  - supabase
+  - api
+  - backend
+  - rest
+  - ml
+  - ai
+
+requirements:
+  docker: true
+  dockerCompose: "2.20.0"
+  python: "3.11.0"
+  pnpm: false
+  uv: true
+
+techStack:
+  backend:
+    framework: fastapi
+    version: "0.110.0"
+    language: python
+    runtime: python
+    apiStyle: rest
+  database:
+    primary: supabase
+    version: "15"
+    orm: sqlalchemy
+    migrations: alembic
+    vector: pgvector
+  testing:
+    unit: pytest
+    integration: pytest
+    e2e: httpx
+  deployment:
+    containerization: docker
+    ci: github-actions
+  ai:
+    provider: openai
+    sdk: openai
+    observability: langfuse
+  packageManager:
+    python: uv
+
+features:
+  authentication: true
+  aiIntegration: false
+  vectorSearch: false
+  payments: false
+  email: false
+  fileStorage: true
+  realtime: false
+  analytics: false
+
+files:
+  # Docker configuration
+  - source: docker-compose.yml
+    destination: docker-compose.yml
+    type: template
+    required: true
+
+  - source: Dockerfile
+    destination: Dockerfile
+    type: template
+    required: true
+
+  # Python configuration
+  - source: pyproject.toml
+    destination: pyproject.toml
+    type: template
+    required: true
+
+  - source: uv.lock
+    destination: uv.lock
+    type: copy
+    required: false
+
+  # Database configuration
+  - source: alembic.ini
+    destination: alembic.ini
+    type: copy
+    required: true
+
+  # Testing configuration
+  - source: pytest.ini
+    destination: pytest.ini
+    type: copy
+    required: true
+
+  # Code quality
+  - source: .ruff.toml
+    destination: .ruff.toml
+    type: copy
+    required: true
+
+  - source: .mypy.ini
+    destination: .mypy.ini
+    type: copy
+    required: true
+
+  # CI/CD
+  - source: .github/workflows/ci.yml
+    destination: .github/workflows/ci.yml
+    type: template
+    required: true
+
+  # Environment
+  - source: .env.example
+    destination: .env.example
+    type: template
+    required: true
+
+  # Documentation
+  - source: README.md
+    destination: README.md
+    type: template
+    required: true
+
+  - source: structure.md
+    destination: docs/structure.md
+    type: copy
+    required: true
+
+  # Git
+  - source: .gitignore
+    destination: .gitignore
+    type: copy
+    required: true
+
+dockerServices:
+  - name: supabase-postgres
+    image: supabase/postgres:15.1.0.147
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_PASSWORD: "{{DB_PASSWORD}}"
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    required: true
+
+  - name: supabase-auth
+    image: supabase/gotrue:v2.132.3
+    ports:
+      - "54321:9999"
+    environment:
+      GOTRUE_API_HOST: "0.0.0.0"
+      GOTRUE_SITE_URL: "http://localhost:3000"
+      GOTRUE_JWT_SECRET: "{{JWT_SECRET}}"
+    required: true
+    features:
+      - authentication
+
+  - name: supabase-storage
+    image: supabase/storage-api:v0.43.11
+    ports:
+      - "54324:5000"
+    required: false
+    features:
+      - fileStorage
+
+  - name: supabase-studio
+    image: supabase/studio:20240101-92c87d1
+    ports:
+      - "54323:3000"
+    environment:
+      STUDIO_PG_META_URL: "http://supabase-postgres:5432"
+    required: true
+
+  - name: redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    required: true
+
+  - name: langfuse
+    image: langfuse/langfuse:latest
+    ports:
+      - "3001:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:{{DB_PASSWORD}}@supabase-postgres:5432/langfuse"
+    required: false
+    features:
+      - aiIntegration
+
+  - name: mailhog
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    required: false
+    features:
+      - email
+
+setupCommands:
+  - description: Install dependencies with uv
+    command: uv sync
+
+  - description: Generate Alembic migrations
+    command: uv run alembic revision --autogenerate -m "Initial migration"
+
+  - description: Run database migrations
+    command: uv run alembic upgrade head
+
+  - description: Seed database (optional)
+    command: uv run python -m app.db.seed
+
+metadata:
+  author: AgentWeaver Team
+  version: 1.0.0
+  lastUpdated: "2025-01-05"
+  documentationUrl: https://github.com/CodeLift-LLC/AgentWeaver-CLI

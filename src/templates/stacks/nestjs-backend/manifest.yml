@@ -1,0 +1,247 @@
+# NestJS Backend API Template
+# Production-ready backend with Vertical Slice Architecture
+
+id: nestjs-backend
+name: NestJS Backend API
+description: Enterprise-grade backend API with NestJS 10, Supabase, Drizzle ORM, and OpenAI integration. Best for scalable microservices and REST APIs.
+complexity: intermediate
+architecture: vertical-slice
+tags:
+  - nestjs
+  - nodejs
+  - typescript
+  - supabase
+  - api
+  - backend
+  - rest
+  - graphql
+
+requirements:
+  docker: true
+  dockerCompose: "2.20.0"
+  node: "18.0.0"
+  pnpm: true
+  uv: false
+
+techStack:
+  backend:
+    framework: nestjs
+    version: "10.0.0"
+    language: typescript
+    runtime: node
+    apiStyle: rest
+  database:
+    primary: supabase
+    version: "15"
+    orm: drizzle
+    migrations: drizzle-kit
+    vector: pgvector
+  testing:
+    unit: jest
+    integration: jest
+    e2e: supertest
+  deployment:
+    containerization: docker
+    ci: github-actions
+  ai:
+    provider: openai
+    sdk: openai
+    observability: langfuse
+  packageManager:
+    node: pnpm
+
+features:
+  authentication: true
+  aiIntegration: false
+  vectorSearch: false
+  payments: false
+  email: false
+  fileStorage: true
+  realtime: false
+  analytics: false
+
+files:
+  # Docker configuration
+  - source: docker-compose.yml
+    destination: docker-compose.yml
+    type: template
+    required: true
+
+  - source: docker-compose.prod.yml
+    destination: docker-compose.prod.yml
+    type: template
+    required: false
+
+  - source: Dockerfile
+    destination: Dockerfile
+    type: template
+    required: true
+
+  # Package management
+  - source: pnpm-workspace.yaml
+    destination: pnpm-workspace.yaml
+    type: copy
+    required: true
+
+  - source: package.json
+    destination: package.json
+    type: template
+    required: true
+
+  # TypeScript configuration
+  - source: tsconfig.json
+    destination: tsconfig.json
+    type: copy
+    required: true
+
+  - source: tsconfig.build.json
+    destination: tsconfig.build.json
+    type: copy
+    required: true
+
+  - source: nest-cli.json
+    destination: nest-cli.json
+    type: copy
+    required: true
+
+  - source: .eslintrc.js
+    destination: .eslintrc.js
+    type: copy
+    required: true
+
+  - source: .prettierrc
+    destination: .prettierrc
+    type: copy
+    required: true
+
+  # Database configuration
+  - source: drizzle.config.ts
+    destination: drizzle.config.ts
+    type: template
+    required: true
+
+  # Testing configuration
+  - source: jest.config.js
+    destination: jest.config.js
+    type: copy
+    required: true
+
+  # CI/CD
+  - source: .github/workflows/ci.yml
+    destination: .github/workflows/ci.yml
+    type: template
+    required: true
+
+  - source: .github/workflows/deploy.yml
+    destination: .github/workflows/deploy.yml
+    type: template
+    required: false
+
+  # Environment
+  - source: .env.example
+    destination: .env.example
+    type: template
+    required: true
+
+  # Documentation
+  - source: README.md
+    destination: README.md
+    type: template
+    required: true
+
+  - source: structure.md
+    destination: docs/structure.md
+    type: copy
+    required: true
+
+  # Git
+  - source: .gitignore
+    destination: .gitignore
+    type: copy
+    required: true
+
+dockerServices:
+  - name: supabase-postgres
+    image: supabase/postgres:15.1.0.147
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_PASSWORD: "{{DB_PASSWORD}}"
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    required: true
+
+  - name: supabase-auth
+    image: supabase/gotrue:v2.132.3
+    ports:
+      - "54321:9999"
+    environment:
+      GOTRUE_API_HOST: "0.0.0.0"
+      GOTRUE_SITE_URL: "http://localhost:3000"
+      GOTRUE_JWT_SECRET: "{{JWT_SECRET}}"
+    required: true
+    features:
+      - authentication
+
+  - name: supabase-storage
+    image: supabase/storage-api:v0.43.11
+    ports:
+      - "54324:5000"
+    required: false
+    features:
+      - fileStorage
+
+  - name: supabase-studio
+    image: supabase/studio:20240101-92c87d1
+    ports:
+      - "54323:3000"
+    environment:
+      STUDIO_PG_META_URL: "http://supabase-postgres:5432"
+    required: true
+
+  - name: redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    required: true
+
+  - name: langfuse
+    image: langfuse/langfuse:latest
+    ports:
+      - "3001:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:{{DB_PASSWORD}}@supabase-postgres:5432/langfuse"
+    required: false
+    features:
+      - aiIntegration
+
+  - name: mailhog
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    required: false
+    features:
+      - email
+
+setupCommands:
+  - description: Install dependencies
+    command: pnpm install
+
+  - description: Generate Drizzle migrations
+    command: pnpm db:generate
+
+  - description: Run database migrations
+    command: pnpm db:migrate
+
+  - description: Seed database (optional)
+    command: pnpm db:seed
+
+metadata:
+  author: AgentWeaver Team
+  version: 1.0.0
+  lastUpdated: "2025-01-05"
+  documentationUrl: https://github.com/CodeLift-LLC/AgentWeaver-CLI

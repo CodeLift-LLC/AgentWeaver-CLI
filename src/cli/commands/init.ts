@@ -6,7 +6,9 @@ import { AgentInstaller } from '../../lib/agent-installer.js';
 import { SkillsInstaller } from '../../lib/skills-installer.js';
 import { EnhancedTechDetector } from '../../lib/enhanced-tech-detector.js';
 import { ConfigGenerator } from '../../lib/config-generator.js';
+import { StackInstaller } from '../../lib/stack-installer.js';
 import { getTemplatesDirectory, pathExists, readFile } from '../../utils/file-operations.js';
+import type { TemplateFeatures } from '../../lib/stack-template.js';
 
 /**
  * Get project name from package.json or directory name
@@ -32,6 +34,7 @@ interface InitOptions {
   skills?: string;
   mcp?: boolean;
   mode?: 'strict' | 'flexible' | 'adaptive';
+  template?: string;
 }
 
 export async function initCommand(options: InitOptions) {
@@ -60,6 +63,160 @@ export async function initCommand(options: InitOptions) {
   }
 
   try {
+    // Step 0: Template selection (optional - for new projects)
+    let selectedFeatures: Partial<TemplateFeatures> | null = null;
+    let templateInstallResult: any = null;
+
+    if (!options.yes) {
+      const { useTemplate } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'useTemplate',
+          message: 'Start with a pre-configured tech stack template?',
+          default: false,
+        },
+      ]);
+
+      if (useTemplate) {
+        const stackInstaller = new StackInstaller();
+        const availableTemplates = await stackInstaller.listTemplates();
+
+        if (availableTemplates.length > 0) {
+          const { templateId } = await inquirer.prompt([
+            {
+              type: 'list',
+              name: 'templateId',
+              message: 'Select a tech stack template:',
+              choices: [
+                { name: 'Skip - Detect existing project', value: null },
+                ...availableTemplates.map((t) => ({
+                  name: `${t.name} - ${t.description}`,
+                  value: t.id,
+                })),
+              ],
+            },
+          ]);
+
+          if (templateId) {
+            const template = await stackInstaller.loadTemplate(templateId);
+
+            // Feature customization
+            console.log(chalk.cyan('\n🎨 Customize features:\n'));
+            const featureChoices: { name: string; value: keyof TemplateFeatures; checked: boolean }[] = [
+              {
+                name: 'Authentication (Supabase Auth)',
+                value: 'authentication',
+                checked: template.features.authentication,
+              },
+              {
+                name: 'AI Integration (OpenAI SDK + Langfuse)',
+                value: 'aiIntegration',
+                checked: template.features.aiIntegration,
+              },
+              {
+                name: 'Vector Search (pgvector)',
+                value: 'vectorSearch',
+                checked: template.features.vectorSearch,
+              },
+              { name: 'Payments (Stripe)', value: 'payments', checked: template.features.payments },
+              { name: 'Email (Resend)', value: 'email', checked: template.features.email },
+              {
+                name: 'File Storage (Supabase Storage)',
+                value: 'fileStorage',
+                checked: template.features.fileStorage,
+              },
+              {
+                name: 'Realtime (Supabase Realtime)',
+                value: 'realtime',
+                checked: template.features.realtime,
+              },
+              { name: 'Analytics', value: 'analytics', checked: template.features.analytics },
+            ];
+
+            const { features } = await inquirer.prompt([
+              {
+                type: 'checkbox',
+                name: 'features',
+                message: 'Select features to include:',
+                choices: featureChoices,
+              },
+            ]);
+
+            // Convert to feature object
+            selectedFeatures = {
+              authentication: features.includes('authentication'),
+              aiIntegration: features.includes('aiIntegration'),
+              vectorSearch: features.includes('vectorSearch'),
+              payments: features.includes('payments'),
+              email: features.includes('email'),
+              fileStorage: features.includes('fileStorage'),
+              realtime: features.includes('realtime'),
+              analytics: features.includes('analytics'),
+            };
+
+            // Install template
+            const templateSpinner = ora('Installing template...').start();
+            const projectName = await getProjectName(projectRoot);
+
+            templateInstallResult = await stackInstaller.installTemplate(templateId, projectRoot, {
+              projectName,
+              projectPath: projectRoot,
+              selectedFeatures,
+              environmentVariables: {},
+            });
+
+            if (templateInstallResult.success) {
+              templateSpinner.succeed('Template installed successfully');
+              console.log(chalk.gray(`\n  Created ${templateInstallResult.filesCreated.length} files`));
+              console.log(
+                chalk.gray(`  Configured ${templateInstallResult.servicesConfigured.length} services`)
+              );
+
+              if (templateInstallResult.warnings.length > 0) {
+                console.log(chalk.yellow('\n  Warnings:'));
+                templateInstallResult.warnings.forEach((warning: string) => {
+                  console.log(chalk.yellow(`    ⚠ ${warning}`));
+                });
+              }
+            } else {
+              templateSpinner.fail('Template installation failed');
+              templateInstallResult.errors.forEach((error: string) => {
+                console.log(chalk.red(`  ✗ ${error}`));
+              });
+              process.exit(1);
+            }
+          }
+        }
+      }
+    } else if (options.template) {
+      // CLI flag: --template <template-id>
+      const stackInstaller = new StackInstaller();
+      const template = await stackInstaller.loadTemplate(options.template);
+
+      // Use default features for --yes mode
+      selectedFeatures = template.features;
+
+      const templateSpinner = ora('Installing template...').start();
+      const projectName = await getProjectName(projectRoot);
+
+      templateInstallResult = await stackInstaller.installTemplate(options.template, projectRoot, {
+        projectName,
+        projectPath: projectRoot,
+        selectedFeatures,
+        environmentVariables: {},
+      });
+
+      if (templateInstallResult.success) {
+        templateSpinner.succeed('Template installed successfully');
+      } else {
+        templateSpinner.fail('Template installation failed');
+        templateInstallResult.errors.forEach((error: string) => {
+          console.log(chalk.red(`  ✗ ${error}`));
+        });
+        process.exit(1);
+      }
+    }
+
     // Step 1: Detect tech stack (using enhanced detector)
     const spinner = ora('Detecting project tech stack...').start();
     const enhancedDetector = new EnhancedTechDetector(projectRoot);
@@ -410,8 +567,22 @@ export async function initCommand(options: InitOptions) {
     }
 
     console.log(chalk.cyan('\n🎯 Next steps:\n'));
+
+    let stepNumber = 1;
+
+    // Template-specific next steps
+    if (templateInstallResult && templateInstallResult.nextSteps.length > 0) {
+      console.log(chalk.cyan.bold('📦 Template Setup:\n'));
+      templateInstallResult.nextSteps.forEach((step: string) => {
+        console.log(chalk.white(`  ${stepNumber}. ${step}`));
+        stepNumber++;
+      });
+      console.log('');
+    }
+
+    // MCP setup
     if (mcpServers.length > 0) {
-      console.log(chalk.white('  1. Copy .env.example to .env and fill in your credentials:'));
+      console.log(chalk.white(`  ${stepNumber}. Copy .env.example to .env and fill in your credentials:`));
       if (mcpServers.includes('github')) {
         console.log(chalk.gray('     - GITHUB_TOKEN (from https://github.com/settings/tokens)'));
       }
@@ -419,12 +590,17 @@ export async function initCommand(options: InitOptions) {
         console.log(chalk.gray('     - SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'));
       }
       console.log('');
+      stepNumber++;
     }
-    console.log(chalk.white('  2. Restart Claude Code to load the new agents'));
+
+    // AgentWeaver setup
+    console.log(chalk.white(`  ${stepNumber}. Restart Claude Code to load the new agents`));
+    stepNumber++;
     console.log('');
-    console.log(chalk.white('  3. Open .claude/CLAUDE.md to see all available agents and their usage'));
+    console.log(chalk.white(`  ${stepNumber}. Open .claude/CLAUDE.md to see all available agents and their usage`));
+    stepNumber++;
     console.log('');
-    console.log(chalk.white('  4. Start using your agents:'));
+    console.log(chalk.white(`  ${stepNumber}. Start using your agents:`));
     console.log(chalk.gray('     "Build a REST API for users"  (automatic invocation)'));
     console.log(chalk.gray('     @backend-dev implement authentication  (manual invocation)'));
     console.log('');
