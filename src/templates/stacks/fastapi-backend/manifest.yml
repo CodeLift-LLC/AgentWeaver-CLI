@@ -78,11 +78,6 @@ files:
     type: template
     required: true
 
-  - source: uv.lock
-    destination: uv.lock
-    type: copy
-    required: false
-
   # Database configuration
   - source: alembic.ini
     destination: alembic.ini
@@ -124,7 +119,7 @@ files:
     type: template
     required: true
 
-  - source: structure.md
+  - source: docs/structure.md
     destination: docs/structure.md
     type: copy
     required: true
