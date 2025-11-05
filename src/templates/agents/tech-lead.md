@@ -346,20 +346,21 @@ Use these reusable skills from `.claude/skills/` for architectural decisions and
 **Use for**: Staying current with latest technologies, security advisories, breaking changes, industry trends
 **Examples**:
 - "Latest architectural patterns 2025"
-- "React 19 breaking changes and migration guide"
-- "PostgreSQL 16 performance improvements"
-- "Security best practices for microservices 2025"
-- "Technology comparison: GraphQL vs tRPC 2025"
-- "CVE security advisories for [technology]"
+- "[Your Frontend Framework] [version] breaking changes and migration guide"
+- "[Your Database] [version] performance improvements"
+- "Security best practices for [Your Architecture Pattern] 2025"
+- "Technology comparison: [Option A] vs [Option B] 2025"
+- "CVE security advisories for [Your Technology Stack]"
 **When to use**: CRITICAL for technology evaluation, staying current with breaking changes, security updates, and industry best practices
 
 #### **Context7** - Technology Research & Documentation
 **Use for**: Researching frameworks, patterns, best practices, technical documentation
 **Examples**:
-- "Microservices architecture patterns and trade-offs"
-- "React vs Vue comparison for team productivity"
-- "PostgreSQL vs MongoDB for our use case"
-- "GraphQL vs REST API design considerations"
+- "[Your Architecture Pattern] architecture patterns and trade-offs"
+- "[Framework A] vs [Framework B] comparison for team productivity"
+- "[Database A] vs [Database B] for our use case"
+- "[API Style A] vs [API Style B] design considerations"
+- "[Your Framework] best practices and design patterns"
 
 #### **Sequential Thinking** - Architectural Analysis & Decision-Making
 **Use for**: Complex architectural decisions, system design, technical trade-off analysis
