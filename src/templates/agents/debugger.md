@@ -88,11 +88,14 @@ Before marking the debugging task as done:
 
 **IMPORTANT**: Always read `.claude/agentweaver.config.yml` at the project root to understand the project's tech stack, architecture, and debugging tools.
 
-### Common Tech Stacks
-- **Frontend**: React, Vue, Angular, Next.js, Svelte
-- **Backend**: Node.js, Python, Java, Go, .NET
-- **Database**: PostgreSQL, MySQL, MongoDB, Redis
-- **Infrastructure**: Docker, Kubernetes, AWS, Azure, GCP
+### Common Tech Stacks (Examples)
+
+> **Note**: AgentWeaver-CLI supports debugging across ALL tech stacks. The examples below are common but not exhaustive. Query Context7 MCP for "[Your Language/Framework] debugging best practices" for specific guidance.
+
+- **Frontend Examples**: React, Vue, Angular, Next.js, Svelte, Solid, Qwik, Web Components
+- **Backend Examples**: Node.js, Python (FastAPI/Django/Flask), Java (Spring Boot), Go, .NET, Ruby, PHP, Rust
+- **Database Examples**: PostgreSQL, MySQL, MongoDB, Redis, Cassandra, DynamoDB, Neo4j
+- **Infrastructure Examples**: Docker, Kubernetes, AWS, Azure, GCP, Vercel, Railway, Cloudflare
 
 ## Automatic Invocation Triggers
 
@@ -141,13 +144,13 @@ Before marking the debugging task as done:
 - **Dependency Graph**: Trace dependencies that could cause issue
 
 ### 4. Debugging Techniques
-- **Logging**: Add strategic console.log/print statements
-- **Breakpoints**: Use debugger to pause execution
-- **Network Inspection**: Check API requests/responses
-- **Database Queries**: Verify data integrity and query correctness
-- **Performance Profiling**: Identify bottlenecks
-- **Memory Profiling**: Find memory leaks
-- **Time Travel Debugging**: Use tools like Redux DevTools
+- **Logging**: Add strategic log statements (console.log, print, logger.info, etc.)
+- **Breakpoints**: Use debugger to pause execution (browser DevTools, IDE debugger, pdb, etc.)
+- **Network Inspection**: Check API requests/responses (browser DevTools, Charles, Postman)
+- **Database Queries**: Verify data integrity and query correctness (SQL logs, query analyzers)
+- **Performance Profiling**: Identify bottlenecks (profiler tools, flame graphs)
+- **Memory Profiling**: Find memory leaks (heap snapshots, memory analyzers)
+- **Time Travel Debugging**: Use state inspection tools (Redux DevTools, Vue DevTools, Angular DevTools, etc.)
 
 ### 5. Fix Implementation
 - **Minimal Change**: Fix with smallest possible code change
@@ -172,19 +175,21 @@ Before marking the debugging task as done:
 #### **WebSearch** - Error Research & Solutions (CRITICAL)
 **Use for**: Searching error messages, stack traces, known issues, bug solutions, CVEs
 **Examples**:
-- "Error: ECONNREFUSED 127.0.0.1:5432 postgresql"
-- "React useState not updating component"
-- "Memory leak in Node.js setTimeout"
-- "CVE-2024-XXXX vulnerability fix"
+- "Error: [Your Specific Error Message]"
+- "[Your Framework] [specific issue] not working"
+- "Memory leak in [Your Language] [specific pattern]"
+- "CVE-2024-XXXX vulnerability fix for [Your Dependency]"
+- "[Your Database] connection error troubleshooting"
 **When to use**: IMMEDIATELY when encountering unfamiliar errors, cryptic messages, or security issues
 
 #### **Context7** - Framework & Library Documentation
 **Use for**: Understanding framework debugging tools, API behavior, configuration
 **Examples**:
-- Next.js error handling best practices
-- React DevTools debugging guide
-- Express.js error middleware documentation
-- PostgreSQL query debugging techniques
+- "[Your Framework] error handling best practices"
+- "[Your Framework] DevTools debugging guide"
+- "[Your Framework] error middleware documentation"
+- "[Your Database] query debugging techniques"
+- "[Your Language] debugger configuration"
 
 #### **Sequential Thinking** - Complex Debugging Strategy
 **Use for**: Multi-step debugging plans, complex root cause analysis, architectural issues
@@ -460,35 +465,59 @@ Use these reusable skills from `.claude/skills/` to accelerate debugging:
 - Bug recurrence rate is low (<5%)
 - Team learns from debugging sessions
 
-## Debugging Tools by Tech Stack
+## Debugging Tools by Tech Stack (Examples)
 
-### Frontend Debugging
-- **Chrome DevTools**: Console, Network, Performance, Memory
-- **React DevTools**: Component inspector, hooks, profiler
-- **Redux DevTools**: State inspection, time travel
-- **Vue DevTools**: Component hierarchy, Vuex state
-- **Lighthouse**: Performance and accessibility audits
+> **Note**: Use Context7 MCP to query "[Your Language/Framework] debugging tools and best practices" for specific guidance on your tech stack.
 
-### Backend Debugging
-- **Node.js Debugger**: `node --inspect`, Chrome DevTools
-- **Python Debugger**: pdb, ipdb, pudb
-- **Java Debugger**: IntelliJ debugger, jdb
-- **Logging Libraries**: Winston, Pino, log4j, Loguru
-- **APM Tools**: New Relic, DataDog, AppDynamics
+### Frontend Debugging Tools
+- **Browser DevTools**: Chrome DevTools, Firefox DevTools, Safari Web Inspector, Edge DevTools
+  - Console, Network, Performance, Memory, Sources
+- **Framework-Specific DevTools**:
+  - React: React DevTools (component inspector, hooks, profiler)
+  - Vue: Vue DevTools (component hierarchy, Pinia/Vuex state)
+  - Angular: Angular DevTools (change detection, dependency injection)
+  - Svelte: Svelte DevTools
+  - Solid: Solid DevTools
+- **State Management DevTools**: Redux DevTools, MobX DevTools, Zustand DevTools
+- **Performance**: Lighthouse, WebPageTest, Chrome User Experience Report
 
-### Database Debugging
-- **Query Analyzers**: EXPLAIN, EXPLAIN ANALYZE
-- **Database Logs**: Slow query log, error log
-- **Query Profilers**: pg_stat_statements, MySQL slow log
-- **Transaction Logs**: For deadlock and lock analysis
-- **Database Monitoring**: Connection pools, query performance
+### Backend Debugging Tools
+- **Language Debuggers**:
+  - JavaScript/TypeScript: `node --inspect`, Chrome DevTools, VS Code debugger
+  - Python: pdb, ipdb, pudb, PyCharm debugger
+  - Java: IntelliJ debugger, Eclipse debugger, jdb
+  - Go: Delve (dlv), VS Code Go debugger
+  - C#: Visual Studio debugger, dotnet-dump
+  - Ruby: byebug, pry, ruby-debug-ide
+  - PHP: Xdebug, PHP Debug Bar
+  - Rust: rust-gdb, rust-lldb, VS Code debugger
+- **Logging Libraries**:
+  - JavaScript: Winston, Pino, Bunyan, log4js
+  - Python: logging (built-in), Loguru, structlog
+  - Java: log4j, SLF4J, Logback
+  - Go: zap, logrus, zerolog
+  - C#: Serilog, NLog, log4net
+- **APM Tools**: New Relic, DataDog, AppDynamics, Dynatrace, Elastic APM
 
-### Infrastructure Debugging
-- **Container Logs**: `docker logs`, `kubectl logs`
-- **System Monitoring**: top, htop, iostat, netstat
-- **Tracing**: Jaeger, Zipkin, AWS X-Ray
-- **Log Aggregation**: ELK stack, Splunk, CloudWatch
-- **Network Tools**: curl, ping, traceroute, tcpdump
+### Database Debugging Tools
+- **Query Analyzers**: EXPLAIN, EXPLAIN ANALYZE (PostgreSQL, MySQL)
+- **Database Logs**: Slow query log, error log, query log
+- **Query Profilers**:
+  - PostgreSQL: pg_stat_statements, auto_explain
+  - MySQL: Performance Schema, slow query log
+  - MongoDB: Database Profiler, explain()
+  - Redis: MONITOR, SLOWLOG
+- **Transaction Tools**: For deadlock and lock analysis
+- **Database Monitoring**: Connection pools, query performance, index usage
+
+### Infrastructure Debugging Tools
+- **Container Debugging**:
+  - Docker: `docker logs`, `docker exec`, `docker inspect`, `docker stats`
+  - Kubernetes: `kubectl logs`, `kubectl describe`, `kubectl exec`, `kubectl top`
+- **System Monitoring**: top, htop, iostat, vmstat, netstat, ss, lsof
+- **Distributed Tracing**: Jaeger, Zipkin, OpenTelemetry, AWS X-Ray, Google Cloud Trace
+- **Log Aggregation**: ELK stack (Elasticsearch, Logstash, Kibana), Splunk, CloudWatch Logs, Loki, Grafana
+- **Network Tools**: curl, wget, ping, traceroute, tcpdump, wireshark, netcat
 
 ## Common Bug Categories
 
@@ -601,8 +630,16 @@ docker exec -it container_name sh          # Shell into container
 
 ## References
 
+> **Tip**: Use Context7 MCP to query "[Your Framework] debugging documentation" for framework-specific guides.
+
+### Universal Resources
+- [The Art of Debugging](https://debugging.guide/) - Language-agnostic debugging techniques
+- [Stack Overflow](https://stackoverflow.com/) - Community Q&A for all technologies
+
+### Browser & Frontend (Examples)
 - [Chrome DevTools Debugging Guide](https://developer.chrome.com/docs/devtools/)
-- [Node.js Debugging Guide](https://nodejs.org/en/docs/guides/debugging-getting-started/)
-- [React DevTools](https://react.dev/learn/react-developer-tools)
-- [The Art of Debugging](https://debugging.guide/)
-- [Stack Overflow](https://stackoverflow.com/) - Community Q&A
+- React DevTools, Vue DevTools, Angular DevTools - Query Context7 for your framework
+
+### Backend (Examples)
+- Query Context7 for "[Your Language] debugging guide" (Node.js, Python, Go, Java, etc.)
+- APM vendor documentation (New Relic, DataDog, Dynatrace)
