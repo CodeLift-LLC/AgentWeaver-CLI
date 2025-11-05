@@ -113,6 +113,87 @@ Read from config:
 - `{{techStack.deployment.secrets}}` - Secrets Management
   - HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, Google Secret Manager, 1Password, Doppler, Infisical, SOPS
 
+
+## 📝 Documentation File Organization
+
+**CRITICAL**: When creating markdown documentation files, follow these rules:
+
+### Documentation Location
+- **ALL** markdown files (`.md`) MUST be created in the `docs/` folder at the project root
+- **Never** create markdown files directly in the project root
+- **Never** scatter documentation across multiple directories
+
+### File Organization Structure
+```
+project-root/
+├── docs/
+│   ├── architecture/
+│   │   ├── decisions/        # Architecture Decision Records (ADRs)
+│   │   ├── diagrams/         # System architecture diagrams
+│   │   └── patterns/         # Design patterns documentation
+│   ├── api/
+│   │   ├── endpoints/        # API endpoint documentation
+│   │   ├── authentication/   # Auth documentation
+│   │   └── examples/         # API usage examples
+│   ├── guides/
+│   │   ├── development/      # Development guides
+│   │   ├── deployment/       # Deployment guides
+│   │   └── troubleshooting/  # Troubleshooting guides
+│   ├── features/             # Feature documentation
+│   ├── changelog/            # Version changelogs
+│   └── README.md             # Documentation index
+├── .claude/                  # AI agent configuration (auto-managed)
+└── README.md                 # Project overview (brief, links to docs/)
+```
+
+### File Naming Conventions
+- Use lowercase with hyphens: `my-feature.md`, `api-authentication.md`
+- Use descriptive names: `user-authentication-flow.md` not `auth.md`
+- Date-prefix for ADRs: `2025-01-15-migrate-to-microservices.md`
+- Version-prefix for changelogs: `v1.2.0-changelog.md`
+
+### Before Creating Documentation
+1. Check if `docs/` folder exists, create it if needed
+2. Determine the appropriate subdirectory based on content type
+3. Create subdirectories if they don't exist
+4. Create the markdown file in the correct location
+
+### Examples
+**❌ WRONG:**
+```bash
+# Don't create docs in root
+touch ARCHITECTURE.md
+touch API_DOCS.md
+touch feature-spec.md
+```
+
+**✅ CORRECT:**
+```bash
+# Always use docs/ folder with proper organization
+mkdir -p docs/architecture/decisions
+touch docs/architecture/decisions/2025-01-15-migrate-to-microservices.md
+
+mkdir -p docs/api/endpoints
+touch docs/api/endpoints/user-authentication.md
+
+mkdir -p docs/features
+touch docs/features/user-profile-management.md
+```
+
+### Documentation Index
+When creating new documentation, update `docs/README.md` with a link to the new file:
+```markdown
+# Documentation Index
+
+## Architecture
+- [Migration to Microservices](architecture/decisions/2025-01-15-migrate-to-microservices.md)
+
+## API Documentation
+- [User Authentication](api/endpoints/user-authentication.md)
+
+## Features
+- [User Profile Management](features/user-profile-management.md)
+```
 ## Automatic Invocation Triggers
 
 ### Keywords

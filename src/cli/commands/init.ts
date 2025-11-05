@@ -2,6 +2,7 @@ import path from 'path';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
+import fs from 'fs-extra';
 import { AgentInstaller } from '../../lib/agent-installer.js';
 import { SkillsInstaller } from '../../lib/skills-installer.js';
 import { EnhancedTechDetector } from '../../lib/enhanced-tech-detector.js';
@@ -26,6 +27,47 @@ async function getProjectName(projectRoot: string): Promise<string> {
     // Fallback to directory name
   }
   return path.basename(projectRoot);
+}
+
+/**
+ * Update .gitignore to exclude .claude/ directory
+ */
+async function updateGitignore(projectRoot: string): Promise<void> {
+  const gitignorePath = path.join(projectRoot, '.gitignore');
+  const claudeEntry = '.claude/';
+
+  try {
+    let gitignoreContent = '';
+    let gitignoreExists = false;
+
+    // Check if .gitignore already exists
+    if (await pathExists(gitignorePath)) {
+      gitignoreExists = true;
+      gitignoreContent = await fs.readFile(gitignorePath, 'utf-8');
+
+      // Check if .claude/ is already in .gitignore
+      const lines = gitignoreContent.split('\n');
+      const hasClaudeEntry = lines.some(line =>
+        line.trim() === claudeEntry || line.trim() === '.claude'
+      );
+
+      if (hasClaudeEntry) {
+        // Already present, no need to update
+        return;
+      }
+    }
+
+    // Add .claude/ to .gitignore
+    const header = '\n# AgentWeaver AI Agent Configuration\n# Contains project-specific AI agent setup and tech stack configuration\n';
+    const newContent = gitignoreExists
+      ? `${gitignoreContent.trimEnd()}\n${header}${claudeEntry}\n`
+      : `${header}${claudeEntry}\n`;
+
+    await fs.writeFile(gitignorePath, newContent, 'utf-8');
+  } catch (error) {
+    // Silently fail - not critical if .gitignore update fails
+    console.warn(chalk.yellow(`\nWarning: Could not update .gitignore: ${(error as Error).message}`));
+  }
 }
 
 interface InitOptions {
@@ -597,6 +639,11 @@ export async function initCommand(options: InitOptions) {
     // Copy WORKFLOWS.md to .claude directory
     await ConfigGenerator.copyWorkflowsFile(claudeDir);
 
+    // Add .claude/ to .gitignore
+    const gitignoreSpinner = ora('Updating .gitignore').start();
+    await updateGitignore(projectRoot);
+    gitignoreSpinner.succeed('Updated .gitignore to exclude .claude/');
+
     // Success message
     console.log(chalk.green.bold('\n✅ Installation complete!\n'));
 
@@ -614,6 +661,7 @@ export async function initCommand(options: InitOptions) {
       console.log(chalk.gray(`  .mcp.json                  (MCP servers at root)`));
       console.log(chalk.gray(`  .env.example               (Environment variables)`));
     }
+    console.log(chalk.gray(`  .gitignore                 (Updated to exclude .claude/)`))
 
     console.log(chalk.cyan('\n🎯 Next steps:\n'));
 
