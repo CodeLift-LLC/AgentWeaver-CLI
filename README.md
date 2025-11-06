@@ -1,154 +1,406 @@
 # AgentWeaver CLI
 
-> **Pre-built AI Agent Library Installer for Claude Code**
+> **AI-Powered Development Toolkit: Pre-Built Agents + Reusable Skills + Complete Tech Stack Templates**
 
-AgentWeaver CLI is a command-line tool that sets up production-ready AI agent templates and reusable skill patterns for your Claude Code projects. Get started with intelligent development agents in seconds.
+AgentWeaver CLI is a comprehensive toolkit that accelerates your development workflow with:
+- 🤖 **21 Pre-Built AI Agent Templates** for Claude Code
+- 📚 **30+ Reusable Skill Patterns** with multi-framework support
+- 🚀 **5 Production-Ready Tech Stack Templates** for rapid project setup
+- ⚙️ **Intelligent Tech Stack Detection** across 8+ languages
+
+Get from zero to production-ready in minutes, not hours.
 
 [![npm version](https://badge.fury.io/js/agentweaver-cli.svg)](https://www.npmjs.com/package/agentweaver-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+---
+
 ## 🚀 Quick Start
+
+### Option 1: Add to Existing Project
 
 ```bash
 # Install globally
 npm install -g agentweaver-cli
 
-# Or use with npx (no installation)
-npx agentweaver-cli init
-
-# Initialize in your project
-cd your-project
+# Add AI agents to your project
+cd your-existing-project
 agentweaver init
 ```
 
+### Option 2: Start New Project with Template
+
+```bash
+# Create a new project with full stack template
+mkdir my-saas-app
+cd my-saas-app
+agentweaver init --template nextjs-mvp
+```
+
+### Option 3: One-Command Setup (No Installation)
+
+```bash
+npx agentweaver-cli init
+```
+
+---
+
 ## ✨ What You Get
 
-### 🤖 **9 Pre-Built Development Agent Templates**
-- **backend-dev** - Backend development, APIs, databases
-- **frontend-dev** - UI development, accessibility, performance
-- **qa-tester** - Testing automation, quality assurance
-- **tech-lead** - Architecture, code review, technical decisions
-- **devops** - CI/CD, infrastructure, deployment
-- **debugger** - Systematic debugging, error investigation, root cause analysis
-- **product-owner** - Requirements, user stories, backlog
-- **scrum-master** - Agile ceremonies, impediment removal
-- **docs-writer** - Technical documentation, API docs
+### 🤖 **21 Pre-Built AI Agent Templates**
 
-### 📚 **Reusable Skills Library with Multi-Framework Support**
-- **API Pagination** - Cursor & offset-based pagination patterns
-  - ✅ **7 Framework Templates**: Express, FastAPI, Spring Boot, ASP.NET Core, Gin, Rails, Laravel
-  - 🎯 **Automatic Selection**: Picks the right template for your tech stack
-  - 🔧 **Framework-Specific**: Uses native patterns and best practices
-- **UI Form Validation** - Accessible form validation with React Hook Form + Zod
-- **Database Optimization** - Query optimization, indexing, N+1 prevention
+Specialized AI assistants that integrate seamlessly with Claude Code:
+
+<details>
+<summary><b>Development Team (8 agents)</b></summary>
+
+- **backend-dev** - Server-side development, REST/GraphQL APIs, database architecture
+- **frontend-dev** - UI development with React/Vue/Angular, component libraries
+- **ui-ux-dev** - Advanced animations, micro-interactions, accessibility
+- **qa-tester** - Automated testing, E2E workflows, quality assurance
+- **tech-lead** - Architecture decisions, code review, technical strategy
+- **devops** - CI/CD pipelines, Docker, Kubernetes, cloud deployment
+- **debugger** - Systematic debugging, root cause analysis, performance profiling
+- **docs-writer** - Technical documentation, API docs, architecture diagrams
+</details>
+
+<details>
+<summary><b>Product Team (2 agents)</b></summary>
+
+- **product-owner** - Requirements gathering, user stories, backlog management
+- **scrum-master** - Agile ceremonies, sprint planning, impediment removal
+</details>
+
+<details>
+<summary><b>Marketing Team (6 agents)</b></summary>
+
+- **marketing-manager** - Campaign strategy, GTM planning, analytics
+- **content-writer** - Blog posts, case studies, educational content
+- **seo-specialist** - SEO optimization, keyword research, SERP analysis
+- **growth-marketer** - A/B testing, conversion optimization, growth hacking
+- **social-media** - Social content calendar, engagement strategies
+- **product-marketer** - Product positioning, messaging, competitive analysis
+</details>
+
+<details>
+<summary><b>Sales Team (5 agents)</b></summary>
+
+- **sales-manager** - Pipeline management, forecasting, deal strategy
+- **sdr** - Lead prospecting, outbound campaigns, qualification
+- **account-exec** - Deal closing, demos, negotiation
+- **customer-success** - Onboarding, retention, expansion
+- **sales-engineer** - Technical demos, POC delivery, integration support
+</details>
+
+**How agents work:**
+- ✅ **Automatic Invocation** - Just ask naturally: *"Build a REST API for users"*
+- ✅ **Manual Control** - Use `@agent-name` for precise control
+- ✅ **Collaborative Workflows** - Agents hand off tasks to each other seamlessly
+
+---
+
+### 📚 **30+ Reusable Skills Library**
+
+Framework-specific code patterns with intelligent template selection:
+
+<details>
+<summary><b>API Skills (5)</b></summary>
+
+- **api-pagination** - Cursor & offset-based pagination
+  - ✅ 7 Frameworks: Express, FastAPI, Spring Boot, ASP.NET Core, Gin, Rails, Laravel
+- **api-authentication** - JWT, OAuth, session-based auth patterns
+- **api-error-handling** - Centralized error handling middleware
+- **api-rate-limiting** - Rate limiting strategies (token bucket, sliding window)
+- **api-versioning** - API versioning patterns (URI, header, media type)
+</details>
+
+<details>
+<summary><b>UI Skills (5)</b></summary>
+
+- **ui-form-validation** - Form validation with React Hook Form, Zod, Yup
+- **ui-accessibility** - WCAG 2.1 AA compliance patterns
+- **ui-responsive-design** - Mobile-first responsive layouts
+- **ui-state-management** - State management patterns (Context, Redux, Zustand)
+- **ui-animations** - Animation libraries and micro-interactions
+</details>
+
+<details>
+<summary><b>Database Skills (4)</b></summary>
+
+- **database-optimization** - Query optimization, N+1 prevention, indexing
+- **db-migrations** - Safe migration patterns (blue-green, rolling)
+- **db-indexes** - Index strategies for different query patterns
+- **db-transactions** - Transaction handling and isolation levels
+</details>
+
+<details>
+<summary><b>Testing Skills (5)</b></summary>
+
+- **test-unit-patterns** - Unit testing patterns and mocking
+- **test-e2e-workflows** - E2E test workflows with Playwright/Cypress
+- **test-mocking** - Mocking strategies for external dependencies
+- **test-coverage** - Code coverage reporting and analysis
+- **tdd-test-driven-development** - TDD practices and workflows
+</details>
+
+<details>
+<summary><b>Architecture Skills (6)</b></summary>
+
+- **clean-architecture** - Clean architecture layers and dependencies
+- **ddd-domain-driven-design** - DDD tactical patterns (aggregates, entities, value objects)
+- **vertical-slice-architecture** - Vertical slice architecture patterns
+- **solid-principles** - SOLID principles with examples
+- **design-patterns** - Gang of Four patterns (Factory, Strategy, Observer, etc.)
+- **clean-code** - Clean code practices and refactoring patterns
+</details>
+
+<details>
+<summary><b>Deployment Skills (4)</b></summary>
+
+- **deploy-docker** - Docker containerization and multi-stage builds
+- **deploy-ci-cd** - CI/CD pipelines (GitHub Actions, GitLab CI)
+- **deploy-environment-config** - Environment management (dev, staging, prod)
+- **deploy-monitoring** - Observability (logging, metrics, tracing)
+</details>
+
+<details>
+<summary><b>Design Skills (2)</b></summary>
+
+- **design-systems** - Design system architecture and tokens
+- **component-generation** - Component scaffolding patterns
+</details>
+
+**Smart Template Selection:**
+- 🎯 5-factor scoring algorithm (language, framework, version, dependencies, preferences)
+- 🔄 Automatic framework detection
+- 🎨 Handlebars variable interpolation for customization
+
+---
+
+### 🚀 **5 Production-Ready Tech Stack Templates**
+
+Complete project scaffolds with Docker, testing, and CI/CD pre-configured:
+
+| Template | Stack | Best For | Complexity |
+|----------|-------|----------|-----------|
+| **nextjs-mvp** | Next.js 15 + Supabase + AI | MVPs, SaaS, AI apps | Beginner |
+| **nestjs-backend** | NestJS + PostgreSQL + Drizzle | REST APIs, microservices | Intermediate |
+| **fastapi-backend** | FastAPI + Python + SQLAlchemy | Python APIs, ML services | Intermediate |
+| **nextjs-nestjs-monorepo** | Next.js + NestJS monorepo | Full-stack enterprise | Advanced |
+| **nextjs-fastapi-monorepo** | Next.js + FastAPI hybrid | AI/ML applications | Advanced |
+
+**Every template includes:**
+- ✅ Docker Compose development environment
+- ✅ Database migrations (Drizzle/SQLAlchemy)
+- ✅ Testing infrastructure (Vitest/Jest/Pytest + Playwright)
+- ✅ CI/CD pipelines (GitHub Actions)
+- ✅ Environment management (.env templates)
+- ✅ Code quality tools (ESLint, Prettier, pre-commit hooks)
+- ✅ API documentation (OpenAPI/Swagger)
+- ✅ Pre-configured AI agents and skills
+
+**Template Features:**
+- 🔐 Authentication (Supabase Auth)
+- 🤖 AI Integration (OpenAI SDK + Langfuse observability)
+- 🔍 Vector Search (pgvector)
+- 💳 Payments (Stripe)
+- 📧 Email (Resend)
+- 📁 File Storage (Supabase Storage)
+- ⚡ Realtime (Supabase Realtime)
+- 📊 Analytics
+
+---
 
 ### ⚙️ **Intelligent Tech Stack Detection**
-- **Multi-Language Detection** - Auto-detects **8 languages**: TypeScript, JavaScript, Python, Java, C#, Go, Ruby, PHP, Rust
-- **Framework Recognition** - Identifies **15+ frameworks**: Express, NestJS, FastAPI, Django, Flask, Spring Boot, Micronaut, Quarkus, ASP.NET Core, Blazor, Gin, Echo, Fiber, Rails, Sinatra, Laravel, Symfony, and more
-- **Architecture Analysis** - Detects monoliths, microservices, and monorepos
-- **Smart Template Selection** - 5-factor scoring algorithm (language, framework, version, dependencies, preferences)
-- **Handlebars Templating** - Full variable interpolation for customization
+
+**Multi-Language Support (8 languages):**
+
+| Language | Frameworks Detected | Template Packs | Status |
+|----------|---------------------|----------------|--------|
+| TypeScript | Express, NestJS, Hono, Elysia | express-typescript | ✅ Production |
+| JavaScript | Express, Fastify, Koa | express-typescript | ✅ Production |
+| Python | FastAPI, Django, Flask | fastapi | ✅ Production |
+| Java | Spring Boot, Micronaut, Quarkus, Jakarta EE | spring-boot | ✅ Production |
+| C# | ASP.NET Core, Blazor, MAUI | aspnet-core | ✅ Production |
+| Go | Gin, Echo, Fiber, Chi | gin | ✅ Production |
+| Ruby | Rails, Sinatra, Hanami | rails | ✅ Production |
+| PHP | Laravel, Symfony, CodeIgniter | laravel | ✅ Production |
+
+**Architecture Detection:**
+- 🏗️ Monolith vs Microservices
+- 📦 Monorepo detection (nx, Turborepo, pnpm workspaces, Lerna)
+- 🎯 Vertical slice vs layered architecture
+- 🌐 Monoglot vs polyglot
+
+**Build Tool Detection:**
+- Node: npm, yarn, pnpm, bun
+- Python: pip, poetry, pipenv, uv
+- Java: Maven, Gradle
+- .NET: dotnet
+- Go: go mod
+- Ruby: bundler
+- PHP: composer
+
+---
 
 ### 🔍 **Template Pack Validation**
-- **Built-in Validator** - `agentweaver validate` command
-- **Schema Validation** - Ensures template packs are correctly configured
-- **File Verification** - Checks all source files exist
-- **Variable Integrity** - Validates variable definitions and usage
-- **Automated Testing** - 100% test coverage for all template packs
 
-### 🌐 **Universal Tech Stack Support**
-AgentWeaver now works with **any technology stack**. Here are all supported languages and frameworks:
+Built-in validation ensures quality and correctness:
 
-#### Supported Languages & Frameworks
+```bash
+agentweaver validate
+```
 
-| # | Language | Frameworks Detected | Template Packs Available | Status |
-|---|----------|---------------------|-------------------------|--------|
-| 1 | **TypeScript** | Express, NestJS, Hono, Elysia | ✅ express-typescript | Production |
-| 2 | **JavaScript** | Express, NestJS, Fastify | ✅ express-typescript | Production |
-| 3 | **Python** | FastAPI, Django, Flask | ✅ fastapi | Production |
-| 4 | **Java** | Spring Boot, Micronaut, Quarkus, Jakarta EE, Vert.x | ✅ spring-boot | Production |
-| 5 | **C#** | ASP.NET Core, Blazor, MAUI, WPF, WinForms | ✅ aspnet-core | Production |
-| 6 | **Go** | Gin, Echo, Fiber, Chi, Gorilla Mux | ✅ gin | Production |
-| 7 | **Ruby** | Rails, Sinatra, Hanami, Padrino, Grape | ✅ rails | Production |
-| 8 | **PHP** | Laravel, Symfony, CodeIgniter, Slim, Lumen | ✅ laravel | Production |
-| 9 | **Rust** | Actix-web, Rocket, Axum, Warp, Tide | 🔜 Coming soon | Planned |
+**Validates:**
+- ✅ Manifest schema completeness
+- ✅ Source file existence
+- ✅ Variable definitions and usage
+- ✅ Version compatibility ranges
+- ✅ Framework applicability rules
+- ✅ Best practices compliance
 
-**Total**: 8 production languages, 30+ framework variants detected, 7 template packs
+---
 
-### ⚙️ **Configuration & Setup**
-- **MCP Server Setup** - Configures GitHub, Context7, Sequential Thinking, Playwright, and more
-- **Agent Configuration** - Creates `agentweaver.config.yml` with your tech stack
-- **Environment Templates** - Generates `.env.example` with required variables
+### 🌐 **MCP Server Integration**
+
+Pre-configured Model Context Protocol servers:
+
+| Server | Purpose | Required Credentials |
+|--------|---------|---------------------|
+| **github** | Repository operations, issues, PRs | `GITHUB_TOKEN` |
+| **fetch** | Web content fetching | None |
+| **context7** | Documentation lookup | Optional: `CONTEXT7_API_KEY` |
+| **sequential** | Complex analysis | None |
+| **playwright** | E2E testing automation | None |
+| **shadcn** | shadcn/ui components | None |
+| **socket** | Security scanning | None |
+| **supabase** | Database operations | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` |
+
+---
 
 ## 📦 Installation
 
 ### Global Installation (Recommended)
+
 ```bash
 npm install -g agentweaver-cli
 ```
 
-### Using npx (No installation required)
+**Verify installation:**
+```bash
+agentweaver --version
+# Output: 0.1.0
+```
+
+### Using npx (No Installation)
+
 ```bash
 npx agentweaver-cli init
 ```
 
+Perfect for trying AgentWeaver without committing to a global install.
+
 ### Local Installation
+
 ```bash
 npm install --save-dev agentweaver-cli
 ```
 
+**Use via npm scripts:**
+```json
+{
+  "scripts": {
+    "setup-agents": "agentweaver init"
+  }
+}
+```
+
+---
+
 ## 🎯 Usage
 
 ### Interactive Setup (Recommended)
+
 ```bash
 agentweaver init
 ```
 
-This will:
-1. 🔍 **Detect your project's tech stack** - Identifies language, framework, version, dependencies
-2. 📋 **Ask which agents and skills you want** - Choose from 9 agents and skill packs
-3. 🎯 **Auto-select framework templates** - Picks the best template pack for your stack
-4. ⚙️ **Configure MCP servers** - Sets up GitHub, Context7, and other integrations
-5. 📝 **Generate configuration files** - Creates .claude/, .mcp.json, agentweaver.config.yml
-6. ✅ **Install everything** - Framework-specific code ready to use
+**You'll be guided through:**
 
-**Example output:**
-```
-📊 Detected Technologies:
-  Architecture: monolith (monoglot)
-  1. java (spring-boot) - 95% confidence
+1. **Tech Stack Template (Optional)**
+   - Choose from 5 production-ready templates
+   - Or skip to detect your existing project
 
-📦 Installing components...
-✓ Installed 8 agents
-✓ Installed 1 skill
+2. **Feature Customization** (if template selected)
+   - Select authentication, AI, payments, email, etc.
 
-Template packs selected:
-  api-pagination: spring-boot-pagination (95% match)
+3. **Tech Stack Detection**
+   - Automatic detection of languages, frameworks, tools
+   - Multi-project support for monorepos
 
-✅ Installation complete!
-```
+4. **Agent Selection**
+   - All agents (21 total)
+   - Development only (8 agents) ← Recommended
+   - Custom selection
+
+5. **Skills Installation**
+   - All skills (30+) ← Recommended
+   - Custom selection
+
+6. **MCP Server Configuration**
+   - Select servers: GitHub, Fetch, Context7, Sequential, etc.
+
+7. **Tech Stack Mode**
+   - Flexible - Prefer detected stack, allow alternatives (recommended)
+   - Strict - Enforce detected stack only
+   - Adaptive - Auto-detect and adapt
 
 ### Quick Setup (Skip Prompts)
-```bash
-agentweaver init --yes
-```
 
-### Custom Installation
 ```bash
-# Install specific agents
+# Use defaults
+agentweaver init --yes
+
+# With specific template
+agentweaver init --yes --template nextjs-mvp
+
+# Custom agents
 agentweaver init --agents backend-dev,frontend-dev,qa-tester
 
-# Install specific skills
-agentweaver init --skills api-pagination,ui-form-validation
+# Custom skills
+agentweaver init --skills api-pagination,database-optimization,ui-form-validation
 
-# Skip MCP configuration
-agentweaver init --no-mcp
-
-# Set tech stack mode
+# Strict mode
 agentweaver init --mode strict
+
+# Without MCP servers
+agentweaver init --no-mcp
+```
+
+### List Available Templates
+
+```bash
+agentweaver templates
+```
+
+**Output:**
+```
+📦 Available Tech Stack Templates
+
+1. Next.js Full-Stack MVP
+   ID: nextjs-mvp
+   Stack: Next.js 15 + Supabase + Drizzle + OpenAI
+   Features: Authentication, AI, File Storage, Realtime
+   ...
+
+2. NestJS Backend
+   ID: nestjs-backend
+   Stack: NestJS + PostgreSQL + Drizzle
+   ...
 ```
 
 ### Validate Template Packs
+
 ```bash
 # Validate all template packs
 agentweaver validate
@@ -160,54 +412,48 @@ agentweaver validate --skill api-pagination
 agentweaver validate --skill api-pagination --verbose
 ```
 
-**Example validation output:**
+### Regenerate Documentation
+
+```bash
+# After editing agentweaver.config.yml
+agentweaver regenerate-docs
 ```
-🔍 AgentWeaver Template Pack Validator
 
-Found 7 template pack(s) for api-pagination:
-
-  ✅ aspnet-core-pagination
-  ✅ express-typescript-pagination
-  ✅ fastapi-pagination
-  ✅ gin-pagination
-  ✅ laravel-pagination
-  ✅ rails-pagination
-  ✅ spring-boot-pagination
-
-📊 Summary:
-  ✅ Valid: 7
-```
+---
 
 ## 📁 What Gets Created
 
 ```
 your-project/
 ├── .claude/
-│   ├── agents/                  # 8 AI agent templates
+│   ├── agents/                     # AI agent templates
 │   │   ├── backend-dev.md
 │   │   ├── frontend-dev.md
 │   │   ├── qa-tester.md
-│   │   └── ...
-│   ├── skills/                  # Reusable skill patterns
+│   │   ├── tech-lead.md
+│   │   ├── devops.md
+│   │   ├── debugger.md
+│   │   ├── ui-ux-dev.md
+│   │   ├── docs-writer.md
+│   │   └── ... (up to 21 agents)
+│   ├── skills/                     # Reusable skill patterns
 │   │   ├── api-pagination/
-│   │   │   ├── SKILL.md         # Skill documentation
-│   │   │   └── templates-used.json  # Selected template pack info
+│   │   │   ├── SKILL.md
+│   │   │   ├── templates/
+│   │   │   └── templates-used.json
+│   │   ├── database-optimization/
 │   │   ├── ui-form-validation/
-│   │   └── database-optimization/
-│   ├── CLAUDE.md                # Project context (read by Claude Code)
-│   ├── WORKFLOWS.md             # Agent workflows and collaboration
-│   └── agentweaver.config.yml   # Tech stack configuration
-├── src/                         # Framework-specific code installed here
-│   └── (language-specific paths, e.g., main/java/com/example/app/)
-│       ├── pagination/          # Generated from template pack
-│       │   ├── CursorPagination.(ext)
-│       │   └── OffsetPagination.(ext)
-│       └── ...
-├── .mcp.json                    # MCP server configuration
-└── .env.example                 # Environment variables template
+│   │   └── ... (up to 30+ skills)
+│   ├── CLAUDE.md                   # Project context for Claude Code
+│   ├── WORKFLOWS.md                # Agent collaboration workflows
+│   ├── agentweaver.config.yml      # Tech stack configuration
+│   └── tech-stack.md               # Human-readable tech docs
+├── .mcp.json                       # MCP server configuration
+├── .env.example                    # Environment variable template
+└── .gitignore                      # Updated (excludes .claude/)
 ```
 
-### Framework-Specific Installation Examples
+### Framework-Specific Code (from Skills)
 
 **Spring Boot (Java):**
 ```
@@ -219,18 +465,6 @@ src/main/java/com/example/app/
 │   └── PaginationResponse.java
 └── util/
     └── PaginationUtils.java
-```
-
-**ASP.NET Core (C#):**
-```
-src/Api/
-├── Pagination/
-│   ├── CursorPagination.cs
-│   └── OffsetPagination.cs
-├── Models/
-│   └── PaginationModels.cs
-└── Extensions/
-    └── PaginationExtensions.cs
 ```
 
 **FastAPI (Python):**
@@ -250,96 +484,172 @@ src/lib/pagination/
 └── pagination.types.ts
 ```
 
+---
+
 ## 🎮 Using Your Agents
 
 ### Automatic Invocation (Recommended)
 
-Agents are configured to be **automatically invoked** by Claude Code when you ask for tasks they specialize in:
+Agents activate automatically based on your requests:
 
-```markdown
-"Build a REST API for user authentication"
-→ Claude Code automatically invokes @backend-dev
+```bash
+# These automatically invoke the right agent:
 
-"Create a responsive navigation component"
-→ Claude Code automatically invokes @frontend-dev
+"Build a REST API for user management"
+→ @backend-dev activates
 
-"Write tests for the login flow"
-→ Claude Code automatically invokes @qa-tester
+"Create a responsive dashboard with charts"
+→ @frontend-dev activates
+
+"Write E2E tests for the authentication flow"
+→ @qa-tester activates
+
+"Review the database schema design"
+→ @tech-lead activates
+
+"Debug the 500 error on login endpoint"
+→ @debugger activates
 ```
 
 **How it works:**
-- Each agent has a `description` field with triggers (e.g., "Use PROACTIVELY when backend code changes...")
-- Claude Code matches your request to the appropriate agent
-- The agent is invoked automatically with full context
+- Each agent has trigger keywords in its `description`
+- Claude Code matches your request to agent descriptions
+- Best-fit agent is invoked automatically
 
 ### Manual Invocation
 
-You can also explicitly request specific agents using `@agent-name`:
+Use `@agent-name` for precise control:
 
-```markdown
-@backend-dev implement user authentication with JWT
+```bash
+@backend-dev implement JWT authentication with refresh tokens
 
-@frontend-dev create a responsive dashboard layout with Tailwind
+@frontend-dev create a dashboard layout with Tailwind and shadcn/ui
 
-@qa-tester write E2E tests for the login flow
+@qa-tester write integration tests for the auth endpoints
 
 @tech-lead review the authentication architecture
 
-@debugger investigate why users are getting 500 errors on login
+@debugger investigate the memory leak in the user service
 ```
 
-### When to Use Each Method
+### Agent Collaboration
 
-**Automatic** (Just ask naturally):
-- ✅ Faster - no need to remember agent names
-- ✅ Claude picks the best agent for the task
-- ✅ Works across conversations
+Agents hand off tasks automatically:
 
-**Manual** (Use `@agent-name`):
-- ✅ Precise control over which agent handles the task
-- ✅ Useful when you want a specific perspective
-- ✅ Override automatic selection if needed
+```
+You: "Build a complete user authentication system"
+
+1. @backend-dev creates API endpoints
+   → Hands off to @frontend-dev
+
+2. @frontend-dev creates login UI
+   → Hands off to @qa-tester
+
+3. @qa-tester writes E2E tests
+   → Hands off to @tech-lead
+
+4. @tech-lead reviews architecture
+   → Provides feedback and improvements
+```
+
+See `.claude/WORKFLOWS.md` for collaboration patterns.
+
+---
 
 ## ⚙️ Configuration
 
 ### Tech Stack Modes
 
-**Flexible** (Default) - Prefer detected stack, allow alternatives
+**Flexible (Default) - Recommended:**
 ```yaml
 techStack:
   mode: flexible
   frontend:
-    framework: nextjs
+    framework: react
     language: typescript
 ```
+- Agents prefer React + TypeScript
+- Can suggest alternatives with justification
+- Asks permission before deviating
 
-**Strict** - Enforce only specified technologies
+**Strict - Enterprise:**
 ```yaml
 techStack:
   mode: strict
+  frontend:
+    framework: react
+    language: typescript
   constraints:
     versionPinning: true
 ```
+- Agents must use React + TypeScript only
+- Rejects alternative suggestions
+- Enforces version constraints
 
-**Adaptive** - Auto-detect and adapt to project patterns
+**Adaptive - Brownfield:**
 ```yaml
 techStack:
   mode: adaptive
+  autoDetect:
+    enabled: true
+    scanDepth: deep
 ```
+- Continuously scans project files
+- Adapts to any framework found
+- No enforcement
 
 ### MCP Server Configuration
 
-AgentWeaver can configure these MCP servers:
-- **GitHub** - Repository operations, issues, PRs
-- **Context7** - Documentation lookup
-- **Sequential Thinking** - Complex analysis
-- **Playwright** - E2E testing
-- **shadcn/ui** - UI components
-- **Supabase** - Database operations
+**In `.mcp.json`:**
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+**In `.env`:**
+```bash
+GITHUB_TOKEN=ghp_your_token_here
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+---
+
+## 📖 Documentation
+
+### Core Guides
+
+- **[Getting Started Guide](docs/GETTING_STARTED.md)** - Complete beginner tutorial
+- **[CLI Reference](docs/CLI_REFERENCE.md)** - All commands and options
+- **[Template Pack Authoring](TEMPLATE_PACK_GUIDE.md)** - Creating custom template packs
+- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Architecture deep dive
+
+### Examples
+
+**7 Complete Template Pack Examples:**
+- [Express TypeScript Pagination](src/templates/skills/api-pagination/templates/express-typescript/)
+- [FastAPI Pagination](src/templates/skills/api-pagination/templates/fastapi/)
+- [Spring Boot Pagination](src/templates/skills/api-pagination/templates/spring-boot/)
+- [ASP.NET Core Pagination](src/templates/skills/api-pagination/templates/aspnet-core/)
+- [Gin Pagination](src/templates/skills/api-pagination/templates/gin/)
+- [Rails Pagination](src/templates/skills/api-pagination/templates/rails/)
+- [Laravel Pagination](src/templates/skills/api-pagination/templates/laravel/)
+
+---
 
 ## 🛠️ Development
 
 ### Building from Source
+
 ```bash
 git clone https://github.com/CodeLift-LLC/AgentWeaver-CLI.git
 cd AgentWeaver-CLI
@@ -348,174 +658,69 @@ npm run build
 ```
 
 ### Running Locally
+
 ```bash
 npm link
 agentweaver init
 ```
 
 ### Running Tests
+
 ```bash
 npm test
 npm run test:coverage
 ```
 
-## 📖 Documentation
+### Project Structure
 
-### Core Documentation
-- [Agent Template Guide](docs/agent-templates.md)
-- [Skills Library Reference](docs/skills-library.md)
-- [Configuration Options](docs/configuration.md)
-- [Creating Custom Agents](docs/custom-agents.md)
-
-### New Features (v0.1.0+)
-- **[Template Pack Authoring Guide](TEMPLATE_PACK_GUIDE.md)** - Complete guide to creating framework-specific template packs
-- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Deep dive into multi-stack architecture
-- **Template Pack Examples** - See [src/templates/skills/api-pagination/templates/](src/templates/skills/api-pagination/templates/) for 7 complete examples
-
-### Key Capabilities
-
-#### 1. **Universal Tech Stack Support**
-AgentWeaver automatically detects and adapts to **any technology stack**:
-
-```bash
-# Works with Java/Spring Boot
-cd my-spring-boot-app && agentweaver init
-# → Installs spring-boot-pagination template
-
-# Works with Python/FastAPI
-cd my-fastapi-app && agentweaver init
-# → Installs fastapi-pagination template
-
-# Works with Go/Gin
-cd my-gin-app && agentweaver init
-# → Installs gin-pagination template
+```
+AgentWeaver-CLI/
+├── src/
+│   ├── cli/
+│   │   ├── index.ts              # CLI entry point
+│   │   └── commands/
+│   │       ├── init.ts           # Init command
+│   │       ├── templates.ts      # Templates command
+│   │       ├── validate.ts       # Validate command
+│   │       └── regenerate-docs.ts
+│   ├── lib/
+│   │   ├── agent-installer.ts    # Agent installation
+│   │   ├── skills-installer.ts   # Skill installation
+│   │   ├── stack-installer.ts    # Template installation
+│   │   ├── enhanced-tech-detector.ts
+│   │   ├── template-resolver.ts  # Template pack selection
+│   │   ├── template-pack-validator.ts
+│   │   ├── config-generator.ts   # Config file generation
+│   │   └── detectors/           # Language-specific detectors
+│   ├── templates/
+│   │   ├── agents/              # 21 agent templates
+│   │   ├── skills/              # 30+ skill patterns
+│   │   └── stacks/              # 5 tech stack templates
+│   └── utils/
+│       ├── file-operations.ts
+│       └── yaml-parser.ts
+├── docs/
+│   ├── GETTING_STARTED.md
+│   └── CLI_REFERENCE.md
+├── tests/
+└── package.json
 ```
 
-#### 2. **Intelligent Template Resolution**
-5-factor scoring algorithm automatically selects the best template pack:
-
-- **Language Match** (40%): Exact language match required
-- **Framework Match** (30%): Exact or partial framework match
-- **Version Compatibility** (15%): Semantic version checking
-- **User Preferences** (10%): Custom preferences (future)
-- **Dependencies** (5%): Bonus for matching optional dependencies
-
-**Minimum score**: 50% to qualify
-
-#### 3. **Framework-Specific Code Generation**
-Each template pack uses native patterns and best practices:
-
-**Example: Spring Boot Pagination**
-```java
-@RestController
-@RequestMapping("/api/users")
-public class UserController {
-    @GetMapping
-    public PaginationResponse<User> getUsers(
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "20") int pageSize
-    ) {
-        Pageable pageable = OffsetPagination.createPageable(page, pageSize);
-        Page<User> userPage = userRepository.findAll(pageable);
-        return PaginationUtils.toResponse(
-            OffsetPagination.fromPage(userPage)
-        );
-    }
-}
-```
-
-**Example: FastAPI Pagination**
-```python
-from fastapi import APIRouter, Depends
-from lib.pagination import offset_paginate, OffsetPaginationParams
-
-@app.get("/users", response_model=OffsetPaginationResponse[User])
-async def list_users(
-    params: OffsetPaginationParams = Depends(),
-    db: Session = Depends(get_db)
-):
-    query = db.query(User).order_by(User.created_at.desc())
-    items, total = await offset_paginate(db, query, params)
-
-    return create_pagination_response(items, total, params.page, params.limit)
-```
-
-#### 4. **Handlebars Variable Interpolation**
-Templates use Handlebars for flexible customization:
-
-**Template file:**
-```java
-package {{packageName}}.pagination;
-
-public class CursorPagination {
-    private static final int DEFAULT_PAGE_SIZE = {{defaultPageSize}};
-    private static final int MAX_PAGE_SIZE = {{maxPageSize}};
-}
-```
-
-**Generated code:**
-```java
-package com.example.app.pagination;
-
-public class CursorPagination {
-    private static final int DEFAULT_PAGE_SIZE = 20;
-    private static final int MAX_PAGE_SIZE = 100;
-}
-```
-
-#### 5. **Comprehensive Validation**
-Built-in validation ensures template pack quality:
-
-```bash
-agentweaver validate --skill api-pagination
-
-# Validates:
-# ✅ Manifest schema completeness
-# ✅ Source file existence
-# ✅ Variable definitions
-# ✅ Version compatibility
-# ✅ Best practices
-```
-
-### Supported Tech Stacks
-
-#### Languages (8 with full detection support)
-
-| Language | Detection Method | Manifest Files | Template Packs |
-|----------|-----------------|----------------|----------------|
-| **TypeScript** | package.json, tsconfig.json | ✅ | express-typescript |
-| **JavaScript** | package.json, .js files | ✅ | express-typescript |
-| **Python** | requirements.txt, pyproject.toml, setup.py | ✅ | fastapi |
-| **Java** | pom.xml, build.gradle, build.gradle.kts | ✅ | spring-boot |
-| **C#** | .csproj, .sln files | ✅ | aspnet-core |
-| **Go** | go.mod, go.sum | ✅ | gin |
-| **Ruby** | Gemfile, Gemfile.lock | ✅ | rails |
-| **PHP** | composer.json, composer.lock | ✅ | laravel |
-| **Rust** | Cargo.toml, Cargo.lock | ✅ | 🔜 Planned |
-
-#### Frameworks & Tools
-
-| Category | Technologies |
-|----------|-------------|
-| **Web Frameworks** | Express, NestJS, FastAPI, Django, Flask, Spring Boot, Micronaut, Quarkus, ASP.NET Core, Blazor, Gin, Echo, Fiber, Rails, Sinatra, Laravel, Symfony |
-| **ORMs** | TypeORM, Prisma, Sequelize, SQLAlchemy, Django ORM, Hibernate, Spring Data JPA, Entity Framework Core, GORM, ActiveRecord, Eloquent |
-| **Databases** | PostgreSQL, MySQL, MariaDB, MongoDB, SQLite, SQL Server, Oracle, Redis, Cassandra, DynamoDB |
-| **Build Tools** | npm, yarn, pnpm, bun, pip, poetry, Maven, Gradle, dotnet, go mod, cargo, bundler, composer |
-| **Architecture** | Monolith, Microservices, Monorepo (nx, turbo, lerna, pnpm workspaces), Serverless |
+---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions! Here's how:
 
 ### Creating Custom Agents
 
-Create a new `.md` file with YAML frontmatter:
+Create a `.md` file with YAML frontmatter:
 
 ```markdown
 ---
 name: my-agent
 description: Custom agent description. Use PROACTIVELY when...
-tools: Read, Write, Edit
+tools: Read, Write, Edit, Bash
 model: sonnet
 ---
 
@@ -526,7 +731,7 @@ Your agent instructions here...
 
 ### Creating Custom Skills
 
-Create a directory with a `SKILL.md` file:
+Create a directory with `SKILL.md`:
 
 ```markdown
 ---
@@ -547,174 +752,56 @@ Skill documentation and patterns...
 
 ### Creating Custom Template Packs
 
-Template packs allow you to create framework-specific implementations of skills. See the **[Template Pack Authoring Guide](TEMPLATE_PACK_GUIDE.md)** for complete documentation.
+See **[Template Pack Authoring Guide](TEMPLATE_PACK_GUIDE.md)** for complete documentation.
 
-**Quick Example:**
+**Quick start:**
 
-1. **Create directory structure:**
-```bash
-src/templates/skills/my-skill/templates/my-framework/
-```
+1. Create directory: `src/templates/skills/[skill]/templates/[framework]/`
+2. Add `manifest.json` with metadata
+3. Add implementation files with Handlebars variables
+4. Validate: `agentweaver validate --skill [skill]`
 
-2. **Create `manifest.json`:**
-```json
-{
-  "name": "my-framework-my-skill",
-  "version": "1.0.0",
-  "description": "My skill for MyFramework",
-  "applicability": {
-    "language": "javascript",
-    "framework": ["my-framework"],
-    "minVersion": "1.0.0"
-  },
-  "files": [
-    {
-      "source": "index.js",
-      "target": "{{srcPath}}/lib/my-skill/index.js",
-      "strategy": "skip-if-exists",
-      "templateEngine": "handlebars"
-    }
-  ],
-  "variables": {
-    "srcPath": {
-      "description": "Source directory",
-      "default": "src",
-      "type": "path"
-    }
-  }
-}
-```
-
-3. **Create implementation file (`index.js`):**
-```javascript
-// My Skill Implementation
-// Generated by AgentWeaver CLI
-
-const DEFAULT_CONFIG = {
-  maxItems: {{maxItems}},
-  timeout: {{timeout}}
-};
-
-module.exports = { DEFAULT_CONFIG };
-```
-
-4. **Validate your template pack:**
-```bash
-npm run build
-agentweaver validate --skill my-skill
-```
-
-**Learn more:**
-- [Template Pack Authoring Guide](TEMPLATE_PACK_GUIDE.md) - Complete guide with examples
-- [Template Pack Examples](src/templates/skills/api-pagination/templates/) - 7 production-ready template packs
-- [Implementation Summary](IMPLEMENTATION_SUMMARY.md) - Architecture deep dive
+---
 
 ## 🔧 Troubleshooting
 
-### Agents Not Automatically Invoked
+### Agents Not Auto-Invoking
 
-If agents aren't being invoked automatically:
+1. Verify installation: `ls .claude/agents/`
+2. Check frontmatter: `head .claude/agents/backend-dev.md`
+3. Restart Claude Code
+4. Use manual invocation: `@agent-name task`
 
-1. **Verify Installation**
-   ```bash
-   ls -la .claude/agents/
-   # Should show: backend-dev.md, frontend-dev.md, etc.
-   ```
+### Skills Not Found
 
-2. **Check Agent Files**
-   ```bash
-   head -n 5 .claude/agents/backend-dev.md
-   # Should show frontmatter with: name, description, tools, model
-   ```
-
-3. **Restart Claude Code**
-   - Close and reopen Claude Code
-   - Agents are loaded when Claude Code starts
-
-4. **Use Manual Invocation**
-   - Try explicit invocation: `@backend-dev build an API`
-   - If manual works but automatic doesn't, the agent is installed correctly
-
-5. **Check Description Triggers**
-   - Each agent's `description` includes "Use PROACTIVELY when..."
-   - Claude Code matches your request against these triggers
-
-### Agents Not Found (Manual Invocation)
-
-If `@agent-name` shows "agent not found":
-
-1. **Check File Names**
-   - Agent files must match their `name` field
-   - Example: `backend-dev.md` must have `name: backend-dev`
-
-2. **Verify Directory Structure**
-   ```
-   .claude/
-   └── agents/
-       ├── backend-dev.md  ✅ Correct
-       └── frontend/
-           └── dev.md      ❌ Wrong - must be at agents/ root level
-   ```
-
-3. **Check Frontmatter Format**
-   ```markdown
-   ---
-   name: backend-dev
-   description: Expert Backend Developer...
-   ---
-   ```
-   - YAML must be valid (use proper indentation)
-   - Description must not be empty
-
-### Skills Not Available
-
-If skills aren't showing up:
-
-1. **Check Installation**
-   ```bash
-   ls -la .claude/skills/
-   # Should show: api-pagination/, ui-form-validation/, database-optimization/
-   ```
-
-2. **Verify Structure**
-   ```
-   .claude/skills/
-   └── api-pagination/
-       ├── SKILL.md          ✅ Required
-       ├── templates/        ✅ Optional
-       └── examples/         ✅ Optional
-   ```
+1. Verify installation: `ls .claude/skills/`
+2. Check structure: `ls .claude/skills/api-pagination/`
+3. Reinstall: `agentweaver init --skills all`
 
 ### MCP Servers Not Working
 
-If MCP servers aren't connecting:
+1. Check config: `cat .mcp.json`
+2. Verify environment variables: `cat .env`
+3. Test tokens: `curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user`
+4. Restart Claude Code
 
-1. **Check Configuration**
-   ```bash
-   cat .mcp.json
-   # Should show configured servers
-   ```
+### Tech Stack Not Detected
 
-2. **Set Environment Variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your API tokens
-   ```
+1. Add manifest files (package.json, requirements.txt, pom.xml, etc.)
+2. Re-run: `agentweaver init`
+3. Manual config: Edit `.claude/agentweaver.config.yml`
 
-3. **Verify Tokens**
-   - GitHub: Generate at [github.com/settings/tokens](https://github.com/settings/tokens)
-   - Supabase: Get from your project settings
+**Still stuck?**
+- [GitHub Issues](https://github.com/CodeLift-LLC/AgentWeaver-CLI/issues)
+- Include: OS, Node version, error messages
 
-### Still Having Issues?
-
-- **Check Claude Code Version**: Ensure you're using the latest version
-- **Review Logs**: Check Claude Code logs for errors
-- **Open an Issue**: [GitHub Issues](https://github.com/CodeLift-LLC/AgentWeaver-CLI/issues)
-- **Manual Invocation**: Always works as fallback (`@agent-name task`)
+---
 
 ## 📝 License
 
 MIT © [CodeLift LLC](https://github.com/CodeLift-LLC)
+
+---
 
 ## 🔗 Links
 
@@ -723,14 +810,18 @@ MIT © [CodeLift LLC](https://github.com/CodeLift-LLC)
 - [Issue Tracker](https://github.com/CodeLift-LLC/AgentWeaver-CLI/issues)
 - [Documentation](https://github.com/CodeLift-LLC/AgentWeaver-CLI/tree/main/docs)
 
+---
+
 ## 🌟 Support
 
 If you find AgentWeaver CLI helpful, please:
 - ⭐ Star the repository
 - 🐛 Report bugs via [GitHub Issues](https://github.com/CodeLift-LLC/AgentWeaver-CLI/issues)
-- 💡 Suggest new features
+- 💡 Request features
 - 📢 Share with your team
 
 ---
 
-Made with ❤️ by [CodeLift LLC](https://www.codelift.codes)
+**Made with ❤️ by [CodeLift LLC](https://www.codelift.codes)**
+
+*Accelerating development with AI-powered tooling*
