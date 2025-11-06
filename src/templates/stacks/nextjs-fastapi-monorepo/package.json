@@ -1,0 +1,26 @@
+{
+  "name": "{{projectName}}",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter=frontend dev\" \"cd apps/backend && uv run uvicorn app.main:app --reload --port 8000\"",
+    "dev:frontend": "pnpm --filter=frontend dev",
+    "dev:backend": "cd apps/backend && uv run uvicorn app.main:app --reload --port 8000",
+    "build": "pnpm --filter=frontend build",
+    "test": "pnpm --filter=frontend test && cd apps/backend && uv run pytest",
+    "lint": "pnpm --filter=frontend lint && cd apps/backend && uv run ruff check .",
+    "format": "prettier --write \"apps/frontend/**/*.{ts,tsx,md}\" && cd apps/backend && uv run ruff format .",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "^3.2.5"
+  },
+  "packageManager": "pnpm@8.15.3",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

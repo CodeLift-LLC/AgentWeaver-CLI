@@ -1,0 +1,95 @@
+{
+  "name": "aspnet-core-pagination",
+  "version": "1.0.0",
+  "description": "Cursor-based and offset-based pagination for ASP.NET Core with Entity Framework",
+  "author": "AgentWeaver",
+  "applicability": {
+    "language": "csharp",
+    "framework": ["aspnet-core", "aspnet"],
+    "minVersion": "6.0.0",
+    "dependencies": {
+      "required": ["Microsoft.AspNetCore"],
+      "optional": ["Microsoft.EntityFrameworkCore"]
+    }
+  },
+  "files": [
+    {
+      "source": "CursorPagination.cs",
+      "target": "{{namespacePath}}/Pagination/CursorPagination.cs",
+      "description": "Cursor-based pagination implementation",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "OffsetPagination.cs",
+      "target": "{{namespacePath}}/Pagination/OffsetPagination.cs",
+      "description": "Offset-based pagination with EF Core",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "PaginationModels.cs",
+      "target": "{{namespacePath}}/Models/PaginationModels.cs",
+      "description": "Pagination response models",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "PaginationExtensions.cs",
+      "target": "{{namespacePath}}/Extensions/PaginationExtensions.cs",
+      "description": "Extension methods for IQueryable pagination",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    }
+  ],
+  "variables": {
+    "namespacePath": {
+      "description": "Namespace path (e.g., src/MyApp.Api)",
+      "required": true,
+      "default": "src/Api",
+      "type": "path"
+    },
+    "namespace": {
+      "description": "C# namespace (e.g., MyApp.Api)",
+      "required": true,
+      "default": "MyApp.Api",
+      "type": "string"
+    },
+    "defaultPageSize": {
+      "description": "Default number of items per page",
+      "required": false,
+      "default": "20",
+      "type": "number"
+    },
+    "maxPageSize": {
+      "description": "Maximum number of items per page",
+      "required": false,
+      "default": "100",
+      "type": "number"
+    }
+  },
+  "instructions": [
+    "Add the pagination classes to your ASP.NET Core project",
+    "Use CursorPagination for efficient large dataset pagination",
+    "Use OffsetPagination with EF Core IQueryable for traditional pagination",
+    "Integrate with your controllers using the extension methods",
+    "See example usage in the XML documentation comments"
+  ],
+  "references": [
+    "https://learn.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page",
+    "https://learn.microsoft.com/en-us/ef/core/querying/",
+    "https://www.yogihosting.com/aspnet-core-pagination/"
+  ],
+  "dependencies": {
+    "required": ["Microsoft.AspNetCore.Mvc"],
+    "optional": [
+      "Microsoft.EntityFrameworkCore",
+      "System.Linq.Async"
+    ]
+  },
+  "tags": ["pagination", "aspnet-core", "csharp", "cursor", "offset", "entity-framework"]
+}

@@ -1,0 +1,44 @@
+FROM node:18-alpine AS base
+RUN corepack enable && corepack prepare pnpm@8.15.3 --activate
+
+FROM base AS builder
+WORKDIR /app
+
+# Copy root package files
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY turbo.json ./
+
+# Copy all workspace packages
+COPY apps/backend ./apps/backend
+COPY packages/shared ./packages/shared
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Build shared package first
+RUN pnpm --filter=@{{projectName}}/shared build
+
+# Build backend
+RUN pnpm --filter=@{{projectName}}/backend build
+
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nestjs
+
+# Copy built application
+COPY --from=builder --chown=nestjs:nodejs /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder --chown=nestjs:nodejs /app/apps/backend/node_modules ./apps/backend/node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+
+USER nestjs
+
+EXPOSE 4000
+
+ENV PORT 4000
+
+CMD ["node", "apps/backend/dist/main.js"]

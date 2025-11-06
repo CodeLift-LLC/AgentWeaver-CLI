@@ -1,0 +1,80 @@
+{
+  "name": "fastapi-pagination",
+  "version": "1.0.0",
+  "description": "Cursor-based and offset-based pagination for FastAPI with Pydantic",
+  "author": "AgentWeaver",
+  "applicability": {
+    "language": "python",
+    "framework": ["fastapi"],
+    "minVersion": "0.68.0",
+    "dependencies": {
+      "required": ["fastapi"],
+      "optional": ["sqlalchemy", "pydantic"]
+    }
+  },
+  "files": [
+    {
+      "source": "cursor_pagination.py",
+      "target": "app/utils/pagination/cursor_pagination.py",
+      "description": "Cursor-based pagination utility for FastAPI",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "offset_pagination.py",
+      "target": "app/utils/pagination/offset_pagination.py",
+      "description": "Offset-based pagination utility for FastAPI",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "schemas.py",
+      "target": "app/schemas/pagination.py",
+      "description": "Pydantic schemas for pagination responses",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "plain"
+    },
+    {
+      "source": "__init__.py",
+      "target": "app/utils/pagination/__init__.py",
+      "description": "Package initializer",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "plain"
+    }
+  ],
+  "variables": {
+    "defaultPageSize": {
+      "description": "Default number of items per page",
+      "required": false,
+      "default": "20",
+      "type": "number"
+    },
+    "maxPageSize": {
+      "description": "Maximum number of items per page",
+      "required": false,
+      "default": "100",
+      "type": "number"
+    }
+  },
+  "instructions": [
+    "Import pagination utilities in your FastAPI routes",
+    "Use `cursor_paginate` for efficient large dataset pagination",
+    "Use `offset_paginate` for simple page-based pagination",
+    "Pydantic schemas in `app/schemas/pagination.py` provide automatic validation",
+    "Works seamlessly with SQLAlchemy queries"
+  ],
+  "references": [
+    "https://fastapi.tiangolo.com/tutorial/query-params/",
+    "https://docs.pydantic.dev/latest/",
+    "https://docs.sqlalchemy.org/en/20/orm/queryguide/select.html#limiting-and-offsetting"
+  ],
+  "dependencies": {
+    "required": ["fastapi", "pydantic"],
+    "optional": ["sqlalchemy"]
+  },
+  "tags": ["pagination", "fastapi", "python", "cursor", "offset", "api", "pydantic"]
+}

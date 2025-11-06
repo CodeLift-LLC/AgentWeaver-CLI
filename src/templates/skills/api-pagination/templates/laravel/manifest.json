@@ -1,0 +1,92 @@
+{
+  "name": "laravel-pagination",
+  "version": "1.0.0",
+  "description": "Cursor-based and offset-based pagination for Laravel with Eloquent ORM",
+  "author": "AgentWeaver",
+  "applicability": {
+    "language": "php",
+    "framework": ["laravel"],
+    "minVersion": "9.0.0",
+    "dependencies": {
+      "required": ["laravel/framework"],
+      "optional": ["illuminate/database"]
+    }
+  },
+  "files": [
+    {
+      "source": "CursorPaginator.php",
+      "target": "{{appPath}}/app/Pagination/CursorPaginator.php",
+      "description": "Cursor-based pagination class",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "OffsetPaginator.php",
+      "target": "{{appPath}}/app/Pagination/OffsetPaginator.php",
+      "description": "Offset-based pagination helper",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "PaginationTrait.php",
+      "target": "{{appPath}}/app/Http/Controllers/PaginationTrait.php",
+      "description": "Controller trait for pagination",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    },
+    {
+      "source": "PaginatedResource.php",
+      "target": "{{appPath}}/app/Http/Resources/PaginatedResource.php",
+      "description": "API resource for paginated responses",
+      "type": "code",
+      "strategy": "skip-if-exists",
+      "templateEngine": "handlebars"
+    }
+  ],
+  "variables": {
+    "appPath": {
+      "description": "Laravel app path (usually just the root)",
+      "required": true,
+      "default": ".",
+      "type": "path"
+    },
+    "namespace": {
+      "description": "Root namespace (e.g., App)",
+      "required": false,
+      "default": "App",
+      "type": "string"
+    },
+    "defaultPageSize": {
+      "description": "Default number of items per page",
+      "required": false,
+      "default": "20",
+      "type": "number"
+    },
+    "maxPageSize": {
+      "description": "Maximum number of items per page",
+      "required": false,
+      "default": "100",
+      "type": "number"
+    }
+  },
+  "instructions": [
+    "Add the pagination classes to your Laravel project",
+    "Use PaginationTrait in your controllers",
+    "Use CursorPaginator for efficient large dataset pagination",
+    "Use OffsetPaginator or Laravel's built-in paginate() for traditional pagination",
+    "See example usage in the class comments"
+  ],
+  "references": [
+    "https://laravel.com/docs/pagination",
+    "https://laravel.com/docs/eloquent",
+    "https://laravel.com/docs/eloquent-resources"
+  ],
+  "dependencies": {
+    "required": ["laravel/framework"],
+    "optional": []
+  },
+  "tags": ["pagination", "laravel", "php", "cursor", "offset", "eloquent"]
+}

@@ -1,0 +1,176 @@
+version: '3.8'
+
+services:
+  # PostgreSQL with pgvector extension
+  postgres:
+    image: supabase/postgres:15.1.0.147
+    container_name: {{projectName}}-postgres
+    restart: unless-stopped
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-your-super-secret-password}
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+{{#if features.authentication}}
+  # Supabase Auth (GoTrue)
+  auth:
+    image: supabase/gotrue:v2.132.3
+    container_name: {{projectName}}-auth
+    restart: unless-stopped
+    ports:
+      - "54321:9999"
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-your-super-secret-password}@postgres:5432/postgres
+      GOTRUE_SITE_URL: ${SITE_URL:-http://localhost:3000}
+      GOTRUE_URI_ALLOW_LIST: "*"
+      GOTRUE_JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token-with-at-least-32-characters-long}
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: true
+      GOTRUE_MAILER_AUTOCONFIRM: ${MAILER_AUTOCONFIRM:-true}
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-mailhog}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-1025}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-admin@example.com}
+      GOTRUE_SMTP_SENDER_NAME: {{projectName}}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+{{/if}}
+{{#if features.fileStorage}}
+  # Supabase Storage
+  storage:
+    image: supabase/storage-api:v0.43.11
+    container_name: {{projectName}}-storage
+    restart: unless-stopped
+    ports:
+      - "54324:5000"
+    environment:
+      ANON_KEY: ${ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0}
+      SERVICE_KEY: ${SERVICE_ROLE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU}
+      POSTGREST_URL: http://rest:3000
+      PGRST_JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token-with-at-least-32-characters-long}
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-your-super-secret-password}@postgres:5432/postgres
+      FILE_SIZE_LIMIT: 52428800
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      REGION: stub
+      GLOBAL_S3_BUCKET: stub
+    volumes:
+      - storage-data:/var/lib/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+
+{{/if}}
+  # Supabase Studio (Database Management UI)
+  studio:
+    image: supabase/studio:20240101-92c87d1
+    container_name: {{projectName}}-studio
+    restart: unless-stopped
+    ports:
+      - "54323:3000"
+    environment:
+      STUDIO_PG_META_URL: http://postgres:5432
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-your-super-secret-password}
+      DEFAULT_ORGANIZATION_NAME: {{projectName}}
+      DEFAULT_PROJECT_NAME: {{projectName}}
+      SUPABASE_URL: http://localhost:54321
+      SUPABASE_PUBLIC_URL: ${PUBLIC_SUPABASE_URL:-http://localhost:54321}
+      SUPABASE_ANON_KEY: ${ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+
+  # Redis for caching and queues
+  redis:
+    image: redis:7-alpine
+    container_name: {{projectName}}-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+{{#if features.aiIntegration}}
+  # Langfuse for AI observability
+  langfuse:
+    image: langfuse/langfuse:latest
+    container_name: {{projectName}}-langfuse
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-your-super-secret-password}@postgres:5432/langfuse
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: ${LANGFUSE_SECRET:-your-langfuse-secret-key}
+      SALT: ${LANGFUSE_SALT:-your-langfuse-salt}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+
+{{/if}}
+{{#if features.email}}
+  # MailHog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: {{projectName}}-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - backend
+
+{{/if}}
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+{{#if features.fileStorage}}
+  storage-data:
+    driver: local
+{{/if}}
+
+networks:
+  backend:
+    driver: bridge
