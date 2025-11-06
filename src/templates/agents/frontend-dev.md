@@ -219,7 +219,7 @@ When creating new documentation, update `docs/README.md` with a link to the new 
 ## Automatic Invocation Triggers
 
 ### Keywords
-`component`, `ui`, `interface`, `layout`, `style`, `css`, `responsive`, `mobile`, `accessibility`, `a11y`, `animation`, `form`, `button`, `modal`, `dropdown`, `navigation`, `theme`
+`component`, `ui`, `interface`, `layout`, `style`, `css`, `responsive`, `mobile`, `accessibility`, `a11y`, `animation`, `framer-motion`, `hero`, `landing`, `transition`, `form`, `button`, `modal`, `dropdown`, `navigation`, `theme`
 
 ### File Patterns
 - Components: `components/*`, `src/components/*`, `app/components/*`
@@ -421,11 +421,26 @@ Use these reusable skills from `.claude/skills/` to accelerate development:
 - Higher-Order Components (HOC)
 - Provider/Consumer patterns
 
+### UI Animations
+**File**: `.claude/skills/ui-animations/skill.md`
+**Use for**: Smooth animations, transitions, hero sections, micro-interactions
+**Capabilities**:
+- Framer Motion patterns and best practices
+- Animated hero sections (parallax, fade-in, stagger)
+- Page transitions and route animations
+- Micro-interactions (buttons, cards, hovers)
+- Scroll-based reveal animations
+- Performance optimization for animations
+- Accessibility (`prefers-reduced-motion`)
+- Gesture animations (drag, swipe, tap)
+
 **How to Use**: When building features, reference relevant skills. For example:
 - Creating components? → Use `.claude/skills/component-generation/skill.md` and `.claude/skills/ui-accessibility/skill.md`
 - Building forms? → Use `.claude/skills/ui-form-validation/skill.md` and `.claude/skills/ui-state-management/skill.md`
 - Writing tests? → Use `.claude/skills/test-e2e-workflows/skill.md` and `.claude/skills/test-unit-patterns/skill.md`
 - Ensuring responsive design? → Use `.claude/skills/ui-responsive-design/skill.md`
+- Adding animations? → Use `.claude/skills/ui-animations/skill.md` and `.claude/skills/ui-accessibility/skill.md`
+- Creating hero sections? → Use `.claude/skills/ui-animations/skill.md` (see examples/hero-sections.md)
 
 ## MCP Server Access
 

@@ -339,6 +339,27 @@ Use these reusable skills from `.claude/skills/` to accelerate testing:
 - Field-level validation testing
 - Form state testing
 
+### UI Animations
+**File**: `.claude/skills/ui-animations/skill.md`
+**Use for**: Testing animations, transitions, and motion design
+**Capabilities**:
+- Animation performance testing (60fps target)
+- Accessibility testing (`prefers-reduced-motion`)
+- Visual regression testing for animated components
+- Testing page transitions and hero sections
+- Gesture animation testing (drag, swipe, tap)
+- Scroll-based animation validation
+- Frame rate monitoring
+- Animation timing verification
+
+**Testing Checklist**:
+- [ ] Animations respect `prefers-reduced-motion` setting
+- [ ] Frame rate stays at 60fps during animations
+- [ ] No layout thrashing or forced reflows
+- [ ] Animations complete within expected duration
+- [ ] Visual regression tests pass for animated states
+- [ ] Touch/gesture interactions work on mobile devices
+
 ### API Error Handling
 **File**: `.claude/skills/api-error-handling/skill.md`
 **Use for**: Testing error responses, edge cases, failure scenarios

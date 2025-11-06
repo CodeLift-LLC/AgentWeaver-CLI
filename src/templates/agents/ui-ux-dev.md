@@ -523,6 +523,25 @@ Before submitting component to @tech-lead:
 - Brand consistency enforcement
 - Style guide adherence
 
+### UI Animations Skill
+**File**: `.claude/skills/ui-animations/skill.md`
+**Use for**: Adding smooth animations, transitions, and motion design to components
+**Capabilities**:
+- Framer Motion patterns for React components
+- Animated hero sections (parallax, fade-in, stagger)
+- Page transitions and micro-interactions
+- Scroll-based reveal animations
+- Performance-optimized animations
+- Accessibility (`prefers-reduced-motion`)
+- Hero section design patterns with animations
+
+**Use when**:
+- Generating animated hero sections or landing pages
+- Adding transitions to component interactions
+- Creating scroll-based reveal effects
+- Implementing page transitions
+- Building animated cards, buttons, or UI elements
+
 ## Example: Complete Component Generation
 
 **Request**: "Create a responsive card component for blog post previews"
