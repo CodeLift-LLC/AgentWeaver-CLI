@@ -40,10 +40,20 @@ jobs:
 
       - name: Configure npm authentication
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          cat > ~/.npmrc << EOF
+          //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          registry=https://registry.npmjs.org/
+          EOF
+
+      - name: Verify npm configuration
+        run: |
+          echo "NPM Config:"
+          npm config list
+          echo "Checking authentication..."
+          npm whoami || echo "Auth check failed, but continuing..."
 
       - name: Publish to npm
-        run: npm publish --access public
+        run: npm publish --access public --registry https://registry.npmjs.org/
 
       - name: Create GitHub Release Assets
         run: npm pack

@@ -70,10 +70,20 @@ jobs:
 
       - name: Configure npm authentication
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          cat > ~/.npmrc << EOF
+          //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          registry=https://registry.npmjs.org/
+          EOF
+
+      - name: Verify npm configuration
+        run: |
+          echo "NPM Config:"
+          npm config list
+          echo "Checking authentication..."
+          npm whoami || echo "Auth check failed, but continuing..."
 
       - name: Dry-run npm publish
-        run: npm publish --dry-run --access public
+        run: npm publish --dry-run --access public --registry https://registry.npmjs.org/
 
       - name: Test installation
         run: |
@@ -122,7 +132,17 @@ jobs:
 
       - name: Configure npm authentication
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          cat > ~/.npmrc << EOF
+          //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          registry=https://registry.npmjs.org/
+          EOF
+
+      - name: Verify npm configuration
+        run: |
+          echo "NPM Config:"
+          npm config list
+          echo "Checking authentication..."
+          npm whoami || echo "Auth check failed, but continuing..."
 
       - name: Determine npm tag
         id: npm_tag
@@ -139,7 +159,7 @@ jobs:
           fi
 
       - name: Publish to npm with tag
-        run: npm publish --access public --tag ${{ steps.npm_tag.outputs.tag }}
+        run: npm publish --access public --tag ${{ steps.npm_tag.outputs.tag }} --registry https://registry.npmjs.org/
 
       - name: Create GitHub Release Assets
         run: npm pack
