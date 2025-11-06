@@ -31,11 +31,26 @@ export interface EnhancedTechStack {
 }
 
 export interface ArchitectureInfo {
-  type: 'monolith' | 'microservices' | 'monorepo' | 'web-fullstack' | 'cli-tool' | 'desktop-app' | 'mobile-app' | 'library';
+  type:
+    | 'monolith'
+    | 'microservices'
+    | 'monorepo'
+    | 'web-fullstack'
+    | 'cli-tool'
+    | 'desktop-app'
+    | 'mobile-app'
+    | 'library';
   style: 'monoglot' | 'polyglot'; // Single language or multiple languages
   projectCount: number;
   hasWorkspaces: boolean; // npm/yarn workspaces, cargo workspaces, etc.
-  workspaceTool?: 'npm-workspaces' | 'yarn-workspaces' | 'pnpm-workspaces' | 'lerna' | 'nx' | 'turborepo' | 'cargo-workspaces';
+  workspaceTool?:
+    | 'npm-workspaces'
+    | 'yarn-workspaces'
+    | 'pnpm-workspaces'
+    | 'lerna'
+    | 'nx'
+    | 'turborepo'
+    | 'cargo-workspaces';
 }
 
 export interface ProjectInfo {
@@ -64,15 +79,55 @@ export interface FrontendTech {
 }
 
 export interface BackendTech {
-  framework?: 'express' | 'fastapi' | 'nestjs' | 'django' | 'flask' | 'hono' | 'elysia' | 'spring-boot' | 'aspnet-core' | 'gin' | 'actix-web' | 'rails' | 'laravel';
-  language?: 'typescript' | 'javascript' | 'python' | 'go' | 'rust' | 'java' | 'csharp' | 'ruby' | 'php';
+  framework?:
+    | 'express'
+    | 'fastapi'
+    | 'nestjs'
+    | 'django'
+    | 'flask'
+    | 'hono'
+    | 'elysia'
+    | 'spring-boot'
+    | 'aspnet-core'
+    | 'gin'
+    | 'actix-web'
+    | 'rails'
+    | 'laravel';
+  language?:
+    | 'typescript'
+    | 'javascript'
+    | 'python'
+    | 'go'
+    | 'rust'
+    | 'java'
+    | 'csharp'
+    | 'ruby'
+    | 'php';
   apiStyle?: 'rest' | 'graphql' | 'grpc' | 'trpc';
   validation?: 'zod' | 'joi' | 'yup' | 'pydantic' | 'class-validator';
 }
 
 export interface DatabaseTech {
-  primary?: 'postgresql' | 'mysql' | 'mongodb' | 'sqlite' | 'redis' | 'supabase' | 'oracle' | 'sql-server';
-  orm?: 'prisma' | 'typeorm' | 'drizzle' | 'mongoose' | 'sequelize' | 'sqlalchemy' | 'hibernate' | 'entity-framework-core' | 'gorm' | 'diesel';
+  primary?:
+    | 'postgresql'
+    | 'mysql'
+    | 'mongodb'
+    | 'sqlite'
+    | 'redis'
+    | 'supabase'
+    | 'oracle'
+    | 'sql-server';
+  orm?:
+    | 'prisma'
+    | 'typeorm'
+    | 'drizzle'
+    | 'mongoose'
+    | 'sequelize'
+    | 'sqlalchemy'
+    | 'hibernate'
+    | 'entity-framework-core'
+    | 'gorm'
+    | 'diesel';
   cache?: 'redis' | 'memcached';
   migrations?: 'prisma' | 'typeorm' | 'knex' | 'alembic';
 }
@@ -131,7 +186,9 @@ export class EnhancedTechDetector {
 
     // Combine all detected projects
     const allProjects = [
-      ...detectionResults.filter(r => r.techInfo !== null).map(r => this.convertToProjectInfo(r)),
+      ...detectionResults
+        .filter((r) => r.techInfo !== null)
+        .map((r) => this.convertToProjectInfo(r)),
       ...jsProjects,
       ...pythonProjects,
     ];
@@ -140,7 +197,8 @@ export class EnhancedTechDetector {
     const architecture = await this.detectArchitecture(allProjects);
 
     // Generate legacy compatibility data
-    const { frontend, backend, database, testing, deployment } = await this.generateLegacyData(allProjects);
+    const { frontend, backend, database, testing, deployment } =
+      await this.generateLegacyData(allProjects);
 
     return {
       architecture,
@@ -277,7 +335,7 @@ export class EnhancedTechDetector {
    */
   private async detectArchitecture(projects: ProjectInfo[]): Promise<ArchitectureInfo> {
     const projectCount = projects.length;
-    const languages = new Set(projects.map(p => p.language));
+    const languages = new Set(projects.map((p) => p.language));
     const style: 'monoglot' | 'polyglot' = languages.size > 1 ? 'polyglot' : 'monoglot';
 
     // Check for workspace configuration
@@ -294,15 +352,27 @@ export class EnhancedTechDetector {
       const project = projects[0];
 
       // CLI tool detection
-      if (await this.hasDirectory('cmd') || await this.hasDirectory('cli') || await this.hasManifestFile('bin')) {
+      if (
+        (await this.hasDirectory('cmd')) ||
+        (await this.hasDirectory('cli')) ||
+        (await this.hasManifestFile('bin'))
+      ) {
         type = 'cli-tool';
       }
       // Desktop app detection
-      else if (project.framework === 'wpf' || project.framework === 'winforms' || project.framework === 'maui') {
+      else if (
+        project.framework === 'wpf' ||
+        project.framework === 'winforms' ||
+        project.framework === 'maui'
+      ) {
         type = 'desktop-app';
       }
       // Mobile app detection
-      else if (project.framework === 'maui' || await this.hasDirectory('android') || await this.hasDirectory('ios')) {
+      else if (
+        project.framework === 'maui' ||
+        (await this.hasDirectory('android')) ||
+        (await this.hasDirectory('ios'))
+      ) {
         type = 'mobile-app';
       }
       // Web application
@@ -311,8 +381,14 @@ export class EnhancedTechDetector {
       }
     } else if (projectCount === 2) {
       // Frontend + Backend = web-fullstack
-      const hasFrontend = projects.some(p => ['nextjs', 'react', 'vue', 'angular', 'svelte'].includes(p.framework || ''));
-      const hasBackend = projects.some(p => ['express', 'fastapi', 'spring-boot', 'aspnet-core', 'gin', 'rails', 'laravel'].includes(p.framework || ''));
+      const hasFrontend = projects.some((p) =>
+        ['nextjs', 'react', 'vue', 'angular', 'svelte'].includes(p.framework || '')
+      );
+      const hasBackend = projects.some((p) =>
+        ['express', 'fastapi', 'spring-boot', 'aspnet-core', 'gin', 'rails', 'laravel'].includes(
+          p.framework || ''
+        )
+      );
 
       if (hasFrontend && hasBackend) {
         type = 'web-fullstack';
@@ -335,7 +411,10 @@ export class EnhancedTechDetector {
   /**
    * Detect workspace configuration (monorepo indicators)
    */
-  private async detectWorkspaces(): Promise<{ hasWorkspaces: boolean; workspaceTool?: ArchitectureInfo['workspaceTool'] }> {
+  private async detectWorkspaces(): Promise<{
+    hasWorkspaces: boolean;
+    workspaceTool?: ArchitectureInfo['workspaceTool'];
+  }> {
     // Check npm/yarn/pnpm workspaces
     const packageJson = await this.readPackageJson();
     if (packageJson?.workspaces) {
@@ -395,8 +474,20 @@ export class EnhancedTechDetector {
    * Detect backend from projects list
    */
   private detectBackendFromProjects(projects: ProjectInfo[]): BackendTech | undefined {
-    const backendProject = projects.find(p =>
-      ['express', 'fastapi', 'nestjs', 'django', 'flask', 'spring-boot', 'aspnet-core', 'gin', 'actix-web', 'rails', 'laravel'].includes(p.framework || '')
+    const backendProject = projects.find((p) =>
+      [
+        'express',
+        'fastapi',
+        'nestjs',
+        'django',
+        'flask',
+        'spring-boot',
+        'aspnet-core',
+        'gin',
+        'actix-web',
+        'rails',
+        'laravel',
+      ].includes(p.framework || '')
     );
 
     if (!backendProject) return undefined;

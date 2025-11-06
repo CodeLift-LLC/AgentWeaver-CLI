@@ -256,10 +256,7 @@ export class ConfigGenerator {
   /**
    * Writes AgentWeaver configuration to file
    */
-  static async writeAgentWeaverConfig(
-    filePath: string,
-    config: AgentWeaverConfig
-  ): Promise<void> {
+  static async writeAgentWeaverConfig(filePath: string, config: AgentWeaverConfig): Promise<void> {
     const yamlContent = this.generateYamlWithComments(config);
     await writeFile(filePath, yamlContent);
   }
@@ -271,7 +268,7 @@ export class ConfigGenerator {
     const lines: string[] = [];
 
     lines.push('# AgentWeaver Configuration');
-    lines.push('# This file defines your project\'s tech stack for AI agents');
+    lines.push("# This file defines your project's tech stack for AI agents");
     lines.push('');
     lines.push(`version: '${config.version}'`);
     lines.push('');
@@ -567,10 +564,7 @@ export class ConfigGenerator {
   /**
    * Writes tech-stack.md markdown file
    */
-  static async writeTechStackMarkdown(
-    filePath: string,
-    config: AgentWeaverConfig
-  ): Promise<void> {
+  static async writeTechStackMarkdown(filePath: string, config: AgentWeaverConfig): Promise<void> {
     const content = this.generateTechStackMarkdown(config);
     await writeFile(filePath, content);
   }
@@ -705,13 +699,19 @@ export class ConfigGenerator {
     lines.push('## 📋 Project Overview');
     lines.push('');
     if (techStack.frontend?.framework) {
-      lines.push(`**Frontend**: ${techStack.frontend.framework}${techStack.frontend.language ? ` (${techStack.frontend.language})` : ''}`);
+      lines.push(
+        `**Frontend**: ${techStack.frontend.framework}${techStack.frontend.language ? ` (${techStack.frontend.language})` : ''}`
+      );
     }
     if (techStack.backend?.framework) {
-      lines.push(`**Backend**: ${techStack.backend.framework}${techStack.backend.language ? ` (${techStack.backend.language})` : ''}`);
+      lines.push(
+        `**Backend**: ${techStack.backend.framework}${techStack.backend.language ? ` (${techStack.backend.language})` : ''}`
+      );
     }
     if (techStack.database?.primary) {
-      lines.push(`**Database**: ${techStack.database.primary}${techStack.database.orm ? ` with ${techStack.database.orm}` : ''}`);
+      lines.push(
+        `**Database**: ${techStack.database.primary}${techStack.database.orm ? ` with ${techStack.database.orm}` : ''}`
+      );
     }
     lines.push('');
 
@@ -765,4 +765,3 @@ export class ConfigGenerator {
     }
   }
 }
-

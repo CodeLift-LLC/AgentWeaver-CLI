@@ -360,7 +360,8 @@ export class TemplateResolver {
     if (!manifest.version) errors.push('Missing required field: version');
     if (!manifest.description) errors.push('Missing required field: description');
     if (!manifest.applicability) errors.push('Missing required field: applicability');
-    if (!manifest.applicability?.language) errors.push('Missing required field: applicability.language');
+    if (!manifest.applicability?.language)
+      errors.push('Missing required field: applicability.language');
     if (!manifest.files || manifest.files.length === 0) {
       errors.push('Missing or empty required field: files');
     }

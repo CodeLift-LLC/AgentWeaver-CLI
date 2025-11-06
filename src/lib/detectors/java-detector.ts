@@ -269,11 +269,7 @@ export class JavaDetector extends BaseDetector {
 
   protected async applyHeuristics(): Promise<TechInfo | null> {
     // Check for .java files in common locations
-    const commonPaths = [
-      'src/main/java',
-      'src/test/java',
-      'src',
-    ];
+    const commonPaths = ['src/main/java', 'src/test/java', 'src'];
 
     for (const p of commonPaths) {
       if (await this.hasDirectory(p)) {

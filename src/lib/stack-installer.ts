@@ -166,7 +166,9 @@ export class StackInstaller {
     if (template.requirements.uv) {
       const hasUv = await this.checkCommand('uv --version');
       if (!hasUv) {
-        result.warnings.push('uv is recommended for Python. Install from: https://github.com/astral-sh/uv');
+        result.warnings.push(
+          'uv is recommended for Python. Install from: https://github.com/astral-sh/uv'
+        );
       }
     }
 

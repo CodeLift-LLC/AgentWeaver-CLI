@@ -243,12 +243,12 @@ export abstract class BaseDetector {
       // *.csproj -> ^.*\.csproj$
       // *.gradle.kts -> ^.*\.gradle\.kts$
       const regexPattern = pattern
-        .replace(/\./g, '\\.')  // Escape dots
-        .replace(/\*/g, '.*');  // Convert * to .*
+        .replace(/\./g, '\\.') // Escape dots
+        .replace(/\*/g, '.*'); // Convert * to .*
 
       const regex = new RegExp(`^${regexPattern}$`);
 
-      return files.some(file => regex.test(file));
+      return files.some((file) => regex.test(file));
     } catch {
       return false;
     }
@@ -261,13 +261,11 @@ export abstract class BaseDetector {
     try {
       const files = await readdir(this.projectRoot);
 
-      const regexPattern = pattern
-        .replace(/\./g, '\\.')
-        .replace(/\*/g, '.*');
+      const regexPattern = pattern.replace(/\./g, '\\.').replace(/\*/g, '.*');
 
       const regex = new RegExp(`^${regexPattern}$`);
 
-      return files.filter(file => regex.test(file));
+      return files.filter((file) => regex.test(file));
     } catch {
       return [];
     }

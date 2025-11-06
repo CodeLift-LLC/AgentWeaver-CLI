@@ -167,11 +167,7 @@ export async function readJsonFile<T>(filePath: string): Promise<T> {
 /**
  * Writes an object to a JSON file with formatting
  */
-export async function writeJsonFile(
-  filePath: string,
-  data: unknown,
-  pretty = true
-): Promise<void> {
+export async function writeJsonFile(filePath: string, data: unknown, pretty = true): Promise<void> {
   try {
     const content = pretty ? JSON.stringify(data, null, 2) : JSON.stringify(data);
     await writeFile(filePath, content);

@@ -61,7 +61,16 @@ export interface ApplicabilityRules {
 
   /** Architecture requirements */
   architecture?: {
-    type?: ('monolith' | 'microservices' | 'monorepo' | 'web-fullstack' | 'cli-tool' | 'desktop-app' | 'mobile-app' | 'library')[];
+    type?: (
+      | 'monolith'
+      | 'microservices'
+      | 'monorepo'
+      | 'web-fullstack'
+      | 'cli-tool'
+      | 'desktop-app'
+      | 'mobile-app'
+      | 'library'
+    )[];
     style?: 'monoglot' | 'polyglot';
   };
 

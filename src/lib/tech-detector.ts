@@ -23,15 +23,57 @@ export interface FrontendTech {
 }
 
 export interface BackendTech {
-  framework?: 'express' | 'fastapi' | 'nestjs' | 'django' | 'flask' | 'hono' | 'elysia' | 'spring-boot' | 'aspnet-core' | 'gin' | 'actix-web' | 'rails' | 'laravel';
-  language?: 'typescript' | 'javascript' | 'python' | 'go' | 'rust' | 'java' | 'csharp' | 'ruby' | 'php';
+  framework?:
+    | 'express'
+    | 'fastapi'
+    | 'nestjs'
+    | 'django'
+    | 'flask'
+    | 'hono'
+    | 'elysia'
+    | 'spring-boot'
+    | 'aspnet-core'
+    | 'gin'
+    | 'actix-web'
+    | 'rails'
+    | 'laravel';
+  language?:
+    | 'typescript'
+    | 'javascript'
+    | 'python'
+    | 'go'
+    | 'rust'
+    | 'java'
+    | 'csharp'
+    | 'ruby'
+    | 'php';
   apiStyle?: 'rest' | 'graphql' | 'grpc' | 'trpc';
   validation?: 'zod' | 'joi' | 'yup' | 'pydantic' | 'class-validator';
 }
 
 export interface DatabaseTech {
-  primary?: 'postgresql' | 'mysql' | 'mongodb' | 'sqlite' | 'redis' | 'supabase' | 'oracle' | 'sql-server' | 'mariadb' | 'h2';
-  orm?: 'prisma' | 'typeorm' | 'drizzle' | 'mongoose' | 'sequelize' | 'sqlalchemy' | 'hibernate' | 'entity-framework-core' | 'gorm' | 'diesel';
+  primary?:
+    | 'postgresql'
+    | 'mysql'
+    | 'mongodb'
+    | 'sqlite'
+    | 'redis'
+    | 'supabase'
+    | 'oracle'
+    | 'sql-server'
+    | 'mariadb'
+    | 'h2';
+  orm?:
+    | 'prisma'
+    | 'typeorm'
+    | 'drizzle'
+    | 'mongoose'
+    | 'sequelize'
+    | 'sqlalchemy'
+    | 'hibernate'
+    | 'entity-framework-core'
+    | 'gorm'
+    | 'diesel';
   cache?: 'redis' | 'memcached';
   migrations?: 'prisma' | 'typeorm' | 'knex' | 'alembic';
 }
@@ -290,7 +332,11 @@ export class TechDetector {
       else if (deps['selenium-webdriver']) testing.e2e = 'selenium';
 
       // Coverage
-      testing.coverage = !!(deps['@vitest/coverage-v8'] || deps['@vitest/coverage-c8'] || packageJson.scripts?.coverage);
+      testing.coverage = !!(
+        deps['@vitest/coverage-v8'] ||
+        deps['@vitest/coverage-c8'] ||
+        packageJson.scripts?.coverage
+      );
     }
 
     if (pyproject) {

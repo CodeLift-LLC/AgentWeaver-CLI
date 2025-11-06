@@ -1,0 +1,12 @@
+# Ignore template files - these are user-facing templates
+src/templates/**/*
+dist/templates/**/*
+
+# Ignore build output
+dist/
+
+# Ignore dependencies
+node_modules/
+
+# Ignore coverage reports
+coverage/

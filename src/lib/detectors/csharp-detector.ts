@@ -124,7 +124,9 @@ export class CSharpDetector extends BaseDetector {
     if (!slnContent) return null;
 
     // Parse solution file to find project references
-    const projectMatches = slnContent.matchAll(/Project\([^)]+\)\s*=\s*"[^"]+",\s*"([^"]+\.csproj)"/g);
+    const projectMatches = slnContent.matchAll(
+      /Project\([^)]+\)\s*=\s*"[^"]+",\s*"([^"]+\.csproj)"/g
+    );
     const projectFiles: string[] = [];
 
     for (const match of projectMatches) {
