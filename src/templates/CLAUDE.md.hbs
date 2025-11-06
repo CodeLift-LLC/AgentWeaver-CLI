@@ -561,6 +561,32 @@ Claude Code uses these signals to detect your scenario:
 
 ---
 
+## 🔄 Git Commit Workflow After Todo Completion
+
+**IMPORTANT**: When ALL todos in your todo list are completed successfully:
+
+1. **Check if git is being used**: Run `git status` to verify if the project is a git repository
+2. **Ask user about commit summary**: Before generating a commit, ALWAYS ask the user:
+   ```
+   ✅ All todos completed! Would you like me to:
+   1. Create a git commit with the changes? (Yes/No)
+   2. Generate a detailed summary of changes before committing? (This uses tokens)
+   ```
+3. **Wait for user response**: Do NOT proceed with git operations until the user responds
+4. **If user wants a summary**:
+   - Review all changed files with `git diff` and `git status`
+   - Generate a concise summary of what changed
+   - Present the summary to the user
+5. **If user wants to commit**:
+   - Add relevant files with `git add`
+   - Create a descriptive commit message following the project's convention
+
+6. **Never commit without user confirmation**
+
+This workflow helps save tokens by letting users skip unnecessary summaries when they already know what changed.
+
+---
+
 ## 🤝 Agent Handoff Protocols
 
 Each agent knows when to delegate to specialists:
