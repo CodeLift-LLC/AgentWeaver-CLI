@@ -71,7 +71,7 @@ export class PHPDetector extends BaseDetector {
     }
 
     // Generic PHP project
-    if (hasApp || await this.hasDirectory('src')) {
+    if (hasApp || (await this.hasDirectory('src'))) {
       return {
         language: 'php',
         buildTool: 'composer',
@@ -98,7 +98,7 @@ export class PHPDetector extends BaseDetector {
       dependencies.push(...Object.keys(composerJson['require-dev']));
     }
 
-    return dependencies.filter(dep => !dep.startsWith('php')); // Filter out PHP version constraint
+    return dependencies.filter((dep) => !dep.startsWith('php')); // Filter out PHP version constraint
   }
 
   /**

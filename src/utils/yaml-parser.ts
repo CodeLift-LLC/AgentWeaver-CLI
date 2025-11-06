@@ -65,10 +65,7 @@ export function parseMarkdown<T = Record<string, unknown>>(
 /**
  * Validates agent frontmatter has required fields
  */
-export function validateAgentFrontmatter(
-  frontmatter: unknown,
-  filePath: string
-): AgentFrontmatter {
+export function validateAgentFrontmatter(frontmatter: unknown, filePath: string): AgentFrontmatter {
   if (!frontmatter || typeof frontmatter !== 'object') {
     throw new YamlParseError('Frontmatter must be an object', filePath);
   }
@@ -80,11 +77,7 @@ export function validateAgentFrontmatter(
     throw new YamlParseError('Agent frontmatter must have a non-empty "name" field', filePath);
   }
 
-  if (
-    !fm.description ||
-    typeof fm.description !== 'string' ||
-    fm.description.trim() === ''
-  ) {
+  if (!fm.description || typeof fm.description !== 'string' || fm.description.trim() === '') {
     throw new YamlParseError(
       'Agent frontmatter must have a non-empty "description" field',
       filePath
@@ -98,7 +91,10 @@ export function validateAgentFrontmatter(
       // Convert comma-separated string to array
       fm.tools = fm.tools.split(',').map((tool) => tool.trim());
     } else if (!Array.isArray(fm.tools)) {
-      throw new YamlParseError('Agent frontmatter "tools" must be an array or comma-separated string', filePath);
+      throw new YamlParseError(
+        'Agent frontmatter "tools" must be an array or comma-separated string',
+        filePath
+      );
     }
 
     // Type assertion after validation
@@ -124,10 +120,7 @@ export function validateAgentFrontmatter(
 /**
  * Validates skill frontmatter has required fields
  */
-export function validateSkillFrontmatter(
-  frontmatter: unknown,
-  filePath: string
-): SkillFrontmatter {
+export function validateSkillFrontmatter(frontmatter: unknown, filePath: string): SkillFrontmatter {
   if (!frontmatter || typeof frontmatter !== 'object') {
     throw new YamlParseError('Frontmatter must be an object', filePath);
   }
@@ -139,11 +132,7 @@ export function validateSkillFrontmatter(
     throw new YamlParseError('Skill frontmatter must have a non-empty "name" field', filePath);
   }
 
-  if (
-    !fm.description ||
-    typeof fm.description !== 'string' ||
-    fm.description.trim() === ''
-  ) {
+  if (!fm.description || typeof fm.description !== 'string' || fm.description.trim() === '') {
     throw new YamlParseError(
       'Skill frontmatter must have a non-empty "description" field',
       filePath
@@ -156,7 +145,10 @@ export function validateSkillFrontmatter(
     if (typeof fm['allowed-tools'] === 'string') {
       fm['allowed-tools'] = (fm['allowed-tools'] as string).split(',').map((tool) => tool.trim());
     } else if (!Array.isArray(fm['allowed-tools'])) {
-      throw new YamlParseError('Skill frontmatter "allowed-tools" must be an array or comma-separated string', filePath);
+      throw new YamlParseError(
+        'Skill frontmatter "allowed-tools" must be an array or comma-separated string',
+        filePath
+      );
     }
 
     const allowedTools = fm['allowed-tools'] as unknown[];
@@ -173,7 +165,10 @@ export function validateSkillFrontmatter(
     if (typeof fm.tags === 'string') {
       fm.tags = (fm.tags as string).split(',').map((tag) => tag.trim());
     } else if (!Array.isArray(fm.tags)) {
-      throw new YamlParseError('Skill frontmatter "tags" must be an array or comma-separated string', filePath);
+      throw new YamlParseError(
+        'Skill frontmatter "tags" must be an array or comma-separated string',
+        filePath
+      );
     }
 
     const tags = fm.tags as unknown[];
@@ -196,7 +191,10 @@ export function hasProactiveTrigger(description: string): boolean {
 /**
  * Parses and validates an agent file
  */
-export function parseAgentFile(content: string, filePath: string): ParsedMarkdown<AgentFrontmatter> {
+export function parseAgentFile(
+  content: string,
+  filePath: string
+): ParsedMarkdown<AgentFrontmatter> {
   const parsed = parseMarkdown<AgentFrontmatter>(content, filePath);
   const validatedFrontmatter = validateAgentFrontmatter(parsed.frontmatter, filePath);
 
@@ -210,7 +208,10 @@ export function parseAgentFile(content: string, filePath: string): ParsedMarkdow
 /**
  * Parses and validates a skill file
  */
-export function parseSkillFile(content: string, filePath: string): ParsedMarkdown<SkillFrontmatter> {
+export function parseSkillFile(
+  content: string,
+  filePath: string
+): ParsedMarkdown<SkillFrontmatter> {
   const parsed = parseMarkdown<SkillFrontmatter>(content, filePath);
   const validatedFrontmatter = validateSkillFrontmatter(parsed.frontmatter, filePath);
 

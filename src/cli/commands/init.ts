@@ -47,8 +47,8 @@ async function updateGitignore(projectRoot: string): Promise<void> {
 
       // Check if .claude/ is already in .gitignore
       const lines = gitignoreContent.split('\n');
-      const hasClaudeEntry = lines.some(line =>
-        line.trim() === claudeEntry || line.trim() === '.claude'
+      const hasClaudeEntry = lines.some(
+        (line) => line.trim() === claudeEntry || line.trim() === '.claude'
       );
 
       if (hasClaudeEntry) {
@@ -58,7 +58,8 @@ async function updateGitignore(projectRoot: string): Promise<void> {
     }
 
     // Add .claude/ to .gitignore
-    const header = '\n# AgentWeaver AI Agent Configuration\n# Contains project-specific AI agent setup and tech stack configuration\n';
+    const header =
+      '\n# AgentWeaver AI Agent Configuration\n# Contains project-specific AI agent setup and tech stack configuration\n';
     const newContent = gitignoreExists
       ? `${gitignoreContent.trimEnd()}\n${header}${claudeEntry}\n`
       : `${header}${claudeEntry}\n`;
@@ -66,7 +67,9 @@ async function updateGitignore(projectRoot: string): Promise<void> {
     await fs.writeFile(gitignorePath, newContent, 'utf-8');
   } catch (error) {
     // Silently fail - not critical if .gitignore update fails
-    console.warn(chalk.yellow(`\nWarning: Could not update .gitignore: ${(error as Error).message}`));
+    console.warn(
+      chalk.yellow(`\nWarning: Could not update .gitignore: ${(error as Error).message}`)
+    );
   }
 }
 
@@ -144,7 +147,11 @@ export async function initCommand(options: InitOptions) {
 
             // Feature customization
             console.log(chalk.cyan('\n🎨 Customize features:\n'));
-            const featureChoices: { name: string; value: keyof TemplateFeatures; checked: boolean }[] = [
+            const featureChoices: {
+              name: string;
+              value: keyof TemplateFeatures;
+              checked: boolean;
+            }[] = [
               {
                 name: 'Authentication (Supabase Auth)',
                 value: 'authentication',
@@ -209,9 +216,13 @@ export async function initCommand(options: InitOptions) {
 
             if (templateInstallResult.success) {
               templateSpinner.succeed('Template installed successfully');
-              console.log(chalk.gray(`\n  Created ${templateInstallResult.filesCreated.length} files`));
               console.log(
-                chalk.gray(`  Configured ${templateInstallResult.servicesConfigured.length} services`)
+                chalk.gray(`\n  Created ${templateInstallResult.filesCreated.length} files`)
+              );
+              console.log(
+                chalk.gray(
+                  `  Configured ${templateInstallResult.servicesConfigured.length} services`
+                )
               );
 
               if (templateInstallResult.warnings.length > 0) {
@@ -271,13 +282,25 @@ export async function initCommand(options: InitOptions) {
       console.log(chalk.cyan(`  Architecture: ${template.architecture}`));
 
       if (template.techStack.frontend?.framework) {
-        console.log(chalk.gray(`  Frontend: ${template.techStack.frontend.framework} ${template.techStack.frontend.version || ''}`));
+        console.log(
+          chalk.gray(
+            `  Frontend: ${template.techStack.frontend.framework} ${template.techStack.frontend.version || ''}`
+          )
+        );
       }
       if (template.techStack.backend?.framework) {
-        console.log(chalk.gray(`  Backend: ${template.techStack.backend.framework} ${template.techStack.backend.version || ''} (${template.techStack.backend.language})`));
+        console.log(
+          chalk.gray(
+            `  Backend: ${template.techStack.backend.framework} ${template.techStack.backend.version || ''} (${template.techStack.backend.language})`
+          )
+        );
       }
       if (template.techStack.database?.primary) {
-        console.log(chalk.gray(`  Database: ${template.techStack.database.primary} (${template.techStack.database.orm})`));
+        console.log(
+          chalk.gray(
+            `  Database: ${template.techStack.database.primary} (${template.techStack.database.orm})`
+          )
+        );
       }
       if (template.techStack.testing) {
         console.log(chalk.gray(`  Testing: ${template.techStack.testing.unit || 'N/A'}`));
@@ -318,7 +341,11 @@ export async function initCommand(options: InitOptions) {
 
       // Show architecture info
       if (enhancedTech.architecture) {
-        console.log(chalk.cyan(`  Architecture: ${enhancedTech.architecture.type} (${enhancedTech.architecture.style})`));
+        console.log(
+          chalk.cyan(
+            `  Architecture: ${enhancedTech.architecture.type} (${enhancedTech.architecture.style})`
+          )
+        );
         if (enhancedTech.architecture.workspaceTool) {
           console.log(chalk.gray(`  Monorepo: ${enhancedTech.architecture.workspaceTool}`));
         }
@@ -329,7 +356,11 @@ export async function initCommand(options: InitOptions) {
         console.log(chalk.cyan(`\n  Detected ${enhancedTech.projects.length} project(s):`));
         enhancedTech.projects.forEach((project: any, idx: number) => {
           const frameworkInfo = project.framework ? ` (${project.framework})` : '';
-          console.log(chalk.gray(`    ${idx + 1}. ${project.language}${frameworkInfo} - ${(project.confidence * 100).toFixed(0)}% confidence`));
+          console.log(
+            chalk.gray(
+              `    ${idx + 1}. ${project.language}${frameworkInfo} - ${(project.confidence * 100).toFixed(0)}% confidence`
+            )
+          );
         });
       }
 
@@ -338,7 +369,11 @@ export async function initCommand(options: InitOptions) {
         console.log(chalk.gray(`\n  Frontend: ${enhancedTech.frontend.framework}`));
       }
       if (enhancedTech.backend?.framework) {
-        console.log(chalk.gray(`  Backend: ${enhancedTech.backend.framework} (${enhancedTech.backend.language})`));
+        console.log(
+          chalk.gray(
+            `  Backend: ${enhancedTech.backend.framework} (${enhancedTech.backend.language})`
+          )
+        );
       }
       if (enhancedTech.database?.primary) {
         console.log(chalk.gray(`  Database: ${enhancedTech.database.primary}`));
@@ -529,7 +564,11 @@ export async function initCommand(options: InitOptions) {
 
     // Step 7: Install skills with template pack resolution
     let skillResult: any = { installed: [], templatePacksUsed: [] };
-    if (selectedSkills.length > 0 || (!options.skills && !options.yes) || (options.yes && selectedSkills.length === 0)) {
+    if (
+      selectedSkills.length > 0 ||
+      (!options.skills && !options.yes) ||
+      (options.yes && selectedSkills.length === 0)
+    ) {
       const skillsInstaller = new SkillsInstaller(path.join(templatesDir, 'skills'));
       const skillSpinner = ora('Installing skills with template resolution...').start();
 
@@ -573,7 +612,9 @@ export async function initCommand(options: InitOptions) {
           console.log(chalk.gray('\n  Template packs selected:'));
           skillResult.templatePacksUsed.forEach((tpu: any) => {
             console.log(
-              chalk.gray(`    ${tpu.skill}: ${tpu.templatePack} (${(tpu.score * 100).toFixed(0)}% match)`)
+              chalk.gray(
+                `    ${tpu.skill}: ${tpu.templatePack} (${(tpu.score * 100).toFixed(0)}% match)`
+              )
             );
           });
         }
@@ -649,9 +690,13 @@ export async function initCommand(options: InitOptions) {
 
     console.log(chalk.cyan('📁 Created:'));
     console.log(chalk.gray(`  .claude/`));
-    console.log(chalk.gray(`  ├── agents/                (${agentResult.installed.length} agents)`));
+    console.log(
+      chalk.gray(`  ├── agents/                (${agentResult.installed.length} agents)`)
+    );
     if (skillResult.installed.length > 0) {
-      console.log(chalk.gray(`  ├── skills/                (${skillResult.installed.length} skills)`));
+      console.log(
+        chalk.gray(`  ├── skills/                (${skillResult.installed.length} skills)`)
+      );
     }
     console.log(chalk.gray(`  ├── CLAUDE.md              (Project context)`));
     console.log(chalk.gray(`  ├── WORKFLOWS.md           (Agent workflows)`));
@@ -661,7 +706,7 @@ export async function initCommand(options: InitOptions) {
       console.log(chalk.gray(`  .mcp.json                  (MCP servers at root)`));
       console.log(chalk.gray(`  .env.example               (Environment variables)`));
     }
-    console.log(chalk.gray(`  .gitignore                 (Updated to exclude .claude/)`))
+    console.log(chalk.gray(`  .gitignore                 (Updated to exclude .claude/)`));
 
     console.log(chalk.cyan('\n🎯 Next steps:\n'));
 
@@ -679,7 +724,9 @@ export async function initCommand(options: InitOptions) {
 
     // MCP setup
     if (mcpServers.length > 0) {
-      console.log(chalk.white(`  ${stepNumber}. Copy .env.example to .env and fill in your credentials:`));
+      console.log(
+        chalk.white(`  ${stepNumber}. Copy .env.example to .env and fill in your credentials:`)
+      );
       if (mcpServers.includes('github')) {
         console.log(chalk.gray('     - GITHUB_TOKEN (from https://github.com/settings/tokens)'));
       }
@@ -694,7 +741,11 @@ export async function initCommand(options: InitOptions) {
     console.log(chalk.white(`  ${stepNumber}. Restart Claude Code to load the new agents`));
     stepNumber++;
     console.log('');
-    console.log(chalk.white(`  ${stepNumber}. Open .claude/CLAUDE.md to see all available agents and their usage`));
+    console.log(
+      chalk.white(
+        `  ${stepNumber}. Open .claude/CLAUDE.md to see all available agents and their usage`
+      )
+    );
     stepNumber++;
     console.log('');
     console.log(chalk.white(`  ${stepNumber}. Start using your agents:`));

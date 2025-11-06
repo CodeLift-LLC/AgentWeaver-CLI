@@ -17,9 +17,7 @@ export async function regenerateDocsCommand() {
     const claudeDir = findClaudeDirectory();
     if (!claudeDir) {
       console.error(
-        chalk.red(
-          '\n❌ Error: .claude directory not found. Run "agentweaver init" first.\n'
-        )
+        chalk.red('\n❌ Error: .claude directory not found. Run "agentweaver init" first.\n')
       );
       process.exit(1);
     }
@@ -29,11 +27,7 @@ export async function regenerateDocsCommand() {
     const spinner = ora('Reading agentweaver.config.yml...').start();
 
     if (!existsSync(configPath)) {
-      spinner.fail(
-        chalk.red(
-          'agentweaver.config.yml not found. Run "agentweaver init" first.'
-        )
-      );
+      spinner.fail(chalk.red('agentweaver.config.yml not found. Run "agentweaver init" first.'));
       process.exit(1);
     }
 
@@ -47,9 +41,7 @@ export async function regenerateDocsCommand() {
       validateConfig(config);
       validateSpinner.succeed('Configuration is valid');
     } catch (error) {
-      validateSpinner.fail(
-        chalk.red(`Invalid configuration: ${(error as Error).message}`)
-      );
+      validateSpinner.fail(chalk.red(`Invalid configuration: ${(error as Error).message}`));
       process.exit(1);
     }
 
@@ -66,10 +58,7 @@ export async function regenerateDocsCommand() {
     console.log(chalk.gray(`  └── ${path.relative(process.cwd(), techStackPath)}`));
     console.log();
   } catch (error) {
-    console.error(
-      chalk.red('\n❌ Failed to regenerate documentation:'),
-      (error as Error).message
-    );
+    console.error(chalk.red('\n❌ Failed to regenerate documentation:'), (error as Error).message);
     process.exit(1);
   }
 }
@@ -121,9 +110,7 @@ function validateConfig(config: AgentWeaverConfig): void {
   for (const section of requiredSections) {
     if (!config.techStack[section as keyof typeof config.techStack]) {
       console.warn(
-        chalk.yellow(
-          `⚠️  Warning: Missing "techStack.${section}" section in configuration`
-        )
+        chalk.yellow(`⚠️  Warning: Missing "techStack.${section}" section in configuration`)
       );
     }
   }

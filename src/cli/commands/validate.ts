@@ -151,7 +151,9 @@ async function validateAllPacks(
   }
 
   if (totalInvalid > 0) {
-    console.log(chalk.yellow('\n⚠️  Please fix validation errors before using these template packs\n'));
+    console.log(
+      chalk.yellow('\n⚠️  Please fix validation errors before using these template packs\n')
+    );
     process.exit(1);
   } else {
     console.log(chalk.green('\n🎉 All template packs are valid!\n'));
@@ -171,7 +173,8 @@ function displayValidationResult(result: any, verbose: boolean = false) {
   if (result.errors.length > 0) {
     console.log(chalk.red('    Errors:'));
     result.errors.forEach((error: any) => {
-      const severity = error.severity === 'critical' ? '🔴' : error.severity === 'high' ? '🟠' : '🟡';
+      const severity =
+        error.severity === 'critical' ? '🔴' : error.severity === 'high' ? '🟠' : '🟡';
       console.log(chalk.red(`      ${severity} ${error.field}: ${error.message}`));
     });
   }

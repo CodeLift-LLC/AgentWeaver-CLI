@@ -81,11 +81,11 @@ export interface TechStack {
  * Template file definition
  */
 export interface TemplateFile {
-  source: string;        // Path relative to template directory
-  destination: string;   // Path relative to project root
-  type: 'copy' | 'template';  // 'copy' = direct copy, 'template' = process variables
-  required: boolean;     // Whether this file is always needed
-  features?: string[];   // Features that require this file (e.g., ['payments'])
+  source: string; // Path relative to template directory
+  destination: string; // Path relative to project root
+  type: 'copy' | 'template'; // 'copy' = direct copy, 'template' = process variables
+  required: boolean; // Whether this file is always needed
+  features?: string[]; // Features that require this file (e.g., ['payments'])
 }
 
 /**
@@ -100,7 +100,7 @@ export interface DockerService {
   volumes?: string[];
   dependsOn?: string[];
   required: boolean;
-  features?: string[];  // Features that require this service
+  features?: string[]; // Features that require this service
 }
 
 /**
@@ -119,9 +119,9 @@ export interface StackTemplate {
    */
   requirements: {
     docker: boolean;
-    dockerCompose?: string;  // Minimum version
-    node?: string;           // Minimum Node.js version
-    python?: string;         // Minimum Python version
+    dockerCompose?: string; // Minimum version
+    node?: string; // Minimum Node.js version
+    python?: string; // Minimum Python version
     pnpm?: boolean;
     uv?: boolean;
   };

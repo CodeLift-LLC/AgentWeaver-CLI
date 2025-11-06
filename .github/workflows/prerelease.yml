@@ -68,10 +68,12 @@ jobs:
           test -d dist/templates || (echo "Templates directory missing" && exit 1)
           echo "Build artifacts validated successfully"
 
+      - name: Configure npm authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - name: Dry-run npm publish
         run: npm publish --dry-run --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Test installation
         run: |
@@ -118,6 +120,10 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Configure npm authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - name: Determine npm tag
         id: npm_tag
         run: |
@@ -134,8 +140,6 @@ jobs:
 
       - name: Publish to npm with tag
         run: npm publish --access public --tag ${{ steps.npm_tag.outputs.tag }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release Assets
         run: npm pack

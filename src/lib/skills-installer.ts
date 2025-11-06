@@ -310,9 +310,7 @@ export class SkillsInstaller {
    */
   async getSkillInfo(skillName: string): Promise<SkillInfo | null> {
     const skills = await this.listAvailableSkills();
-    return (
-      skills.find((skill) => skill.name === skillName || skill.dirName === skillName) || null
-    );
+    return skills.find((skill) => skill.name === skillName || skill.dirName === skillName) || null;
   }
 
   /**
